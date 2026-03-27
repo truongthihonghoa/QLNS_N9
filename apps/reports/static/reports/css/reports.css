@@ -117,7 +117,8 @@
 .table .header .row {
     display: grid;
     grid-template-columns: 90px 90px 100px 100px 70px 80px 90px 120px;
-    align-items: center;
+    align-items: stretch;
+    min-height: 68px;
 }
 
 /* Table Cells */
@@ -129,14 +130,16 @@
 .cell_05,
 .cell_06,
 .cell_action {
-    padding: 16px 14px;
+    padding: 22px 14px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
     font: 700 22px "Montserrat", sans-serif;
-    color: #fff;
+    color: #fff !important;
+    text-align: center !important;
+    vertical-align: middle;
 }
 
 .cell { box-sizing: border-box; }
@@ -237,6 +240,7 @@
     font: 500 20px "Montserrat", sans-serif;
     color: #1a1a1a;
     vertical-align: middle;
+    text-align: center !important;
 }
 
 .data_03,
@@ -247,7 +251,7 @@
 .data_28,
 .data_33,
 .data_38 {
-    align-items: flex-start;
+    align-items: center !important;
 }
 
 /* Data Text */

@@ -211,7 +211,8 @@
 .header .row {
     display: grid;
     grid-template-columns: 64px 114px 108px 200px 106px 167px 120px 77px 170px 132px 150px;
-    align-items: center;
+    align-items: stretch;
+    min-height: 68px;
 }
 
 /* Table Cells */
@@ -226,14 +227,16 @@
 .cell_08,
 .cell_09,
 .cell_action {
-    padding: 16px 14px;
+    padding: 22px 14px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
     font: 700 22px "Montserrat", sans-serif;
-    color: #fff;
+    color: #fff !important;
+    text-align: center !important;
+    vertical-align: middle;
 }
 
 .cell { box-sizing: border-box; }
@@ -261,10 +264,10 @@
 .lngthclnh_span,
 .trngthi_span,
 .hanhdong_span {
-    color: white;
+    color: white !important;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
-    text-align: center;
+    text-align: center !important;
 }
 
 .stt_span { font-size: 14px; }
@@ -363,13 +366,14 @@
     font: 500 20px "Montserrat", sans-serif;
     color: #1a1a1a;
     vertical-align: middle;
+    text-align: center !important;
 }
 
 /* Match data cell widths to header cell widths - Grid handles sizing */
 .data, .data_10, .data_20, .data_30, .data_40 { box-sizing: border-box; }
 .data_01, .data_11, .data_21, .data_31, .data_41 { box-sizing: border-box; }
 .data_02, .data_12, .data_22, .data_32, .data_42 { box-sizing: border-box; }
-.data_03, .data_13, .data_23, .data_33, .data_43 { align-items: flex-start; box-sizing: border-box; }
+.data_03, .data_13, .data_23, .data_33, .data_43 { align-items: center !important; box-sizing: border-box; }
 .data_04, .data_14, .data_24, .data_34, .data_44 { box-sizing: border-box; }
 .data_05, .data_15, .data_25, .data_35, .data_45 { box-sizing: border-box; }
 .data_06, .data_16, .data_26, .data_36, .data_46 { box-sizing: border-box; }
