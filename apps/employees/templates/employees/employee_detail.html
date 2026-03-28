@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chi tiết nhân viên - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'employees/css/employee_detail.css' %}?v=1.0">
+{% endblock %}
+
+{% block content %}
+<section class="employee-detail-page">
+    <a href="{% url 'employee_list' %}" class="detail-back-btn">+ Danh sách nhân viên</a>
+
+    <h1 class="detail-heading">Thông tin chi tiết nhân viên: {{ employee.ho_ten }}</h1>
+
+    <div class="detail-card">
+        <div class="detail-avatar-panel">
+            <div class="detail-avatar">
+                {% if image_path %}
+                    <img src="{% static image_path %}" alt="{{ employee.ho_ten }}">
+                {% else %}
+                    <span>{{ initials }}</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="detail-form-grid">
+            <div class="detail-field">
+                <label>Mã nhân viên</label>
+                <input type="text" value="{{ employee.ma_nv }}" readonly>
+            </div>
+            <div class="detail-field">
+                <label>Họ tên<span>*</span></label>
+                <input type="text" value="{{ employee.ho_ten }}" readonly>
+            </div>
+            <div class="detail-field">
+                <label>Giới tính<span>*</span></label>
+                <input type="text" value="{{ employee.gioi_tinh|default:'' }}" readonly>
+            </div>
+
+            <div class="detail-field">
+                <label>CCCD<span>*</span></label>
+                <input type="text" value="{{ employee.cccd }}" readonly>
+            </div>
+            <div class="detail-field">
+                <label>Số điện thoại<span>*</span></label>
+                <input type="text" value="{{ employee.sdt }}" readonly>
+            </div>
+            <div class="detail-field">
+                <label>Ngày sinh<span>*</span></label>
+                <input type="text" value="{{ employee.ngay_sinh|date:'d/m/Y' }}" readonly>
+            </div>
+
+            <div class="detail-field detail-field-full">
+                <label>Địa chỉ</label>
+                <textarea readonly>{{ employee.dia_chi|default:'' }}</textarea>
+            </div>
+            <div class="detail-field">
+                <label>Tài khoản ngân hàng<span>*</span></label>
+                <input type="text" value="{{ employee.tk_ngan_hang }}" readonly>
+            </div>
+            <div class="detail-field">
+                <label>Vị trí việc làm<span>*</span></label>
+                <input type="text" value="{{ employee.vi_tri_vl }}" readonly>
+            </div>
+
+            <div class="detail-field detail-field-full">
+                <label>Địa chỉ làm việc</label>
+                <textarea readonly>{% if employee.ma_chi_nhanh %}{{ employee.ma_chi_nhanh }}{% if employee.ma_chi_nhanh.dia_chi %} - {{ employee.ma_chi_nhanh.dia_chi }}{% endif %}{% endif %}</textarea>
+            </div>
+            <div class="detail-field">
+                <label>Người quản lý</label>
+                <input type="text" value="{{ manager_name }}" readonly>
+            </div>
+            <div class="detail-field">
+                <label>Chức vụ<span>*</span></label>
+                <input type="text" value="{{ employee.chuc_vu }}" readonly>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-actions">
+        <a href="{% url 'employee_list' %}" class="detail-btn detail-btn-muted">Hủy</a>
+        <a href="{% url 'employee_edit' employee_id=employee.ma_nv %}" class="detail-btn detail-btn-primary">Chỉnh sửa</a>
+    </div>
+</section>
+{% endblock %}

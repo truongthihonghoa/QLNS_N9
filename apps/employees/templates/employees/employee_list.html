@@ -1,68 +1,68 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Quản lý Nhân viên - {{ block.super }}{% endblock %}
+{% block title %}Quản lý nhân viên - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'employees/css/employee_list.css' %}?v=2.0">
+    <link rel="stylesheet" href="{% static 'employees/css/employee_list.css' %}?v=5.0">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="employee-management-container">
-    <div class="toolbar">
-        <div class="search-bar">
-            <input type="text" placeholder="Nhập tên nhân viên">
-        </div>
-        <div class="spacer"></div> <!-- This will push the buttons to the right -->
-        <button class="search-action-btn">
-            <img src="{% static 'images/search_icon.png' %}" alt="Tìm kiếm">
-            <span>Tìm kiếm</span>
-        </button>
-        <a href="{% url 'employee_add' %}" class="add-btn">
-            <img src="{% static 'employees/img/add_icon.png' %}" alt="Thêm">
-            <span>Thêm</span>
-        </a>
+<section class="employee-page">
+    <form method="get" class="employee-toolbar">
+        <label class="employee-search" for="employee-search-input">
+            <img src="{% static 'images/search_icon.png' %}" alt="" aria-hidden="true">
+            <input
+                id="employee-search-input"
+                type="text"
+                name="q"
+                value="{{ search_query }}"
+                placeholder="Nhập tên nhân viên"
+            >
+        </label>
+        <button type="submit" class="toolbar-btn toolbar-btn-primary">Tìm kiếm</button>
+        <a href="{% url 'employee_add' %}" class="toolbar-btn toolbar-btn-add">+ Thêm</a>
+    </form>
+
+    <div class="employee-board">
+        {% if employee_cards %}
+            <div class="employee-grid">
+                {% for employee in employee_cards %}
+                    <article class="employee-card" data-detail-url="{% url 'employee_detail' employee_id=employee.ma_nv %}" tabindex="0" role="link" aria-label="Xem chi tiết {{ employee.ho_ten }}">
+                        <div class="employee-avatar {{ employee.theme_class }}">
+                            {% if employee.image_path %}
+                                <img src="{% static employee.image_path %}" alt="{{ employee.ho_ten }}">
+                            {% else %}
+                                <span>{{ employee.initials }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="employee-card-body">
+                            <h2 class="employee-name">{{ employee.ho_ten }}</h2>
+                            <p class="employee-meta">Mã NV: {{ employee.ma_nv }}</p>
+                            <p class="employee-meta">Sinh: {{ employee.ngay_sinh|date:'d/m/Y' }}</p>
+                            <p class="employee-meta">SDT: {{ employee.sdt }}</p>
+                        </div>
+                        <div class="employee-card-footer">
+                            <span class="employee-role">{{ employee.chuc_vu }}</span>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="employee-empty-state">
+                <h2>Không tìm thấy nhân viên phù hợp</h2>
+                <p>Thử lại với tên, mã nhân viên hoặc số điện thoại khác.</p>
+            </div>
+        {% endif %}
     </div>
 
-    <table class="employee-table">
-        <thead>
-            <tr>
-                <th>STT</th>
-                <th>Mã Nhân Viên</th>
-                <th>Tên Nhân Viên</th>
-                <th>Ngày Sinh</th>
-                <th>Số Điện Thoại</th>
-                <th>Chức Vụ</th>
-                <th>Hành Động</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for i in "12345678" %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>NV0000{{ forloop.counter }}</td>
-                <td>Nguyễn Văn An</td>
-                <td>12/02/2000</td>
-                <td>0966983691</td>
-                <td>Pha chế</td>
-                <td class="action-cell">
-                    <a href="{% url 'employee_edit' employee_id='NV00001' %}" class="action-icon">
-                        <img src="{% static 'images/edit_icon.png' %}" alt="Sửa">
-                    </a>
-                    <a href="#" class="action-icon delete-btn">
-                        <img src="{% static 'images/delete_icon.png' %}" alt="Xóa">
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <p class="employee-count">Hiển thị {{ employee_count }} nhân viên</p>
+</section>
 
-{% include 'partials/popup_confirm_delete.html' %}
+{% include 'partials/popup_confirm_delete.html' with delete_popup_title='XÁC NHẬN XÓA' delete_popup_message_1='Chức năng xóa nhân viên chưa được kết nối dữ liệu.' delete_popup_message_2_before='Hiện tại hệ thống chỉ hiển thị xác nhận cho' delete_popup_highlight='"giao diện mới".' %}
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'employees/js/employee_list.js' %}"></script>
+    <script src="{% static 'employees/js/employee_list.js' %}?v=4.0"></script>
 {% endblock %}

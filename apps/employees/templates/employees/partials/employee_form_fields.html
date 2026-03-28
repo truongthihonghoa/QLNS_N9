@@ -1,0 +1,77 @@
+<div class="form-row">
+    {% if is_edit %}
+        <div class="form-group">
+            <label for="ma_nv">Mã nhân viên</label>
+            <input type="text" id="ma_nv" value="{{ employee.ma_nv }}" readonly>
+        </div>
+    {% else %}
+        <div class="form-group">
+            <label for="{{ form.ma_nv.id_for_label }}">Mã nhân viên <span class="required">*</span></label>
+            {{ form.ma_nv }}
+            {% if form.ma_nv.errors %}<p class="field-error">{{ form.ma_nv.errors|join:', ' }}</p>{% endif %}
+        </div>
+    {% endif %}
+    <div class="form-group">
+        <label for="{{ form.ho_ten.id_for_label }}">Họ và tên <span class="required">*</span></label>
+        {{ form.ho_ten }}
+        {% if form.ho_ten.errors %}<p class="field-error">{{ form.ho_ten.errors|join:', ' }}</p>{% endif %}
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group">
+        <label for="{{ form.gioi_tinh.id_for_label }}">Giới tính</label>
+        {{ form.gioi_tinh }}
+        {% if form.gioi_tinh.errors %}<p class="field-error">{{ form.gioi_tinh.errors|join:', ' }}</p>{% endif %}
+    </div>
+    <div class="form-group">
+        <label for="{{ form.ngay_sinh.id_for_label }}">Ngày sinh <span class="required">*</span></label>
+        {{ form.ngay_sinh }}
+        {% if form.ngay_sinh.errors %}<p class="field-error">{{ form.ngay_sinh.errors|join:', ' }}</p>{% endif %}
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group">
+        <label for="{{ form.cccd.id_for_label }}">CCCD <span class="required">*</span></label>
+        {{ form.cccd }}
+        {% if form.cccd.errors %}<p class="field-error">{{ form.cccd.errors|join:', ' }}</p>{% endif %}
+    </div>
+    <div class="form-group">
+        <label for="{{ form.sdt.id_for_label }}">Số điện thoại <span class="required">*</span></label>
+        {{ form.sdt }}
+        {% if form.sdt.errors %}<p class="field-error">{{ form.sdt.errors|join:', ' }}</p>{% endif %}
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group">
+        <label for="{{ form.tk_ngan_hang.id_for_label }}">Tài khoản ngân hàng <span class="required">*</span></label>
+        {{ form.tk_ngan_hang }}
+        {% if form.tk_ngan_hang.errors %}<p class="field-error">{{ form.tk_ngan_hang.errors|join:', ' }}</p>{% endif %}
+    </div>
+    <div class="form-group">
+        <label for="{{ form.ma_chi_nhanh.id_for_label }}">Chi nhánh <span class="required">*</span></label>
+        {{ form.ma_chi_nhanh }}
+        {% if form.ma_chi_nhanh.errors %}<p class="field-error">{{ form.ma_chi_nhanh.errors|join:', ' }}</p>{% endif %}
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group">
+        <label for="{{ form.chuc_vu.id_for_label }}">Chức vụ <span class="required">*</span></label>
+        {{ form.chuc_vu }}
+        {% if form.chuc_vu.errors %}<p class="field-error">{{ form.chuc_vu.errors|join:', ' }}</p>{% endif %}
+    </div>
+    <div class="form-group">
+        <label for="{{ form.vi_tri_vl.id_for_label }}">Vị trí việc làm <span class="required">*</span></label>
+        {{ form.vi_tri_vl }}
+        {% if form.vi_tri_vl.errors %}<p class="field-error">{{ form.vi_tri_vl.errors|join:', ' }}</p>{% endif %}
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="{{ form.dia_chi.id_for_label }}">Địa chỉ</label>
+    {{ form.dia_chi }}
+    {% if form.dia_chi.errors %}<p class="field-error">{{ form.dia_chi.errors|join:', ' }}</p>{% endif %}
+</div>

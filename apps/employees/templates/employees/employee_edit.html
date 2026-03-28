@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Chỉnh sửa Nhân viên - {{ block.super }}{% endblock %}
+{% block title %}Chinh sua nhan vien - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'employees/css/employee_edit.css' %}">
+    <link rel="stylesheet" href="{% static 'employees/css/employee_edit.css' %}?v=3.0">
     <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
 {% endblock %}
@@ -15,59 +15,22 @@
         <a href="{% url 'employee_list' %}" class="back-link">
             <img src="{% static 'images/back_icon.png' %}" alt="Back" class="back-icon">
         </a>
-        <h2 class="page-title">Chỉnh sửa thông tin nhân viên</h2>
+        <h2 class="page-title">Chinh sua thong tin nhan vien</h2>
     </div>
-    <p class="page-note">* Lưu ý: Chỉ được phép cập nhật chức vụ và địa chỉ nhân viên.</p>
+    <p class="page-note">Cap nhat truc tiep theo model nhan vien hien tai.</p>
+
+    {% if form.non_field_errors %}
+        <div class="form-error-summary">{{ form.non_field_errors|join:', ' }}</div>
+    {% endif %}
 
     <form class="employee-form" method="POST" data-employee-list-url="{% url 'employee_list' %}">
         {% csrf_token %}
-        <div class="form-column">
-            <div class="form-group">
-                <label for="ma_nv">Mã nhân viên</label>
-                <input type="text" id="ma_nv" name="ma_nv" value="{{ employee_id|default:'NV00001' }}" readonly>
-            </div>
-            <div class="form-group">
-                <label for="gioi_tinh">Giới tính</label>
-                <input type="text" id="gioi_tinh" name="gioi_tinh" value="Nam" readonly>
-            </div>
-            <div class="form-group">
-                <label for="cccd">Số CCCD</label>
-                <input type="text" id="cccd" name="cccd" value="051305000652" readonly>
-            </div>
-            <div class="form-group">
-                <label for="chuc_vu">Chức vụ <span class="required">*</span></label>
-                <select id="chuc_vu" name="chuc_vu" required>
-                    <option value="pha_che" {% if form_data.chuc_vu == 'pha_che' or not form_data.chuc_vu %}selected{% endif %}>Pha chế</option>
-                    <option value="phuc_vu" {% if form_data.chuc_vu == 'phuc_vu' %}selected{% endif %}>Phục vụ</option>
-                    <option value="giu_xe" {% if form_data.chuc_vu == 'giu_xe' %}selected{% endif %}>Giữ xe</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="dia_chi_thuong_tru">Địa chỉ thường trú <span class="required">*</span></label>
-                <textarea id="dia_chi_thuong_tru" name="dia_chi_thuong_tru" required>{{ form_data.dia_chi_thuong_tru|default:'Thôn 3, Xã Long Hiệp, Huyện Minh Long, Tỉnh Quảng Ngãi.' }}</textarea>
-            </div>
+        <div class="form-column form-column-wide">
+            {% include 'employees/partials/employee_form_fields.html' with form=form employee=employee is_edit=True %}
         </div>
-        <div class="form-column">
-            <div class="form-group">
-                <label for="ho_ten">Họ và tên</label>
-                <input type="text" id="ho_ten" name="ho_ten" value="Nguyễn Văn An" readonly>
-            </div>
-            <div class="form-group">
-                <label for="ngay_sinh">Ngày sinh</label>
-                <input type="text" id="ngay_sinh" name="ngay_sinh" value="12/02/2000" readonly>
-            </div>
-            <div class="form-group">
-                <label for="sdt">Số điện thoại</label>
-                <input type="tel" id="sdt" name="sdt" value="0966983691" readonly>
-            </div>
-            <div class="form-group">
-                <label for="dia_chi_tam_tru">Địa chỉ tạm trú <span class="required">*</span></label>
-                <textarea id="dia_chi_tam_tru" name="dia_chi_tam_tru" required>{{ form_data.dia_chi_tam_tru|default:'572 Đường 2/9, Phường Hòa Cường Nam, Quận Hải Châu.' }}</textarea>
-            </div>
-            <div class="form-actions">
-                <button type="button" class="cancel-btn">HỦY THAO TÁC</button>
-                <button type="submit" class="save-btn">LƯU THÔNG TIN</button>
-            </div>
+        <div class="form-actions">
+            <button type="button" class="cancel-btn">Huy thao tac</button>
+            <button type="submit" class="save-btn">Luu thong tin</button>
         </div>
     </form>
 </div>
@@ -75,14 +38,11 @@
 {% include 'partials/popup_error.html' %}
 {% include 'partials/popup_confirm_cancel.html' %}
 
-{% for message in messages %}
-    {% if 'invalid_info_error' in message.tags %}
-        <div id="auto-show-invalid-info-popup" style="display: none;"></div>
-    {% endif %}
-{% endfor %}
-
+{% if form.errors %}
+    <div id="auto-show-invalid-info-popup" style="display: none;"></div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'employees/js/employee_edit.js' %}"></script>
+    <script src="{% static 'employees/js/employee_edit.js' %}?v=3.0"></script>
 {% endblock %}

@@ -44,12 +44,12 @@
                     <a href="#">Nhân viên</a>
                 </div>
             </div>
-            <a href="{% url 'employee_list' %}" class="nav-item">Nhân Viên</a>
-            <a href="{% url 'contract_list' %}" class="nav-item">Hợp Đồng</a>
-            <a href="{% url 'schedule_list' %}" class="nav-item">Lịch Làm Việc</a>
-            <a href="{% url 'request_list' %}" class="nav-item">Yêu Cầu</a>
-            <a href="{% url 'payroll_list' %}" class="nav-item">Bảng Lương</a>
-            <a href="{% url 'reports:report_list' %}" class="nav-item">Báo Cáo</a>
+            <a href="{% url 'employee_list' %}" class="nav-item">Nhân viên</a>
+            <a href="{% url 'contract_list' %}" class="nav-item">Hợp đồng</a>
+            <a href="{% url 'schedule_list' %}" class="nav-item">Lịch làm việc</a>
+            <a href="{% url 'request_list' %}" class="nav-item">Yêu cầu</a>
+            <a href="{% url 'payroll_list' %}" class="nav-item">Bảng lương</a>
+            <a href="{% url 'reports:report_list' %}" class="nav-item">Báo cáo</a>
         </nav>
 
         <main class="main-content">
@@ -58,7 +58,6 @@
         </main>
     </div>
 
-    <!-- Include logout confirmation popup -->
     {% include 'partials/popup_confirm_logout.html' %}
 
     <script src="{% static 'js/base.js' %}"></script>

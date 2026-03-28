@@ -1,8 +1,8 @@
 .edit-employee-container {
-    background: white;
-    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.10);
+    background: #ffffff;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
-    padding: 20px 40px;
+    padding: 24px 32px 32px;
 }
 
 .page-header {
@@ -22,114 +22,147 @@
 }
 
 .page-title {
-    color: #174D17;
+    color: #174d17;
     font-size: 23px;
-    font-family: 'Montserrat', sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-weight: 700;
     text-transform: uppercase;
 }
 
 .page-note {
-    color: #888888;
-    font-size: 18px;
-    font-family: 'Montserrat', sans-serif;
+    color: #6b7280;
+    font-size: 16px;
+    font-family: "Montserrat", sans-serif;
     font-style: italic;
-    margin-bottom: 40px;
+    margin-bottom: 24px;
     padding-left: 35px;
+}
+
+.form-error-summary {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background: #fff1f1;
+    color: #b42318;
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
 }
 
 .employee-form {
     display: flex;
-    gap: 60px;
+    flex-direction: column;
+    gap: 22px;
 }
 
 .form-column {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 22px;
+}
+
+.form-column-wide {
+    width: 100%;
+}
+
+.form-row {
+    display: flex;
+    gap: 24px;
 }
 
 .form-group {
+    flex: 1;
     display: flex;
     flex-direction: column;
 }
 
 .form-group label {
-    color: #4B2E1F;
-    font-size: 22px;
-    font-family: 'Montserrat', sans-serif;
+    color: #4b2e1f;
+    font-size: 18px;
+    font-family: "Montserrat", sans-serif;
     font-weight: 600;
     margin-bottom: 8px;
 }
 
-.form-group .required {
-    color: #FF0000;
+.required {
+    color: #ff0000;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
     width: 100%;
-    height: 50px;
-    padding: 0 20px;
+    min-height: 50px;
+    padding: 0 16px;
     border-radius: 10px;
-    border: 2px solid #DEE2E6;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 20px;
+    border: 1px solid #d1d5db;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
     box-sizing: border-box;
 }
 
-.form-group input[readonly],
-.form-group input:disabled {
-    background: #E9ECEF;
+.form-group textarea {
+    min-height: 110px;
+    padding-top: 14px;
+    resize: vertical;
+}
+
+.form-group input[readonly] {
+    background: #e9ecef;
     color: #495057;
     cursor: not-allowed;
 }
 
-.form-group select,
-.form-group textarea {
-    border-color: #4B2E1F;
-}
-
-.form-group textarea {
-    height: 120px;
-    padding-top: 15px;
-    resize: vertical;
+.field-error {
+    margin-top: 6px;
+    color: #b42318;
+    font-family: "Montserrat", sans-serif;
+    font-size: 13px;
 }
 
 .form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 20px;
-    margin-top: 40px;
+    gap: 16px;
 }
 
-.cancel-btn, .save-btn {
+.cancel-btn,
+.save-btn {
     all: unset;
     box-sizing: border-box;
-    height: 65px;
+    height: 52px;
     border-radius: 10px;
-    font-family: 'Montserrat', sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-weight: 700;
-    font-size: 24px;
+    font-size: 18px;
     text-align: center;
     cursor: pointer;
-    padding: 0 30px;
+    padding: 0 28px;
     transition: background-color 0.3s;
 }
 
 .cancel-btn {
-    background: #E0E0E0;
+    background: #e0e0e0;
     color: #444444;
 }
 
 .save-btn {
     background: rgba(23, 77, 23, 0.87);
-    color: white;
+    color: #ffffff;
 }
 
-.cancel-btn:hover, .save-btn:hover {
-    background-color: #0000FF;
-    color: white;
+.cancel-btn:hover,
+.save-btn:hover {
+    background-color: #0000ff;
+    color: #ffffff;
+}
+
+@media (max-width: 720px) {
+    .form-row {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
 }

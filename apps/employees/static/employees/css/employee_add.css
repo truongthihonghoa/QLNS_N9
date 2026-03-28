@@ -1,23 +1,22 @@
 .add-employee-container {
     background-color: #ffffff;
     border-radius: 12px;
-    box-shadow: 0px 4px 15px #0000000d;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     padding: 30px;
 }
 
 .page-header {
-    margin-bottom: 40px;
+    margin-bottom: 32px;
 }
 
 .back-link {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    text-decoration: none;
     color: #174d17;
     font-family: "Montserrat-Regular", Helvetica, sans-serif;
     font-size: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .back-icon {
@@ -29,36 +28,58 @@
     font-family: "Montserrat-Bold", Helvetica, sans-serif;
     font-weight: 700;
     color: #174d17;
-    font-size: 23.6px;
+    font-size: 24px;
     border-left: 5px solid #6f4e37;
     padding-left: 20px;
+}
+
+.form-error-summary,
+.field-error,
+.avatar-note {
+    font-family: "Montserrat-Regular", Helvetica, sans-serif;
+}
+
+.form-error-summary {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background: #fff1f1;
+    color: #b42318;
+    font-size: 15px;
 }
 
 .employee-form {
     display: flex;
     gap: 40px;
+    align-items: flex-start;
 }
 
 .form-left {
-    flex-basis: 287px;
+    flex-basis: 250px;
     flex-shrink: 0;
 }
 
 .avatar-upload-placeholder {
     width: 100%;
-    height: 370px;
+    height: 310px;
     background-color: #fafafa;
     border: 2px dashed #dddddd;
     border-radius: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
 }
 
 .upload-icon {
-    width: 64px; /* Adjust size as needed */
+    width: 64px;
     height: 64px;
+}
+
+.avatar-note {
+    margin-top: 12px;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 .form-right {
@@ -70,7 +91,7 @@
 
 .form-row {
     display: flex;
-    gap: 30px;
+    gap: 24px;
 }
 
 .form-group {
@@ -82,12 +103,12 @@
 .form-group label {
     font-family: "Montserrat-Bold", Helvetica, sans-serif;
     font-weight: 700;
-    font-size: 20px;
+    font-size: 18px;
     color: #333333;
     margin-bottom: 8px;
 }
 
-.form-group .required {
+.required {
     color: #e74c3c;
 }
 
@@ -95,54 +116,70 @@
 .form-group select,
 .form-group textarea {
     width: 100%;
-    height: 44px;
+    min-height: 46px;
     padding: 0 15px;
     border-radius: 6px;
-    border: 1px solid #dddddd;
+    border: 1px solid #d1d5db;
     font-family: "Montserrat-Regular", Helvetica, sans-serif;
-    font-size: 18px;
-    color: #333;
-    box-sizing: border-box;
+    font-size: 16px;
+    color: #333333;
+    background: #ffffff;
 }
-
-.form-group input::placeholder,
-.form-group textarea::placeholder {
-    color: #b3b3b3;
-}
-
-.form-group select {
-    color: #b3b3b3;
-}
-.form-group select:valid {
-    color: #333;
-}
-
 
 .form-group textarea {
-    height: 80px;
-    padding-top: 10px;
+    min-height: 104px;
+    padding-top: 12px;
     resize: vertical;
+}
+
+.form-group input[readonly] {
+    background: #f3f4f6;
+}
+
+.field-error {
+    margin-top: 6px;
+    color: #b42318;
+    font-size: 13px;
+    line-height: 1.4;
 }
 
 .form-actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 20px;
+    margin-top: 12px;
 }
 
 .save-btn {
-    width: 130px;
-    height: 40px;
-    background-color: #174d17de;
+    min-width: 130px;
+    height: 44px;
+    background-color: rgba(23, 77, 23, 0.87);
     color: white;
     border: none;
     border-radius: 6px;
     font-family: "Montserrat-Bold", Helvetica, sans-serif;
-    font-size: 24px;
+    font-size: 20px;
     cursor: pointer;
-    transition: background-color 0.3s; /* Smooth transition */
+    transition: background-color 0.3s;
 }
 
 .save-btn:hover {
-    background-color: #0000FF; /* New hover color */
+    background-color: #0000ff;
+}
+
+@media (max-width: 960px) {
+    .employee-form {
+        flex-direction: column;
+    }
+
+    .form-left {
+        flex-basis: auto;
+        width: 100%;
+    }
+}
+
+@media (max-width: 720px) {
+    .form-row {
+        flex-direction: column;
+        gap: 20px;
+    }
 }
