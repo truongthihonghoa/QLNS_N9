@@ -7,6 +7,7 @@
     <title>{% block title %}GE CAFE HRM{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/globals.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -18,7 +19,12 @@
             </div>
             <div class="header-right">
                 <span class="welcome-message">Xin chào, GÉ CAFE</span>
-                <img class="user-avatar" src="{% static 'images/user_avatar.png' %}" alt="User Avatar" />
+                <div class="user-dropdown">
+                    <img class="user-avatar" src="{% static 'images/user_avatar.png' %}" alt="User Avatar" />
+                    <div class="user-dropdown-content">
+                        <a href="#" id="logout-link">Đăng xuất</a>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -51,6 +57,9 @@
             {% endblock %}
         </main>
     </div>
+
+    <!-- Include logout confirmation popup -->
+    {% include 'partials/popup_confirm_logout.html' %}
 
     <script src="{% static 'js/base.js' %}"></script>
     {% block extra_js %}{% endblock %}

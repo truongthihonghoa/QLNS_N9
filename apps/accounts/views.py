@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 
 
 def _account_rows():
@@ -145,3 +146,11 @@ def account_admin_list_view(request):
             'account_rows': _admin_accounts(),
         },
     )
+
+
+def logout_view(request):
+    """
+    Handles user logout
+    """
+    logout(request)
+    return redirect('login')
