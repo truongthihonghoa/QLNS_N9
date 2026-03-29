@@ -11,6 +11,8 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <div class="bg-overlay"></div>
+
     <div class="main-container">
         <header class="header">
             <div class="header-left">
@@ -37,13 +39,7 @@
                     <a href="{% url 'account_employee_list' %}">Nhân viên</a>
                 </div>
             </div>
-            <div class="nav-item dropdown">
-                <span>Chi nhánh ⌵</span>
-                <div class="dropdown-content">
-                    <a href="{% url 'branches:branch_admin' %}">Admin</a>
-                    <a href="#">Nhân viên</a>
-                </div>
-            </div>
+            <a href="{% url 'branches:branch_admin' %}" class="nav-item">Chi nhánh</a>
             <a href="{% url 'employee_list' %}" class="nav-item">Nhân Viên</a>
             <a href="{% url 'contract_list' %}" class="nav-item">Hợp Đồng</a>
             <a href="{% url 'schedule_list' %}" class="nav-item">Lịch Làm Việc</a>
@@ -58,7 +54,6 @@
         </main>
     </div>
 
-    <!-- Include logout confirmation popup -->
     {% include 'partials/popup_confirm_logout.html' %}
 
     <script src="{% static 'js/base.js' %}"></script>
