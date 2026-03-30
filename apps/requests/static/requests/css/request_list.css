@@ -74,7 +74,7 @@
 
 .btn-search-ge:hover, 
 .btn-create-request:hover {
-    background: #0000ff; /* Đổi sang xanh dương khi hover theo yêu cầu cũ của bạn */
+    background: #27682b;
     transform: translateY(-1px);
 }
 

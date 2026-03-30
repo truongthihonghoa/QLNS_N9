@@ -12,9 +12,13 @@
 /* Toolbar */
 .toolbar {
     display: grid;
-    grid-template-columns: minmax(280px, 1fr) 170px;
+    grid-template-columns: minmax(240px, 420px) 170px;
     gap: 14px;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: transparent;
 }
 
 .search-box {
@@ -28,27 +32,28 @@
     border: 1px solid #dadce0;
     border-radius: 10px;
     padding: 0 18px;
-    background: rgba(112, 69, 47, 0.04);
+    background: #ffffff;
     font: 500 18px "Montserrat", sans-serif;
 }
 
 .btn-search {
-    height: 48px;
+    height: 54px;
+    min-width: 156px;
     border: none;
     border-radius: 8px;
     background: rgba(23, 77, 23, 0.87);
     color: #fff;
-    font: 700 20px "Montserrat", sans-serif;
+    font: 700 18px "Montserrat", sans-serif;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    padding: 0 24px;
+    padding: 0 30px;
 }
 
 .btn-search:hover {
-    background: #0000ff;
+    background: #27682b;
 }
 
 .btn-primary {
@@ -68,7 +73,7 @@
 }
 
 .btn-primary:hover {
-    background: #0000ff;
+    background: #27682b;
 }
 
 .btn-secondary {
@@ -89,6 +94,16 @@
 
 .btn-secondary:hover {
     background: #f5f5f5;
+}
+
+.branch-view-modal .btn-secondary {
+    border-color: #5fa768;
+    background: #5fa768;
+    color: #ffffff;
+}
+
+.branch-view-modal .btn-secondary:hover {
+    background: #4d9357;
 }
 
 .btn-danger {
@@ -112,9 +127,10 @@
 
 /* Table Container */
 .branch-table-card {
-    background: #fff;
+    margin-top: 18px;
+    background: transparent;
     border-radius: 14px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    box-shadow: none;
     overflow: hidden;
 }
 
@@ -147,6 +163,12 @@
     vertical-align: middle;
 }
 
+.branch-empty-state {
+    padding: 28px 14px !important;
+    font: 600 18px "Montserrat", sans-serif;
+    color: #5f6b63;
+}
+
 /* Action Buttons */
 .branch-actions {
     display: flex;
@@ -177,6 +199,14 @@
     width: 20px;
     height: 20px;
     object-fit: contain;
+}
+
+.branch-delete-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #8d1f1f;
+    font: 700 28px/1 "Montserrat", sans-serif;
 }
 
 .btn-view:hover {
@@ -219,19 +249,228 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     z-index: 1000;
+    overflow-y: auto;
+    padding: 158px 0 30px;
+    box-sizing: border-box;
 }
 
 .branch-modal {
     background: #fff;
     border-radius: 24px;
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.16);
-    width: min(760px, 100%);
-    max-height: calc(100vh - 48px);
-    overflow: auto;
+    width: min(760px, 95%);
     position: relative;
+    margin-bottom: 20px;
+    overflow: hidden; /* Quan trọng: Đảm bảo bo góc cho cả header/footer bên trong */
+}
+
+.branch-edit-modal {
+    width: min(680px, 95%);
+    background: #edf8ee;
+}
+
+.branch-create-modal {
+    width: min(760px, 95%);
+    background: #f7fbf7;
+}
+
+.branch-create-modal .branch-modal-header {
+    background: #cfe3cf;
+}
+
+.branch-create-modal .branch-modal-header h2 {
+    color: #214f28;
+}
+
+.branch-create-modal .branch-modal-body {
+    background: #f7fbf7;
+}
+
+.branch-create-modal .branch-modal-footer {
+    background: #dcebdc;
+}
+
+.branch-view-modal {
+    background: #edf8ee;
+}
+
+.branch-edit-modal .branch-modal-header {
+    background: #7fb889;
+}
+
+.branch-edit-modal .branch-modal-header h2 {
+    color: #214f28;
+}
+
+.branch-edit-modal .branch-modal-body {
+    background: #edf8ee;
+}
+
+.branch-edit-modal .branch-modal-footer {
+    background: #e3f2e5;
+}
+
+.branch-edit-modal .btn-primary,
+.branch-edit-modal .btn-secondary {
+    min-width: 108px;
+    height: 44px;
+    padding: 0 20px;
+    font-size: 18px;
+}
+
+.branch-view-modal .branch-modal-header {
+    background: #dcefdc;
+}
+
+.branch-view-modal .branch-modal-header h2 {
+    color: #2f6b35;
+}
+
+.branch-view-modal .branch-modal-body {
+    background: #edf8ee;
+    padding-left: 48px;
+}
+
+.branch-view-modal .branch-modal-footer {
+    background: #e3f2e5;
+}
+
+.branch-delete-modal {
+    width: min(560px, 95%);
+    background: #fdf0f0;
+}
+
+.branch-delete-modal .branch-modal-header {
+    background: #efcaca;
+}
+
+.branch-delete-modal .branch-modal-header h2 {
+    color: #7f1d1d;
+    font-size: 28px;
+}
+
+.branch-delete-modal .branch-modal-body {
+    background: #fdf0f0;
+    text-align: center;
+    padding-top: 14px;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.branch-delete-modal .branch-modal-body::before {
+    content: "";
+    display: block;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 14px;
+    background: url("/static/images/error_icon.png") center / contain no-repeat;
+}
+
+.branch-delete-modal .branch-modal-footer {
+    background: #f8e4e4;
+}
+
+.branch-confirm-cancel-overlay {
+    z-index: 2100;
+    align-items: center;
+    padding: 0;
+}
+
+.branch-confirm-cancel-box {
+    width: min(560px, calc(100vw - 32px));
+    background: #f3fbf3;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+}
+
+.branch-confirm-cancel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    background: #dcefdc;
+}
+
+.branch-confirm-cancel-header h3 {
+    margin: 0;
+    color: #2f6b35;
+    font: 700 28px "Montserrat", sans-serif;
+}
+
+.branch-confirm-cancel-close {
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #111111;
+    font-size: 34px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.branch-confirm-cancel-body {
+    padding: 22px 28px 28px;
+    text-align: center;
+    background: #f8fff8;
+}
+
+.branch-confirm-cancel-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #f7de8a;
+    color: #8a6a00;
+    font: 700 32px/72px "Montserrat", sans-serif;
+}
+
+.branch-confirm-cancel-message {
+    margin: 0;
+    color: #17371c;
+    font: 600 19px/1.55 "Montserrat", sans-serif;
+}
+
+.branch-confirm-cancel-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    padding: 20px 24px 22px;
+    background: #edf7ed;
+}
+
+.branch-confirm-cancel-btn {
+    min-width: 134px;
+    height: 52px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    font: 700 18px "Montserrat", sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.branch-confirm-cancel-no {
+    background: #ffffff;
+    border-color: #d7e2d7;
+    color: #3f5e43;
+}
+
+.branch-confirm-cancel-yes {
+    background: #2f7b34;
+    color: #ffffff;
+}
+
+.branch-confirm-cancel-no:hover {
+    background: #dce9dc;
+}
+
+.branch-confirm-cancel-yes:hover {
+    background: #256429;
 }
 
 .branch-modal-header {
@@ -302,10 +541,41 @@
     box-sizing: border-box;
 }
 
+.form-group select {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #dadce0;
+    border-radius: 14px;
+    padding: 0 40px 0 16px;
+    font: 500 16px "Montserrat", sans-serif;
+    background: #fff;
+    box-sizing: border-box;
+}
+
 .form-group input:focus {
     outline: none;
     border-color: #174d17;
     box-shadow: 0 0 0 3px rgba(23, 77, 23, 0.1);
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: #174d17;
+    box-shadow: 0 0 0 3px rgba(23, 77, 23, 0.1);
+}
+
+
+.branch-form-note {
+    margin: 0 0 24px;
+    font: 500 18px "Montserrat", sans-serif;
+    font-style: italic;
+    color: #7f9784;
+}
+
+.form-error {
+    margin: 8px 0 0;
+    font: 600 14px "Montserrat", sans-serif;
+    color: #c62828;
 }
 
 /* Branch Info Display */
@@ -378,6 +648,10 @@
     .btn-delete img {
         width: 16px;
         height: 16px;
+    }
+
+    .branch-delete-mark {
+        font-size: 22px;
     }
     
     .branch-modal {

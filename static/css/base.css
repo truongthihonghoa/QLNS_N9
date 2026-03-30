@@ -130,11 +130,12 @@ body {
 /* 5. Navigation Bar Styles */
 .navigation-bar {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     height: 70px;
     width: 100%;
     box-sizing: border-box;
+    padding: 0 12px;
     background-color: rgba(23, 77, 23, 0.95);
     color: #ffffff;
     position: fixed;
@@ -144,16 +145,22 @@ body {
 }
 
 .nav-item {
+    flex: 1 0 0;
+    min-width: 0;
     font-weight: 700;
     font-size: 18px;
+    line-height: 1;
     text-decoration: none;
     color: #ffffff;
-    padding: 0 25px;
+    padding: 0 8px;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    white-space: normal;
+    box-sizing: border-box;
+    text-align: center;
+    transition: background-color 0.2s ease;
 }
 
 .dropdown {

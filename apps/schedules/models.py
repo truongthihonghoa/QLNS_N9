@@ -13,7 +13,6 @@ class LichLamViec(models.Model):
 class LichLamViec_CT(models.Model):
     ma_llv = models.ForeignKey(LichLamViec, on_delete=models.CASCADE)
     ma_nv = models.ForeignKey('employees.NhanVien', on_delete=models.CASCADE)
-
     vi_tri_vl = models.CharField(max_length=100)
 
     class Meta:

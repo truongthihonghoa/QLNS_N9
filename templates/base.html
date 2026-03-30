@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/globals.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
@@ -79,6 +80,7 @@
     </div>
 
     {% include 'partials/popup_confirm_logout.html' %}
+    {% include 'partials/toast_notification.html' %}
 
     <script src="{% static 'js/base.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>

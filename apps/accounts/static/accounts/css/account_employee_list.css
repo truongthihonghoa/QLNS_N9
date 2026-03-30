@@ -53,6 +53,10 @@
     color: #ffffff;
 }
 
+.account-btn-primary:hover {
+    background: #27682b;
+}
+
 .account-btn-light {
     background: #e0e0e0;
     color: #444444;
