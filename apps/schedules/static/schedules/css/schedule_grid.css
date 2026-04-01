@@ -34,7 +34,7 @@
 
 .schedule-board-card {
     padding: 54px 34px 58px;
-    overflow: hidden;
+    position: relative;
 }
 
 .schedule-board {
@@ -64,19 +64,17 @@
     color: #000000;
 }
 
-.board-day.is-highlight {
-    color: #000000;
-}
-
-.board-day.is-highlight .date {
-    color: #000000;
-}
-
 .board-time {
     font-size: 15px;
     font-weight: 700;
     color: #000000;
     line-height: 1.35;
+}
+
+.shift-cell-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
 .shift-pill {
@@ -89,14 +87,14 @@
     font-size: 16px;
     font-weight: 400;
     cursor: pointer;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     white-space: normal;
     word-break: break-word;
     line-height: 1.35;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .shift-pill:hover {
@@ -104,23 +102,34 @@
     box-shadow: 0 10px 18px rgba(82, 96, 114, 0.12);
 }
 
-.shift-pill.is-morning {
-    background: var(--morning-bg);
-    color: #000000;
-}
+.shift-pill.is-morning { background: var(--morning-bg); }
+.shift-pill.is-afternoon { background: var(--afternoon-bg); }
+.shift-pill.is-evening { background: var(--evening-bg); }
 
-.shift-pill.is-afternoon {
-    background: var(--afternoon-bg);
-    color: #000000;
-}
-
-.shift-pill.is-evening {
-    background: var(--evening-bg);
-    color: #000000;
-}
-
-.shift-pill.is-empty {
+/* Icons Edit/Delete Styles */
+.shift-actions {
+    position: absolute;
+    bottom: 12px;
+    right: 15px;
+    display: flex;
+    gap: 10px;
+    z-index: 5;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 4px 8px;
+    border-radius: 12px;
     opacity: 0.8;
+}
+
+.shift-actions i {
+    color: var(--active-green);
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.shift-actions i:hover {
+    color: #2c4a30;
+    transform: scale(1.2);
 }
 
 .schedule-sidebar {
@@ -197,6 +206,7 @@
     justify-content: center;
     font-size: 14px;
     color: #33475b;
+    cursor: pointer;
 }
 
 .mini-calendar-day.is-selected {
@@ -238,14 +248,9 @@
     align-items: center;
     justify-content: center;
     z-index: 1200;
-    opacity: 0;
-    transition: opacity 0.3s ease;
 }
 
-.modal-overlay.show {
-    display: flex;
-    opacity: 1;
-}
+.modal-overlay.show { display: flex; }
 
 .modal-content {
     background: #fff;
@@ -255,12 +260,6 @@
     max-height: 90vh;
     display: flex;
     flex-direction: column;
-    transform: scale(0.95);
-    transition: transform 0.3s ease;
-}
-
-.modal-overlay.show .modal-content {
-    transform: scale(1);
 }
 
 .modal-header {
@@ -271,144 +270,32 @@
     border-bottom: 1px solid var(--schedule-border);
 }
 
-.modal-header h2 {
-    margin: 0;
-    font-size: 18px;
-}
+.modal-header h2 { margin: 0; font-size: 18px; }
 
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 28px;
-    cursor: pointer;
-    color: #7d8a97;
-}
+.close-btn { background: none; border: none; font-size: 28px; cursor: pointer; }
 
-.modal-body {
-    padding: 24px;
-    overflow-y: auto;
-}
+.modal-body { padding: 24px; overflow-y: auto; }
 
-.shift-info {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 24px;
-    font-size: 14px;
-}
+.shift-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; font-size: 14px; }
 
-.employee-list-title {
-    font-size: 16px;
-    margin-bottom: 12px;
-}
+.employee-table-container { border: 1px solid var(--schedule-border); border-radius: 10px; }
 
-.employee-table-container {
-    max-height: 300px;
-    overflow-y: auto;
-    border: 1px solid var(--schedule-border);
-    border-radius: 10px;
-}
+.employee-table { width: 100%; border-collapse: collapse; }
 
-.employee-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+.employee-table th, .employee-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--schedule-border); }
 
-.employee-table th,
-.employee-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid var(--schedule-border);
-    font-size: 14px;
-}
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--schedule-border); display: flex; justify-content: flex-end; gap: 12px; }
 
-.employee-table th {
-    background: #f7f7f7;
-    font-weight: 600;
-}
+.modal-btn { padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
 
-.employee-table tr.is-sent {
-    background: #f9f9f9;
-    opacity: 0.6;
-    color: #8d98a5;
-}
-
-.modal-footer {
-    padding: 16px 24px;
-    border-top: 1px solid var(--schedule-border);
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-}
-
-.modal-btn {
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: 1px solid var(--schedule-border);
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.modal-btn.primary {
-    background: var(--active-green);
-    color: #fff;
-    border-color: var(--active-green);
-}
+.modal-btn.primary { background: var(--active-green); color: #fff; }
 
 @media (max-width: 1200px) {
-    .schedule-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .schedule-sidebar {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+    .schedule-layout { grid-template-columns: 1fr; }
+    .schedule-sidebar { display: grid; grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 820px) {
-    .schedule-page {
-        padding: 12px;
-    }
-
-    .schedule-board-card,
-    .calendar-card,
-    .schedule-note-card {
-        border-radius: 24px;
-    }
-
-    .schedule-board-card {
-        padding: 18px 14px 20px;
-    }
-
-    .schedule-board {
-        grid-template-columns: 72px repeat(7, minmax(92px, 1fr));
-        gap: 30px 8px;
-    }
-
-    .board-day {
-        font-size: 16px;
-    }
-
-    .board-day .date {
-        font-size: 14px;
-    }
-
-    .board-time {
-        font-size: 13px;
-    }
-
-    .shift-pill {
-        min-height: 118px;
-        font-size: 16px;
-        padding: 22px 8px;
-    }
-
-    .schedule-sidebar {
-        grid-template-columns: 1fr;
-    }
-
-    .shift-info {
-        grid-template-columns: 1fr;
-    }
+    .schedule-board { grid-template-columns: 72px repeat(7, minmax(92px, 1fr)); }
+    .shift-pill { min-height: 118px; }
 }

@@ -1,0 +1,509 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Duyệt Yêu Cầu - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* General Page Layout */
+    .request-approval-page {
+        padding: 20px 0;
+        min-height: 100vh;
+    }
+
+    /* Toolbar Styling */
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .search-filter-group {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .search-box {
+        display: flex;
+        gap: 8px;
+    }
+
+    .search-box input {
+        width: 300px;
+        height: 48px;
+        border: 1px solid #dadce0;
+        border-radius: 10px;
+        padding: 0 18px;
+        background: #ffffff;
+        font: 500 18px "Montserrat", sans-serif;
+    }
+
+    .btn-search {
+        height: 48px;
+        min-width: 120px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(23, 77, 23, 0.87);
+        color: #fff;
+        font: 700 18px "Montserrat", sans-serif;
+        cursor: pointer;
+    }
+
+    .filter-select {
+        height: 48px;
+        border: 1px solid #dadce0;
+        border-radius: 10px;
+        padding: 0 15px;
+        background: #ffffff;
+        font: 500 18px "Montserrat", sans-serif;
+        cursor: pointer;
+        outline: none;
+    }
+
+    /* Status Tabs */
+    .status-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 15px;
+    }
+
+    .status-tab {
+        padding: 10px 25px;
+        border-radius: 25px;
+        font: 600 16px "Montserrat", sans-serif;
+        color: #5c6c7b;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: #f1f1f1;
+    }
+
+    .status-tab.active {
+        background-color: rgba(23, 77, 23, 0.87);
+        color: white;
+    }
+
+    /* Table Styling */
+    .request-table-card {
+        margin-top: 18px;
+        background: transparent;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .request-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .request-table th {
+        background: rgba(23, 77, 23, 0.84);
+        color: #fff;
+        font: 700 22px "Montserrat", sans-serif;
+        padding: 16px 14px;
+        text-align: center;
+    }
+
+    .request-table tbody tr:nth-child(odd) { background: #ebe7e4; }
+    .request-table tbody tr:nth-child(even) { background: rgba(243, 240, 238, 0.93); }
+
+    .request-table td {
+        padding: 22px 14px;
+        text-align: center;
+        font: 500 20px "Montserrat", sans-serif;
+        color: #1a1a1a;
+        vertical-align: middle;
+    }
+
+    .badge {
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 700;
+        display: inline-block;
+        text-transform: uppercase;
+    }
+
+    .badge-pending { background-color: #f7de8a; color: #8a6a00; }
+    .badge-approved { background-color: #d4edda; color: #155724; }
+    .badge-rejected { background-color: #f8d7da; color: #721c24; }
+
+    .btn-detail {
+        background-color: #ffffff;
+        border: 1px solid #c7b4aa;
+        color: #174d17;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font: 700 16px "Montserrat", sans-serif;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-detail:hover {
+        background-color: #f5f5f5;
+        transform: translateY(-2px);
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        backdrop-filter: blur(4px);
+    }
+
+    .modal-box {
+        background: #fff;
+        border-radius: 24px;
+        width: min(450px, 90%);
+        max-height: 90vh;
+        overflow: hidden;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.16);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .modal-header {
+        padding: 20px 25px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .modal-title {
+        font: 700 22px "Montserrat", sans-serif;
+        color: #1a1a1a;
+        margin: 0;
+    }
+
+    .modal-close-btn {
+        background: none;
+        border: none;
+        font-size: 32px;
+        color: #99a4b0;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .modal-body {
+        padding: 0 30px 30px;
+        font-family: "Montserrat", sans-serif;
+        overflow-y: auto;
+    }
+
+    /* Profile Section */
+    .profile-header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .profile-icon {
+        font-size: 60px;
+        color: #5c6c7b;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .profile-name {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin: 5px 0;
+    }
+
+    .profile-id-sub {
+        font-size: 16px;
+        color: #5c6c7b;
+        font-weight: 500;
+        margin-bottom: 20px;
+    }
+
+    /* Details List */
+    .detail-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        text-align: left;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .detail-label {
+        font-weight: 700;
+        color: #1a1a1a;
+        font-size: 16px;
+    }
+
+    .detail-value {
+        font-weight: 500;
+        color: #5c6c7b;
+        font-size: 16px;
+    }
+
+    /* Action Buttons in Modal */
+    .modal-footer-actions {
+        display: flex;
+        margin: 0 30px 30px; /* Padding for buttons */
+        gap: 15px;
+        flex-shrink: 0;
+    }
+
+    .btn-modal-action {
+        flex: 1;
+        height: 50px;
+        border-radius: 12px;
+        border: none;
+        font: 700 18px "Montserrat", sans-serif;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .btn-modal-approve { background-color: #28a745; color: white; }
+    .btn-modal-reject { background-color: #dc3545; color: white; }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="request-approval-page">
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="search-filter-group">
+            <div class="search-box">
+                <input type="text" id="employee-search" placeholder="Nhập tên nhân viên...">
+                <button type="button" id="btn-search" class="btn-search">Tìm kiếm</button>
+            </div>
+            <select id="type-filter" class="filter-select">
+                {% for type in types %}
+                    <option value="{{ type }}">{{ type }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="stats-badge">
+            <span class="badge badge-pending" id="pending-count-badge" style="font-size: 18px;">0 Yêu cầu chờ duyệt</span>
+        </div>
+    </div>
+
+    <!-- Tabs Trạng thái -->
+    <div class="status-tabs">
+        <div class="status-tab active" data-status="all">Tất cả</div>
+        <div class="status-tab" data-status="pending">Đang chờ duyệt</div>
+        <div class="status-tab" data-status="approved">Đã duyệt</div>
+        <div class="status-tab" data-status="rejected">Từ chối</div>
+    </div>
+
+    <!-- Bảng thông tin -->
+    <div class="request-table-card">
+        <table class="request-table" id="requestTable">
+            <thead>
+                <tr>
+                    <th>Mã YC</th>
+                    <th>Nhân Viên</th>
+                    <th>Loại Yêu Cầu</th>
+                    <th>Ngày Đăng Ký</th>
+                    <th>Trạng Thái</th>
+                    <th>Hành Động</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in requests_data %}
+                <tr class="request-row"
+                    data-type="{{ req.loai_yc }}"
+                    data-name="{{ req.ten_nv|lower }}"
+                    data-status="{{ req.trang_thai_key }}">
+                    <td style="font-weight: 700;">{{ req.ma_dk }}</td>
+                    <td>{{ req.ten_nv }}</td>
+                    <td>{{ req.loai_yc }}</td>
+                    <td>{{ req.ngay_dk }}</td>
+                    <td><span class="badge badge-{{ req.trang_thai_key }}">{{ req.trang_thai }}</span></td>
+                    <td>
+                        <button type="button" class="btn-detail"
+                            onclick="openRequestModal(
+                                '{{ req.ma_nv }}',
+                                '{{ req.ten_nv }}',
+                                '{{ req.ma_dk }}',
+                                '{{ req.chi_tiet_json|escapejs }}',
+                                '{{ req.trang_thai_key }}'
+                            )">
+                            Xem chi tiết
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div id="no-results" style="display: none; text-align: center; padding: 50px; font: 600 20px Montserrat; color: #888;">
+            Không tìm thấy yêu cầu nào phù hợp.
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chi tiết yêu cầu -->
+<div id="requestDetailModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title">Chi tiết yêu cầu</h2>
+            <button type="button" class="modal-close-btn" onclick="closeModal('requestDetailModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="profile-header">
+                <i class="fas fa-user-circle profile-icon"></i>
+                <h2 class="profile-name" id="modal-nv-name"></h2>
+                <p class="profile-id-sub" id="modal-nv-id-display"></p>
+            </div>
+
+            <div class="detail-list" id="modal-fields-list"></div>
+        </div>
+        <div class="modal-footer-actions" id="modal-actions">
+            <button type="button" class="btn-modal-action btn-modal-approve" id="modal-btn-approve">
+                ✔ Duyệt
+            </button>
+            <button type="button" class="btn-modal-action btn-modal-reject" id="modal-btn-reject">
+                ✖ Từ chối
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Lý do từ chối -->
+<div id="rejectReasonModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 450px;">
+        <div class="modal-header" style="background: #efcaca; padding: 15px 25px;">
+            <h2 style="color: #7f1d1d; font-size: 20px; font-weight: 700;">Lý do từ chối</h2>
+            <button type="button" onclick="closeModal('rejectReasonModal')" style="background:none; border:none; font-size:28px; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 20px;">
+            <textarea id="rejectReasonText" style="width: 100%; min-height: 100px; padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none;" placeholder="Vui lòng nhập lý do..."></textarea>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button type="button" class="btn-modal-action" style="background:#e0e0e0; color:#5c6c7b; height: 44px; border-radius: 8px;" onclick="closeModal('rejectReasonModal')">Hủy</button>
+                <button type="button" class="btn-modal-action btn-modal-reject" style="height: 44px; border-radius: 8px;" id="finalRejectBtn">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentRequestId = '';
+    let currentStatusFilter = 'all';
+
+    function openRequestModal(nvId, nvName, maDk, detailsJson, statusKey) {
+        currentRequestId = maDk;
+        document.getElementById('modal-nv-name').textContent = nvName;
+        document.getElementById('modal-nv-id-display').textContent = 'Mã nhân viên - ' + nvId;
+
+        const listContainer = document.getElementById('modal-fields-list');
+        listContainer.innerHTML = '';
+
+        // Parse JSON string safely
+        try {
+            const details = JSON.parse(detailsJson);
+            details.forEach(item => {
+                listContainer.innerHTML += `
+                    <div class="detail-item">
+                        <span class="detail-label">${item[0]}:</span>
+                        <span class="detail-value">${item[1]}</span>
+                    </div>
+                `;
+            });
+        } catch (e) {
+            console.error("Error parsing details JSON", e);
+        }
+
+        const actionsDiv = document.getElementById('modal-actions');
+        actionsDiv.style.display = (statusKey === 'pending') ? 'flex' : 'none';
+
+        document.getElementById('requestDetailModal').style.display = 'flex';
+    }
+
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    document.getElementById('modal-btn-approve').onclick = () => {
+        if(confirm('Bạn có chắc chắn muốn duyệt yêu cầu này?')) {
+            alert('Đã duyệt thành công!');
+            location.reload();
+        }
+    };
+
+    document.getElementById('modal-btn-reject').onclick = () => {
+        document.getElementById('rejectReasonText').value = '';
+        document.getElementById('rejectReasonModal').style.display = 'flex';
+    };
+
+    document.getElementById('finalRejectBtn').onclick = () => {
+        const reason = document.getElementById('rejectReasonText').value.trim();
+        if(!reason) return alert('Vui lòng nhập lý do!');
+        alert('Đã từ chối yêu cầu với lý do: ' + reason);
+        location.reload();
+    };
+
+    const typeFilter = document.getElementById('type-filter');
+    const employeeSearch = document.getElementById('employee-search');
+    const statusTabs = document.querySelectorAll('.status-tab');
+
+    function filterRequests() {
+        const selectedType = typeFilter.value;
+        const searchText = employeeSearch.value.toLowerCase().trim();
+        const rows = document.querySelectorAll('.request-row');
+        let visibleCount = 0;
+        let pendingTotal = 0;
+
+        rows.forEach(row => {
+            const matchesType = (selectedType === '' || row.dataset.type === selectedType);
+            const matchesSearch = row.dataset.name.includes(searchText);
+            const matchesStatus = (currentStatusFilter === 'all' || row.dataset.status === currentStatusFilter);
+
+            if (row.dataset.status === 'pending') pendingTotal++;
+
+            if (matchType && matchesSearch && matchesStatus) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        document.getElementById('pending-count-badge').textContent = `${pendingTotal} Yêu cầu chờ duyệt`;
+        document.getElementById('no-results').style.display = visibleCount === 0 ? 'block' : 'none';
+        document.getElementById('requestTable').style.display = visibleCount === 0 ? 'none' : 'table';
+    }
+
+    statusTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            statusTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentStatusFilter = tab.dataset.status;
+            filterRequests();
+        });
+    });
+
+    typeFilter.addEventListener('change', filterRequests);
+    employeeSearch.addEventListener('input', filterRequests);
+    filterRequests();
+
+    window.onclick = (e) => {
+        if (e.target.classList.contains('modal-overlay')) {
+            e.target.style.display = 'none';
+        }
+    };
+</script>
+{% endblock %}

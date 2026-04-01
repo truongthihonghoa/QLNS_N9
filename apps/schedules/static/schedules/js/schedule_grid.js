@@ -1,31 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const mockScheduleData = {
-        "2026-03-16": {
-            morning: { id: "LLV001", status: "Chưa gửi", created: "15/03/2026", employees: 3, details: [{ id: "NV001", name: "Nguyễn Văn An", role: "Pha chế", status: "Chưa gửi" }] },
-            afternoon: { id: "LLV002", status: "Chưa gửi", created: "15/03/2026", employees: 3, details: [{ id: "NV002", name: "Trần Thị Bích", role: "Phục vụ", status: "Chưa gửi" }] },
-            evening: { id: "LLV003", status: "Chưa gửi", created: "15/03/2026", employees: 0, details: [] },
-        },
-        "2026-03-17": {
-            morning: { id: "LLV004", status: "Chưa gửi", created: "16/03/2026", employees: 6, details: [{ id: "NV003", name: "Lê Minh Cường", role: "Thu ngân", status: "Chưa gửi" }] },
-            afternoon: { id: "LLV005", status: "Chưa gửi", created: "16/03/2026", employees: 6, details: [{ id: "NV004", name: "Phạm Thị Dung", role: "Phục vụ", status: "Chưa gửi" }] },
-            evening: { id: "LLV006", status: "Chưa gửi", created: "16/03/2026", employees: 0, details: [] },
-        },
-        "2026-03-18": {
-            morning: { id: "LLV007", status: "Đã gửi", created: "17/03/2026", employees: 8, details: [{ id: "NV005", name: "Hoàng Văn Em", role: "Giữ xe", status: "Đã gửi" }] },
-            afternoon: { id: "LLV008", status: "Đã gửi", created: "17/03/2026", employees: 8, details: [{ id: "NV006", name: "Đỗ Thu Hà", role: "Phục vụ", status: "Đã gửi" }] },
-            evening: { id: "LLV009", status: "Chưa gửi", created: "17/03/2026", employees: 3, details: [{ id: "NV007", name: "Ngô Thanh Long", role: "Pha chế", status: "Chưa gửi" }] },
-        },
-    };
+    // 1. DỮ LIỆU TỪ LOCALSTORAGE
+    const storageKey = 'mock_schedules';
+    let savedData = JSON.parse(localStorage.getItem(storageKey)) || {};
 
     const shifts = [
-        { key: "morning", label: "Ca Sáng", time: "06:00 - 12:00", defaultText: "Ca Sáng", className: "is-morning" },
-        { key: "afternoon", label: "Ca Chiều", time: "12:00 - 17:00", defaultText: "Ca Chiều", className: "is-afternoon" },
-        { key: "evening", label: "Ca Tối", time: "17:00 - 22:00", defaultText: "Ca Tối", className: "is-evening" },
+        { key: "morning", label: "Ca Sáng", time: "06:00 - 12:00", className: "is-morning" },
+        { key: "afternoon", label: "Ca Chiều", time: "12:00 - 17:00", className: "is-afternoon" },
+        { key: "evening", label: "Ca Tối", time: "17:00 - 22:00", className: "is-evening" },
     ];
 
-    const weekdays = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
     const weekdayLabels = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "CN"];
-
     const scheduleBoard = document.getElementById("schedule-board");
     const miniCalendar = document.getElementById("mini-calendar");
     const calendarTitle = document.getElementById("calendar-title");
@@ -35,11 +19,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("shift-detail-modal");
     const modalCloseBtn = document.getElementById("modal-close-btn");
     const modalConfirmBtn = document.getElementById("modal-confirm-btn");
-    const modalSendBtn = document.getElementById("modal-send-notification-btn");
-    const selectAllEmployees = document.getElementById("select-all-employees");
 
-    let currentWeekStart = new Date("2026-03-16T00:00:00");
-    let selectedDate = new Date("2026-03-16T00:00:00");
+    let currentWeekStart = startOfWeek(new Date()); // Bắt đầu từ tuần hiện tại
+    let selectedDate = new Date(); // Ngày được chọn mặc định là hôm nay
 
     function addDays(date, days) {
         const next = new Date(date);
@@ -57,35 +39,27 @@ document.addEventListener("DOMContentLoaded", function () {
     function startOfWeek(date) {
         const start = new Date(date);
         const day = start.getDay();
-        const offset = day === 0 ? -6 : 1 - day;
+        const offset = day === 0 ? -6 : 1 - day; // Thứ 2 là 1, CN là 0. Chuyển CN thành 7 để tính offset
         start.setDate(start.getDate() + offset);
         start.setHours(0, 0, 0, 0);
         return start;
     }
 
-    function formatShort(date) {
-        return `${date.getDate()}/${date.getMonth() + 1}`;
-    }
+    // 2. KIỂM TRA ĐIỀU KIỆN 1 NGÀY (USE CASE 4.2, 4.3)
+    function canEditOrDelete(dateStr) {
+        const shiftDate = new Date(dateStr);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Chuẩn hóa về đầu ngày
+        shiftDate.setHours(0, 0, 0, 0); // Chuẩn hóa về đầu ngày
 
-    function formatDateVN(date) {
-        return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
-    }
+        const diffTime = shiftDate.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Tính số ngày chênh lệch
 
-    function monthTitle(date) {
-        return `Tháng ${date.getMonth() + 1} ${date.getFullYear()}`;
-    }
-
-    function monthTitleWithComma(date) {
-        return `Tháng ${date.getMonth() + 1} ${date.getFullYear()}`;
-    }
-
-    function getWeekDays(startDate) {
-        return Array.from({ length: 7 }, (_, index) => addDays(startDate, index));
+        return diffDays >= 1; // Chỉ cho phép chỉnh sửa/xóa nếu ca làm còn ít nhất 1 ngày
     }
 
     function renderBoard() {
-        const days = getWeekDays(currentWeekStart);
-        const selectedDateKey = formatKey(selectedDate);
+        const days = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
         scheduleBoard.innerHTML = "";
 
         const corner = document.createElement("div");
@@ -95,8 +69,8 @@ document.addEventListener("DOMContentLoaded", function () {
         days.forEach((day, index) => {
             const header = document.createElement("div");
             const dateKey = formatKey(day);
-            header.className = `board-day${dateKey === selectedDateKey ? " is-highlight" : ""}`;
-            header.innerHTML = `${weekdayLabels[index]}<span class="date">${formatShort(day)}</span>`;
+            header.className = `board-day${dateKey === formatKey(selectedDate) ? " is-highlight" : ""}`;
+            header.innerHTML = `${weekdayLabels[index]}<span class="date">${day.getDate()}/${day.getMonth() + 1}</span>`;
             scheduleBoard.appendChild(header);
         });
 
@@ -108,145 +82,170 @@ document.addEventListener("DOMContentLoaded", function () {
 
             days.forEach((day) => {
                 const dateKey = formatKey(day);
-                const shiftData = mockScheduleData[dateKey]?.[shift.key];
+                const shiftData = savedData[dateKey]?.[shift.key];
+
+                // Tạo container cho mỗi ô ca làm để chứa button và icons
+                const cellContainer = document.createElement("div");
+                cellContainer.className = "shift-cell-container";
+                cellContainer.style.position = "relative"; // Để định vị tuyệt đối cho icons
+
                 const button = document.createElement("button");
                 button.type = "button";
                 button.className = `shift-pill ${shift.className}${shiftData ? "" : " is-empty"}`;
-                button.dataset.date = dateKey;
-                button.dataset.shift = shift.key;
-                button.textContent = shiftData && shiftData.employees > 0 ? `${shiftData.employees} người đăng ký` : shift.defaultText;
 
-                if (shiftData) {
-                    button.addEventListener("click", () => openModal(dateKey, shift.key));
+                if (shiftData && shiftData.details && shiftData.details.length > 0) {
+                    // Hiển thị tên nhân viên kèm vị trí
+                    const names = shiftData.details.map(e => `${e.name} (${e.role})`).join("<br>");
+                    button.innerHTML = names;
+                    button.onclick = () => openModal(dateKey, shift.key);
+
+                    // THÊM BIỂU TƯỢNG EDIT/DELETE
+                    if (canEditOrDelete(dateKey)) {
+                        const actionGroup = document.createElement("div");
+                        actionGroup.className = "shift-actions";
+                        actionGroup.style.cssText = `
+                            position: absolute;
+                            bottom: 5px;
+                            right: 5px;
+                            display: flex;
+                            gap: 8px;
+                            z-index: 10;
+                            background-color: rgba(255, 255, 255, 0.8); /* Nền nhẹ để dễ nhìn icon */
+                            padding: 3px 5px;
+                            border-radius: 5px;
+                        `;
+
+                        const editIcon = document.createElement("i");
+                        editIcon.className = "fas fa-pencil-alt"; // Biểu tượng bút chì
+                        editIcon.style.cssText = `
+                            color: #406a45;
+                            cursor: pointer;
+                            font-size: 12px;
+                            transition: color 0.2s ease;
+                        `;
+                        editIcon.title = "Chỉnh sửa lịch làm việc";
+                        editIcon.onmouseover = () => editIcon.style.color = "#315235"; // Màu đậm hơn khi hover
+                        editIcon.onmouseout = () => editIcon.style.color = "#406a45";
+                        editIcon.onclick = (e) => {
+                            e.stopPropagation(); // Ngăn sự kiện click của button cha
+                            handleEditShift(shiftData, dateKey, shift.label);
+                        };
+
+                        const deleteIcon = document.createElement("i");
+                        deleteIcon.className = "fas fa-trash-alt"; // Biểu tượng thùng rác
+                        deleteIcon.style.cssText = `
+                            color: #406a45;
+                            cursor: pointer;
+                            font-size: 12px;
+                            transition: color 0.2s ease;
+                        `;
+                        deleteIcon.title = "Xóa lịch làm việc";
+                        deleteIcon.onmouseover = () => deleteIcon.style.color = "#315235"; // Màu đậm hơn khi hover
+                        deleteIcon.onmouseout = () => deleteIcon.style.color = "#406a45";
+                        deleteIcon.onclick = (e) => {
+                            e.stopPropagation(); // Ngăn sự kiện click của button cha
+                            handleDeleteShift(dateKey, shift.key);
+                        };
+
+                        actionGroup.appendChild(editIcon);
+                        actionGroup.appendChild(deleteIcon);
+                        cellContainer.appendChild(actionGroup);
+                    }
+                } else {
+                    button.textContent = shift.label; // Hiển thị tên ca nếu không có người
                 }
 
-                scheduleBoard.appendChild(button);
+                cellContainer.appendChild(button);
+                scheduleBoard.appendChild(cellContainer);
             });
         });
 
-        currentWeekLabel.textContent = `${formatShort(days[0])} - ${formatShort(days[6])}`;
-        calendarTitle.textContent = monthTitleWithComma(days[0]);
+        currentWeekLabel.textContent = `${days[0].getDate()}/${days[0].getMonth()+1} - ${days[6].getDate()}/${days[6].getMonth()+1}`;
+        calendarTitle.textContent = `Tháng ${days[0].getMonth() + 1} ${days[0].getFullYear()}`;
+    }
+
+    // 3. LOGIC XỬ LÝ SỰ KIỆN (EVENT HANDLING)
+    function handleEditShift(shiftData, dateKey, shiftLabel) {
+        // Logic thực tế: Mở modal form chỉnh sửa và điền dữ liệu
+        alert(`Chỉnh sửa lịch làm việc:\nNgày: ${dateKey}\nCa: ${shiftLabel}\nID Lịch: ${shiftData.id}\nNhân viên: ${shiftData.details.map(e => e.name).join(', ')}`);
+        // Ví dụ chuyển hướng đến trang chỉnh sửa:
+        // window.location.href = `/schedules/edit/${shiftData.id}`;
+    }
+
+    function handleDeleteShift(dateKey, shiftKey) {
+        if (confirm("Bạn có chắc chắn muốn xóa ca làm việc này?")) {
+            if (savedData[dateKey] && savedData[dateKey][shiftKey]) {
+                delete savedData[dateKey][shiftKey];
+                localStorage.setItem(storageKey, JSON.stringify(savedData));
+                alert("Đã xóa ca làm thành công!");
+                renderBoard(); // Render lại bảng để cập nhật giao diện
+            } else {
+                alert("Không tìm thấy ca làm việc để xóa.");
+            }
+        }
     }
 
     function renderMiniCalendar() {
-        const baseDate = currentWeekStart;
-        const selectedDateKey = formatKey(selectedDate);
-        const year = baseDate.getFullYear();
-        const month = baseDate.getMonth();
+        const year = currentWeekStart.getFullYear();
+        const month = currentWeekStart.getMonth();
         const firstDay = new Date(year, month, 1);
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const startOffset = (firstDay.getDay() + 6) % 7;
 
         miniCalendar.innerHTML = "";
-        weekdays.forEach((label) => {
-            const weekday = document.createElement("div");
-            weekday.className = "mini-calendar-weekday";
-            weekday.textContent = label;
-            miniCalendar.appendChild(weekday);
+        ["T2", "T3", "T4", "T5", "T6", "T7", "CN"].forEach(label => {
+            const div = document.createElement("div");
+            div.className = "mini-calendar-weekday";
+            div.textContent = label;
+            miniCalendar.appendChild(div);
         });
 
-        for (let i = 0; i < startOffset; i += 1) {
-            const empty = document.createElement("div");
-            miniCalendar.appendChild(empty);
-        }
+        for (let i = 0; i < startOffset; i++) miniCalendar.appendChild(document.createElement("div"));
 
-        for (let day = 1; day <= daysInMonth; day += 1) {
+        for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(year, month, day);
             const dateKey = formatKey(date);
             const cell = document.createElement("div");
-            cell.className = `mini-calendar-day${dateKey === selectedDateKey ? " is-selected" : ""}`;
+            cell.className = `mini-calendar-day${dateKey === formatKey(selectedDate) ? " is-selected" : ""}`;
             cell.textContent = day;
+            cell.onclick = () => {
+                selectedDate = new Date(date);
+                currentWeekStart = startOfWeek(selectedDate);
+                renderBoard();
+                renderMiniCalendar();
+            };
             miniCalendar.appendChild(cell);
         }
-
-        calendarTitle.textContent = monthTitle(baseDate);
     }
 
     function openModal(dateKey, shiftKey) {
-        const shiftData = mockScheduleData[dateKey]?.[shiftKey];
+        const shiftData = savedData[dateKey]?.[shiftKey];
         if (!shiftData) return;
 
-        const shiftInfo = shifts.find((item) => item.key === shiftKey);
-        document.getElementById("modal-schedule-id").textContent = shiftData.id || "N/A";
-        document.getElementById("modal-date").textContent = formatDateVN(new Date(`${dateKey}T00:00:00`));
-        document.getElementById("modal-shift-time").textContent = `${shiftInfo.defaultText} (${shiftInfo.time})`;
-        document.getElementById("modal-status").textContent = shiftData.status || "Chưa có";
-        document.getElementById("modal-created-date").textContent = shiftData.created || "N/A";
+        document.getElementById("modal-schedule-id").textContent = shiftData.id;
+        document.getElementById("modal-date").textContent = dateKey;
+        // Cập nhật các thông tin khác của modal nếu cần
 
-        const employeeListBody = document.getElementById("modal-employee-list");
-        employeeListBody.innerHTML = "";
+        const list = document.getElementById("modal-employee-list");
+        list.innerHTML = shiftData.details.map(e => `
+            <tr>
+                <td><input type="checkbox"></td>
+                <td>${e.id}</td>
+                <td>${e.name}</td>
+                <td>${e.role}</td>
+                <td>${e.status}</td>
+            </tr>
+        `).join("");
 
-        if (shiftData.details.length) {
-            shiftData.details.forEach((employee) => {
-                const isSent = employee.status === "Đã gửi";
-                const row = document.createElement("tr");
-                row.className = isSent ? "is-sent" : "";
-                row.dataset.employeeId = employee.id;
-                row.innerHTML = `
-                    <td><input type="checkbox" ${isSent ? "disabled" : ""}></td>
-                    <td>${employee.id}</td>
-                    <td>${employee.name}</td>
-                    <td>${employee.role}</td>
-                    <td class="status-cell">${employee.status}</td>
-                `;
-                employeeListBody.appendChild(row);
-            });
-        } else {
-            employeeListBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có nhân viên nào trong ca này.</td></tr>';
-        }
-
-        modalSendBtn.dataset.date = dateKey;
-        modalSendBtn.dataset.shift = shiftKey;
-        selectAllEmployees.checked = false;
         modal.classList.add("show");
     }
 
-    function closeModal() {
-        modal.classList.remove("show");
-    }
+    modalCloseBtn.onclick = () => modal.classList.remove("show");
+    modalConfirmBtn.onclick = () => modal.classList.remove("show");
+    prevWeekBtn.onclick = () => { currentWeekStart = addDays(currentWeekStart, -7); renderBoard(); renderMiniCalendar(); };
+    nextWeekBtn.onclick = () => { currentWeekStart = addDays(currentWeekStart, 7); renderBoard(); renderMiniCalendar(); };
 
-    function handleSendNotification() {
-        const checkedBoxes = modal.querySelectorAll("tbody input[type='checkbox']:checked");
-        if (!checkedBoxes.length) {
-            alert("Vui lòng chọn ít nhất một nhân viên để gửi thông báo.");
-            return;
-        }
-        alert("Đã gửi thông báo thành công!");
-        closeModal();
-    }
-
-    modalCloseBtn.addEventListener("click", closeModal);
-    modalConfirmBtn.addEventListener("click", closeModal);
-    modalSendBtn.addEventListener("click", handleSendNotification);
-
-    modal.addEventListener("click", function (event) {
-        if (event.target === modal) {
-            closeModal();
-        }
-    });
-
-    selectAllEmployees.addEventListener("change", function (event) {
-        const checkboxes = modal.querySelectorAll("tbody input[type='checkbox']:not(:disabled)");
-        checkboxes.forEach((checkbox) => {
-            checkbox.checked = event.target.checked;
-        });
-    });
-
-    prevWeekBtn.addEventListener("click", function () {
-        currentWeekStart = addDays(currentWeekStart, -7);
-        selectedDate = addDays(selectedDate, -7);
-        renderBoard();
-        renderMiniCalendar();
-    });
-
-    nextWeekBtn.addEventListener("click", function () {
-        currentWeekStart = addDays(currentWeekStart, 7);
-        selectedDate = addDays(selectedDate, 7);
-        renderBoard();
-        renderMiniCalendar();
-    });
-
-    currentWeekStart = startOfWeek(selectedDate);
+    // Khởi tạo bảng và lịch khi tải trang
     renderBoard();
     renderMiniCalendar();
 });

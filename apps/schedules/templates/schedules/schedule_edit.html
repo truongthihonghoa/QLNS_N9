@@ -32,7 +32,7 @@
         <form class="schedule-form" method="POST">
             {% csrf_token %}
             <input type="hidden" name="schedule_id" value="{{ schedule.ma_llv }}">
-            
+
             <div class="schedule-info">
                 <p><strong>Mã lịch làm:</strong> {{ schedule.ma_llv }}</p>
                 <p><strong>Trạng thái:</strong> {{ schedule.trang_thai }}</p>
@@ -86,7 +86,7 @@
                             </label>
                             <span>{{ employee.ma_nv }}</span>
                             <span>{{ employee.ho_ten }}</span>
-                            <select name="position_{{ employee.ma_nv }}" disabled>
+                            <select name="position_{{ employee.ma_nv }}">
                                 <option value="">Chọn vị trí</option>
                                 {% for position in position_options %}
                                 <option value="{{ position }}">{{ position }}</option>
