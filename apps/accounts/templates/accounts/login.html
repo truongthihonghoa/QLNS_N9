@@ -6,11 +6,11 @@
     <meta charset="utf-8" />
     <title>Đăng nhập - GE CAFE HRM</title>
 
-    <link rel="stylesheet" href="{% static 'accounts/css/globals.css' %}" />
     <link rel="stylesheet" href="{% static 'accounts/css/login.css' %}" />
-    <link rel="stylesheet" href="{% static 'accounts/css/Popup_ForgotPassword.css' %}" />
+    <link rel="stylesheet" href="{% static 'accounts/css/popup_forgot_password.css' %}" />
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}" />
     <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/components/popup_common.css' %}" />
 
     <style>
         .background-shadow .p, .background-shadow .error-message { display: block; justify-content: flex-start; text-align: left; width: auto; margin-left: 106px; margin-right: 106px; align-self: stretch; font-family: "Montserrat-Regular", Helvetica, sans-serif; font-size: 13px; margin-top: 13px; }
@@ -38,24 +38,34 @@
           </div>
         </div>
 
-        <label for="username" class="label-t-n-ng-nh-p">Tên đăng nhập</label>
-        <div class="input">
-            <input type="text" id="username" name="username" required>
-        </div>
+        <form method="post" action="{% url 'accounts:login' %}">
+            {% csrf_token %}
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="error-message">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
 
-        <label for="password" class="label-m-t-kh-u">Mật khẩu</label>
-        <div class="container-wrapper">
-            <input type="password" id="password" name="password" required>
-            <div class="symbol-wrapper" onclick="togglePasswordVisibility()">
-                <img id="eye-icon" src="{% static 'accounts/img/eye_opened.png' %}" alt="Toggle Password Visibility">
+            <label for="username" class="label-t-n-ng-nh-p">Tên đăng nhập</label>
+            <div class="input">
+                <input type="text" id="username" name="username" required>
             </div>
-        </div>
 
-        <p class="p">Mật khẩu phải có ít nhất 8 ký tự bao gồm chữ và số.</p>
+            <label for="password" class="label-m-t-kh-u">Mật khẩu</label>
+            <div class="container-wrapper">
+                <input type="password" id="password" name="password" required>
+                <div class="symbol-wrapper" onclick="togglePasswordVisibility()">
+                    <img id="eye-icon" src="{% static 'accounts/img/eye_opened.png' %}" alt="Toggle Password Visibility">
+                </div>
+            </div>
 
-        <button type="button" id="login-btn" class="ng-nhp" data-dashboard-url="{% url 'dashboard' %}">
-            <span class="text-wrapper-2">Đăng Nhập</span>
-        </button>
+            <p class="p">Mật khẩu phải có ít nhất 8 ký tự bao gồm chữ và số.</p>
+
+            <button type="submit" class="ng-nhp">
+                <span class="text-wrapper-2">Đăng Nhập</span>
+            </button>
+        </form>
 
         <div class="link-qu-n-m-t-kh-u-wrapper">
             <a href="#" class="link-qu-n-m-t-kh-u" id="forgot-password-link">Quên mật khẩu?</a>
@@ -63,10 +73,11 @@
       </div>
     </div>
 
-    {% include 'accounts/partials/Popup_ForgotPassword.html' %}
-    {% include 'partials/popup_confirm_cancel.html' %}
-    {% include 'partials/popup_success.html' %}
+    {% include 'accounts/partials/popup_forgot_password.html' %}
+    {% include 'partials/popup_common_alert.html' %}
+    {% include 'partials/popup_common_confirm.html' %}
 
+    <script src="{% static 'js/popup_common.js' %}" defer></script>
     <script src="{% static 'accounts/js/login.js' %}" defer></script>
   </body>
 </html>

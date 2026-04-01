@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/globals.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_common.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
@@ -62,8 +63,8 @@
         </header>
 
         <nav class="navigation-bar">
-            <a href="{% url 'dashboard' %}" class="nav-item">Tổng quan</a>
-            <a href="{% url 'account_admin_list' %}" class="nav-item">Tài khoản</a>
+            <a href="{% url 'accounts:dashboard' %}" class="nav-item">Tổng quan</a>
+            <a href="{% url 'accounts:account_admin_list' %}" class="nav-item">Tài khoản</a>
             <a href="{% url 'branches:branch_admin' %}" class="nav-item">Chi nhánh</a>
             <a href="{% url 'employee_list' %}" class="nav-item">Nhân Viên</a>
             <a href="{% url 'contract_list' %}" class="nav-item">Hợp Đồng</a>
@@ -79,11 +80,14 @@
         </main>
     </div>
 
+    {% include 'partials/popup_common_confirm.html' %}
+    {% include 'partials/popup_common_alert.html' %}
     {% include 'partials/popup_confirm_logout.html' %}
     {% include 'partials/toast_notification.html' %}
 
     <script src="{% static 'js/base.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/popup_common.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

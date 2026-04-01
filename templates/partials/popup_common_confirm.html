@@ -1,0 +1,17 @@
+{% load static %}
+<!-- Common Confirm Popup -->
+<div class="common-popup-overlay" id="common-confirm-popup">
+    <div class="common-popup-box">
+        <div class="common-popup-icon">
+            <img src="{% static 'images/confirm_icon.png' %}" alt="Confirm Icon" />
+        </div>
+        <div class="common-popup-content">
+            <div class="common-popup-title" id="common-confirm-title">XÁC NHẬN</div>
+            <div class="common-popup-message" id="common-confirm-message">Bạn có chắc chắn muốn thực hiện hành động này?</div>
+        </div>
+        <div class="common-popup-actions">
+            <button class="common-popup-btn common-popup-btn-cancel" id="common-confirm-cancel">Không</button>
+            <button class="common-popup-btn common-popup-btn-confirm" id="common-confirm-ok">Đồng ý</button>
+        </div>
+    </div>
+</div>
