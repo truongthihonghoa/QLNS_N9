@@ -16,4 +16,4 @@ class ChiNhanh(models.Model):
     )
 
     def __str__(self):
-        return self.ten_chi_nhanh
+        return f"{self.ten_chi_nhanh} ({self.ma_chi_nhanh})"
