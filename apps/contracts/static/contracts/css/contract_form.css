@@ -1,120 +1,317 @@
-/* Container chính - thêm padding để không dính sát mép màn hình */
 .contract-form-page {
     display: flex;
-    justify-content: center;
-    padding: 20px;
-    background: #f0f2f5; /* Màu nền nhẹ để nổi bật card */
-    min-height: 100vh;
-}
-
-.contract-form-card {
-    width: 100%;
-    max-width: 900px; /* Giới hạn chiều rộng tối đa */
-    max-height: 90vh; /* Giới hạn chiều cao card bằng 90% màn hình */
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    padding: 20px 25px;
-    display: flex;
     flex-direction: column;
-    overflow: hidden; /* Để không bị tràn bo góc */
+    gap: 22px;
+    padding: 20px 24px 36px;
 }
 
-/* Phần tiêu đề cố định */
-.contract-form-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
+.contract-add-page .success-popup-overlay {
+    background: rgba(0, 0, 0, 0.14);
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 42px;
+}
+
+.contract-add-page .success-popup-box {
+    width: min(940px, calc(100vw - 28px));
+    height: auto;
+    min-height: 100px;
+    padding: 24px 28px;
+    border-radius: 30px;
+    flex-direction: row;
+    justify-content: space-between;
+    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.14);
+}
+
+.contract-add-page .success-popup-box .heading {
+    margin: 0;
+    text-align: left;
+    flex: 1;
+}
+
+.contract-add-page .success-popup-box .text-wrapper {
+    font: 700 24px "Montserrat", sans-serif;
+    color: #2a2a2a;
+}
+
+.contract-add-page .success-popup-box .message,
+.contract-add-page .success-popup-box .confirm-button {
+    display: none;
+}
+
+.contract-add-page .success-popup-box::after {
+    content: "\2713";
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #12d868;
+    color: #fff;
+    font: 700 34px/54px "Montserrat", sans-serif;
+    text-align: center;
     flex-shrink: 0;
 }
 
-.contract-form-header h2 {
-    margin: 0;
-    color: #174d17;
-    font: 700 20px "Montserrat", sans-serif; /* Thu nhỏ từ 24px xuống 20px */
+.contract-back-button {
+    width: fit-content;
+    min-width: 280px;
+    height: 48px;
+    padding: 0 20px;
+    border: none;
+    border-radius: 12px;
+    background: #2d7c36;
+    color: #fff;
+    font: 600 15px "Montserrat", sans-serif;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(45, 124, 54, 0.18);
 }
 
-/* KHU VỰC CHÍNH ĐỂ CUỘN */
+.contract-form-card {
+    width: min(1240px, 100%);
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 24px;
+    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.1);
+    padding: 32px 38px 36px;
+    margin: 0 auto;
+}
+
+.contract-form-heading {
+    margin: 20px 0 28px;
+    padding-left: 18px;
+    border-left: 5px solid #0f6b20;
+}
+
+.contract-form-heading--tight {
+    margin: 0;
+}
+
+.contract-edit-topbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.contract-edit-close-btn {
+    width: 44px;
+    height: 44px;
+    border: 1px solid #d9dfe6;
+    border-radius: 14px;
+    background: #f7f9fb;
+    color: #3b3b3b;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.contract-edit-close-btn:hover {
+    background: #eef3f7;
+    border-color: #c6d0da;
+    color: #1e1e1e;
+}
+
+.contract-form-heading h2 {
+    margin: 0;
+    color: #0f6b20;
+    font: 700 22px "Montserrat", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0;
+}
+
 .contract-form {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px 30px;
-    overflow-y: auto; /* Cho phép cuộn dọc nội dung form */
-    padding-right: 10px; /* Tránh dính thanh cuộn */
-    flex-grow: 1; /* Chiếm diện tích còn lại */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px 34px;
 }
 
-/* Tinh chỉnh Label */
+.contract-field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
 .contract-field label {
-    color: #4b2e1f;
-    font: 600 16px "Montserrat", sans-serif; /* Thu nhỏ từ 22px xuống 16px */
-    margin-bottom: 4px;
+    color: #604534;
+    font: 600 16px "Montserrat", sans-serif;
 }
 
-/* Tinh chỉnh Input & Select */
+.contract-field .required {
+    color: #d93025;
+    font-weight: 600;
+}
+
 .contract-field input,
-.contract-field select {
+.contract-field select,
+.contract-field textarea {
     width: 100%;
-    height: 42px; /* Thu nhỏ từ 52px xuống 42px */
-    padding: 0 15px;
-    border-radius: 8px;
-    border: 1.5px solid #ddd; /* Giảm độ dày border */
-    background: #fff;
-    color: #1e1e1e;
-    font: 500 15px "Montserrat", sans-serif; /* Thu nhỏ font input */
+    height: 50px;
+    padding: 0 17px;
+    border: 1.5px solid #d8dde3;
+    border-radius: 14px;
+    background: #fbfcfd;
+    color: #222;
+    font: 400 15px "Montserrat", sans-serif;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-/* Phần nút bấm ở dưới cùng */
+.contract-field textarea {
+    min-height: 84px;
+    height: 84px;
+    padding-top: 15px;
+    resize: none;
+}
+
+.contract-money-input {
+    position: relative;
+}
+
+.contract-money-input input {
+    padding-right: 72px;
+}
+
+.contract-money-suffix {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    color: #6f6f6f;
+    font: 600 13px "Montserrat", sans-serif;
+    pointer-events: none;
+}
+
+.contract-field input[readonly] {
+    background: #eef2f5;
+    color: #4d4d4d;
+    cursor: not-allowed;
+}
+
+.contract-edit-form .contract-field input[readonly] {
+    background: #e7ebf0;
+    border-color: #d8dfe7;
+    color: #3f4750;
+    font-weight: 500;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.contract-edit-form .contract-field input[readonly]:focus {
+    box-shadow: none;
+    border-color: #d8dfe7;
+    background: #e7ebf0;
+}
+
+.contract-edit-form .contract-field:first-child,
+.contract-edit-form .contract-field:nth-child(2),
+.contract-edit-form .contract-field:nth-child(3),
+.contract-edit-form .contract-field:nth-child(4) {
+    padding: 16px 16px 14px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #fbfcfd 0%, #f3f6f9 100%);
+    border: 1px solid #edf1f5;
+}
+
+.contract-field input::placeholder {
+    color: #a9afb6;
+    font-weight: 400;
+}
+
+.contract-field input:focus,
+.contract-field select:focus,
+.contract-field textarea:focus {
+    outline: none;
+    border-color: #0f6b20;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(15, 107, 32, 0.1);
+}
+
+.contract-hidden-field {
+    display: none;
+}
+
+.contract-hidden-field.is-visible {
+    display: flex;
+}
+
 .contract-form-actions {
     grid-column: 1 / -1;
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
-    flex-shrink: 0;
+    gap: 18px;
+    margin-top: 30px;
+    padding-top: 14px;
+    border-top: 1px solid #eef1f4;
 }
 
 .contract-cancel-btn,
 .contract-save-btn {
-    min-width: 140px; /* Thu nhỏ từ 235px xuống 140px */
-    height: 45px;    /* Thu nhỏ từ 64px xuống 45px */
+    min-width: 190px;
+    height: 52px;
     border: none;
-    border-radius: 8px;
+    border-radius: 14px;
+    font: 700 16px "Montserrat", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
     cursor: pointer;
-    font: 600 16px "Montserrat", sans-serif; /* Thu nhỏ từ 22px xuống 16px */
-    transition: all 0.2s ease;
 }
 
-/* Màu sắc nút bấm giữ nguyên như bạn muốn hoặc đổi blue thành xanh đậm hơn */
+.contract-cancel-btn {
+    background: #e4e4e4;
+    color: #4f4f4f;
+}
+
 .contract-save-btn {
-    background: #174d17;
+    background: #0f6b20;
     color: #fff;
+    box-shadow: 0 10px 18px rgba(15, 107, 32, 0.18);
 }
 
-.contract-cancel-btn:hover,
-.contract-save-btn:hover {
-    background: #0000bb; /* Đổi blue sáng thành xanh đậm cho dịu mắt */
-    color: #fff;
+@media (max-width: 1024px) {
+    .contract-form {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px 28px;
+    }
+
+    .contract-form-card {
+        width: 100%;
+    }
 }
 
-/* Tùy chỉnh thanh cuộn cho đẹp (Webkit) */
-.contract-form::-webkit-scrollbar {
-    width: 6px;
-}
-.contract-form::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 10px;
-}
+@media (max-width: 768px) {
+    .contract-add-page .success-popup-overlay {
+        padding-top: 20px;
+    }
 
-@media (max-width: 700px) {
+    .contract-add-page .success-popup-box {
+        border-radius: 22px;
+        padding: 18px 20px;
+    }
+
+    .contract-add-page .success-popup-box .text-wrapper {
+        font-size: 18px;
+    }
+
+    .contract-form-card {
+        padding: 24px 20px 26px;
+    }
+
+    .contract-edit-close-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 28px;
+    }
+
     .contract-form {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
-    .contract-form-card {
-        max-height: 95vh;
-        margin: 10px;
+
+    .contract-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .contract-cancel-btn,
+    .contract-save-btn,
+    .contract-back-button {
+        width: 100%;
     }
 }
