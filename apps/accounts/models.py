@@ -14,7 +14,7 @@ class TaiKhoan(models.Model):
     @property
     def vai_tro(self):
         if self.user.is_superuser:
-            return 'Admin'
+            return 'Chủ'
         elif self.user.is_staff:
             return 'Quản lý'
         else:
