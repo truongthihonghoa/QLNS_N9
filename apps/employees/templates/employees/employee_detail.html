@@ -4,7 +4,7 @@
 {% block title %}Chi tiết nhân viên - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'employees/css/employee_detail.css' %}?v=2.3">
+    <link rel="stylesheet" href="{% static 'employees/css/employee_detail.css' %}?v=2.4">
 {% endblock %}
 
 {% block content %}
@@ -21,8 +21,8 @@
         <div class="employee-detail-content">
             <div class="form-left">
                 <div class="avatar-preview-card">
-                    {% if image_path %}
-                        <img src="{% static image_path %}" alt="{{ employee.ho_ten }}" class="avatar-preview-image">
+                    {% if image_url %}
+                        <img src="{{ image_url }}" alt="{{ employee.ho_ten }}" class="avatar-preview-image">
                     {% else %}
                         <div class="detail-avatar-fallback">{{ initials }}</div>
                     {% endif %}

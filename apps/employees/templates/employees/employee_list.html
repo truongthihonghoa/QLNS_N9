@@ -4,7 +4,7 @@
 {% block title %}Quản lý nhân viên - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'employees/css/employee_list.css' %}?v=5.5">
+    <link rel="stylesheet" href="{% static 'employees/css/employee_list.css' %}?v=5.6">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 {% endblock %}
@@ -14,13 +14,7 @@
     <form method="get" class="employee-toolbar">
         <label class="employee-search" for="employee-search-input">
             <img src="{% static 'images/search_icon.png' %}" alt="" aria-hidden="true">
-            <input
-                id="employee-search-input"
-                type="text"
-                name="q"
-                value="{{ search_query }}"
-                placeholder="Nhập tên nhân viên"
-            >
+            <input id="employee-search-input" type="text" name="q" value="{{ search_query }}" placeholder="Nhập tên nhân viên">
         </label>
         <button type="submit" class="toolbar-btn toolbar-btn-primary">Tìm kiếm</button>
         <a href="{% url 'employee_add' %}" class="toolbar-btn toolbar-btn-add">+ Thêm</a>
@@ -32,8 +26,8 @@
                 {% for employee in employee_cards %}
                     <article class="employee-card-modern-row" data-detail-url="{{ employee.detail_url }}" tabindex="0" role="link" aria-label="Xem chi tiết {{ employee.ho_ten }}">
                         <div class="employee-avatar-modern-row {{ employee.theme_class }}">
-                            {% if employee.image_path %}
-                                <img src="{% static employee.image_path %}" alt="{{ employee.ho_ten }}">
+                            {% if employee.image_url %}
+                                <img src="{{ employee.image_url }}" alt="{{ employee.ho_ten }}">
                             {% else %}
                                 <span>{{ employee.initials }}</span>
                             {% endif %}

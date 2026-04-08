@@ -6,8 +6,39 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmCancelPopup = document.getElementById('confirm-cancel-popup');
     const confirmNoBtn = document.getElementById('confirm-no-btn');
     const confirmYesBtn = document.getElementById('confirm-yes-btn');
+    const avatarInput = document.getElementById('id_anh_dai_dien');
+    const avatarTrigger = document.getElementById('employee-avatar-trigger');
+    const avatarPreview = document.getElementById('employee-avatar-preview');
+    const defaultAvatarSrc = avatarPreview ? avatarPreview.getAttribute('src') : '';
 
-    // --- Cancel Button Handler ---
+    function bindAvatarUpload() {
+        if (!avatarInput || !avatarTrigger || !avatarPreview) {
+            return;
+        }
+
+        avatarTrigger.addEventListener('click', function() {
+            avatarInput.click();
+        });
+
+        avatarInput.addEventListener('change', function(event) {
+            const [file] = event.target.files || [];
+            if (!file) {
+                avatarPreview.src = defaultAvatarSrc;
+                avatarPreview.classList.add('upload-icon');
+                avatarPreview.classList.add('is-empty');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(loadEvent) {
+                avatarPreview.src = loadEvent.target.result;
+                avatarPreview.classList.remove('upload-icon');
+                avatarPreview.classList.remove('is-empty');
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
     if (cancelBtn) {
         cancelBtn.addEventListener('click', function(event) {
             event.preventDefault();
@@ -39,10 +70,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ...existing code...
     if (maNvInput) {
-        // Fetch mã nhân viên tiếp theo khi page load
-        fetch('/nhan-vien/api/next-id/', {
+        fetch('/employees/api/next-id/', {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -57,7 +86,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => console.error('Error fetching next employee ID:', error));
     }
 
-    // ...existing code...
     const errorPopup = document.getElementById('error-popup');
     const errorPopupTitle = document.getElementById('error-popup-title');
     const errorPopupMsg1 = document.getElementById('error-popup-message1');
@@ -75,43 +103,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function hideErrorPopup() {
-        if (errorPopup) errorPopup.style.display = 'none';
+        if (errorPopup) {
+            errorPopup.style.display = 'none';
+        }
     }
 
-    // --- Client-side Validation ---
     if (saveBtn) {
         saveBtn.addEventListener('click', function(event) {
             if (!employeeForm.checkValidity()) {
                 event.preventDefault();
-                showErrorPopup(
-                    'THÔNG BÁO LỖI', 
-                    'Xin vui lòng nhập đầy đủ thông tin!', 
-                    ''
-                );
+                showErrorPopup('THÔNG BÁO LỖI', 'Xin vui lòng nhập đầy đủ thông tin!', '');
             }
         });
     }
 
-    // --- Server-side Error Handling ---
-    const autoShowDuplicate = document.getElementById('auto-show-duplicate-popup');
-    if (autoShowDuplicate) {
-        showErrorPopup(
-            'THÔNG BÁO LỖI', 
-            'CCCD hoặc số điện thoại đã tồn tại?', 
-            'Xin vui lòng nhập lại thông tin chính xác!'
-        );
-    }
-
     const autoShowInvalidInfo = document.getElementById('auto-show-invalid-info-popup');
     if (autoShowInvalidInfo) {
-        showErrorPopup(
-            'THÔNG BÁO LỖI', 
-            'Thông tin không hợp lệ?', 
-            'Xin vui lòng nhập lại thông tin chính xác!'
-        );
+        showErrorPopup('THÔNG BÁO LỖI', 'Thông tin không hợp lệ?', 'Xin vui lòng nhập lại thông tin chính xác!');
     }
 
-    // --- Popup Button Listeners ---
     if (errorPopupExitBtn) {
         errorPopupExitBtn.addEventListener('click', function() {
             window.location.href = employeeForm.dataset.employeeListUrl;
@@ -121,10 +131,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (errorPopupBackBtn) {
         errorPopupBackBtn.addEventListener('click', hideErrorPopup);
     }
-    
+
     if (errorPopup) {
         errorPopup.addEventListener('click', function(event) {
-            if (event.target === errorPopup) hideErrorPopup();
+            if (event.target === errorPopup) {
+                hideErrorPopup();
+            }
         });
     }
+
+    bindAvatarUpload();
 });

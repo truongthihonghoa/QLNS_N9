@@ -15,8 +15,6 @@ CARD_THEMES = (
     "theme-rose",
 )
 
-EMPLOYEE_IMAGE_MAP = {}
-
 
 def get_next_employee_id():
     last_employee = NhanVien.objects.order_by("-ma_nv").first()
@@ -26,8 +24,7 @@ def get_next_employee_id():
 
             match = re.search(r"\d+", last_employee.ma_nv)
             if match:
-                last_num = int(match.group())
-                next_num = last_num + 1
+                next_num = int(match.group()) + 1
             else:
                 next_num = 1
         except (ValueError, AttributeError):
@@ -40,8 +37,7 @@ def get_next_employee_id():
 
 def api_next_employee_id(request):
     if request.method == "GET":
-        next_id = get_next_employee_id()
-        return JsonResponse({"next_id": next_id})
+        return JsonResponse({"next_id": get_next_employee_id()})
     return JsonResponse({"error": "Invalid method"}, status=400)
 
 
@@ -73,7 +69,7 @@ def _build_employee_cards(queryset):
                 "detail_url": detail_url,
                 "initials": initials,
                 "theme_class": CARD_THEMES[index % len(CARD_THEMES)],
-                "image_path": EMPLOYEE_IMAGE_MAP.get(employee.ma_nv, ""),
+                "image_url": employee.anh_dai_dien.url if employee.anh_dai_dien else "",
             }
         )
     return cards
@@ -102,7 +98,7 @@ def employee_list_view(request):
 
 def employee_add_view(request):
     if request.method == "POST":
-        form = EmployeeCreateForm(request.POST)
+        form = EmployeeCreateForm(request.POST, request.FILES)
         if form.is_valid():
             employee = form.save(commit=False)
             if not employee.ma_nv:
@@ -129,14 +125,14 @@ def employee_detail_view(request, employee_id):
         "employee": employee,
         "manager_name": manager.ho_ten if manager else "",
         "initials": "".join(word[0] for word in words[:2]).upper() if words else "NV",
-        "image_path": EMPLOYEE_IMAGE_MAP.get(employee.ma_nv, ""),
+        "image_url": employee.anh_dai_dien.url if employee.anh_dai_dien else "",
     }
     return render(request, "employees/employee_detail.html", context)
 
 
 def employee_edit_view(request, employee_id):
     employee = get_object_or_404(NhanVien, pk=employee_id)
-    form = EmployeeUpdateForm(request.POST or None, instance=employee)
+    form = EmployeeUpdateForm(request.POST or None, request.FILES or None, instance=employee)
 
     if request.method == "POST":
         if form.is_valid():
@@ -149,6 +145,6 @@ def employee_edit_view(request, employee_id):
     context = {
         "employee": employee,
         "form": form,
-        "image_path": EMPLOYEE_IMAGE_MAP.get(employee.ma_nv, ""),
+        "image_url": employee.anh_dai_dien.url if employee.anh_dai_dien else "",
     }
     return render(request, "employees/employee_edit.html", context)

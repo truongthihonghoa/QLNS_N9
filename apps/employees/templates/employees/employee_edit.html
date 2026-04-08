@@ -4,7 +4,7 @@
 {% block title %}Chỉnh sửa nhân viên - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'employees/css/employee_edit.css' %}?v=4.3">
+    <link rel="stylesheet" href="{% static 'employees/css/employee_edit.css' %}?v=4.5">
     <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
 {% endblock %}
@@ -27,19 +27,25 @@
         <form
             class="employee-form"
             method="POST"
+            enctype="multipart/form-data"
             data-employee-list-url="{% url 'employee_list' %}"
             data-return-url="{% url 'employee_detail' employee_id=employee.ma_nv %}"
         >
             {% csrf_token %}
             <div class="form-left">
-                <div class="avatar-upload-placeholder">
-                    {% if image_path %}
-                        <img src="{% static image_path %}" alt="{{ employee.ho_ten }}" class="avatar-preview-image">
+                <div class="avatar-upload-placeholder avatar-upload-card">
+                    <input type="file" name="anh_dai_dien" id="id_anh_dai_dien" class="employee-avatar-input" accept="image/*">
+                    {% if image_url %}
+                        <img src="{{ image_url }}" alt="{{ employee.ho_ten }}" class="avatar-preview-image" id="employee-avatar-preview">
                     {% else %}
-                        <img src="{% static 'employees/img/upload_avatar_icon.png' %}" alt="Avatar" class="upload-icon">
+                        <img src="{% static 'employees/img/upload_avatar_icon.png' %}" alt="Avatar" class="upload-icon avatar-preview-image is-empty" id="employee-avatar-preview">
                     {% endif %}
+                    <button type="button" class="avatar-edit-trigger" id="employee-avatar-trigger" aria-label="Cập nhật ảnh đại diện">
+                        <img src="{% static 'images/edit_icon.png' %}" alt="">
+                    </button>
                 </div>
-                <p class="avatar-note">Ảnh đại diện hiện chưa được liên kết với dữ liệu nhân viên.</p>
+                {% if form.anh_dai_dien.errors %}<p class="field-error">{{ form.anh_dai_dien.errors|join:', ' }}</p>{% endif %}
+                <p class="avatar-note">Bấm vào biểu tượng cây bút để thay đổi ảnh từ máy của bạn.</p>
             </div>
 
             <div class="form-right">
@@ -62,5 +68,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'employees/js/employee_edit.js' %}?v=4.1"></script>
+    <script src="{% static 'employees/js/employee_edit.js' %}?v=4.2"></script>
 {% endblock %}

@@ -37,6 +37,12 @@ class NhanVien(models.Model):
         verbose_name="Giới tính",
     )
     tk_ngan_hang = models.CharField(max_length=30, unique=True, verbose_name="Tài khoản ngân hàng")
+    anh_dai_dien = models.ImageField(
+        upload_to="employees/avatars/",
+        null=True,
+        blank=True,
+        verbose_name="Ảnh đại diện",
+    )
     ma_chi_nhanh = models.ForeignKey(
         "branches.ChiNhanh",
         on_delete=models.CASCADE,

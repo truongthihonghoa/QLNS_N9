@@ -8,6 +8,7 @@ class EmployeeBaseForm(forms.ModelForm):
         model = NhanVien
         fields = [
             "ma_nv",
+            "anh_dai_dien",
             "ho_ten",
             "gioi_tinh",
             "ngay_sinh",
@@ -20,6 +21,7 @@ class EmployeeBaseForm(forms.ModelForm):
         ]
         widgets = {
             "ma_nv": forms.TextInput(attrs={"placeholder": "Tự động sinh"}),
+            "anh_dai_dien": forms.ClearableFileInput(attrs={"accept": "image/*"}),
             "ho_ten": forms.TextInput(attrs={"placeholder": "Nhập họ tên"}),
             "ngay_sinh": forms.DateInput(attrs={"type": "date"}),
             "cccd": forms.TextInput(attrs={"placeholder": "Nhập CCCD"}),
@@ -56,6 +58,10 @@ class EmployeeBaseForm(forms.ModelForm):
             self.fields["ma_nv"].required = False
             self.fields["ma_nv"].widget.attrs["readonly"] = True
 
+        if "anh_dai_dien" in self.fields:
+            self.fields["anh_dai_dien"].required = False
+            self.fields["anh_dai_dien"].widget.attrs["class"] = "employee-avatar-input"
+
 
 class EmployeeCreateForm(EmployeeBaseForm):
     pass
@@ -64,6 +70,7 @@ class EmployeeCreateForm(EmployeeBaseForm):
 class EmployeeUpdateForm(EmployeeBaseForm):
     class Meta(EmployeeBaseForm.Meta):
         fields = [
+            "anh_dai_dien",
             "ho_ten",
             "gioi_tinh",
             "ngay_sinh",

@@ -75,7 +75,7 @@
 }
 
 .form-left {
-    flex-basis: 220px;
+    flex: 0 0 280px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
@@ -84,19 +84,65 @@
 
 .avatar-upload-placeholder {
     width: 100%;
-    height: 220px;
+    height: 300px;
     background-color: #fbfcfd;
     border: 2px dashed #d8dde3;
     border-radius: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.employee-avatar-input {
+    display: none;
+}
+
+.avatar-preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+}
+
+.avatar-upload-placeholder .avatar-preview-image:not(.is-empty) {
+    width: 100%;
+    height: 100%;
+}
+
+.avatar-preview-image.is-empty {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
 }
 
 .upload-icon {
-    width: 48px;
-    height: 48px;
+    width: 72px;
+    height: 72px;
     opacity: 0.5;
+}
+
+.avatar-edit-trigger {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 999px;
+    background: #0f6b20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(15, 107, 32, 0.24);
+}
+
+.avatar-edit-trigger img {
+    width: 18px;
+    height: 18px;
 }
 
 .avatar-note {
@@ -234,7 +280,7 @@
 
     .form-left {
         width: 100%;
-        max-width: 250px;
+        max-width: 280px;
     }
 
     .form-right {
