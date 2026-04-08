@@ -9,16 +9,33 @@
     grid-template-columns: minmax(280px, 1fr) 170px 170px;
     gap: 14px;
     align-items: center;
+    margin-bottom: 22px;
+}
+
+.contract-search {
+    display: block;
 }
 
 .contract-search input {
     width: 100%;
-    height: 48px;
-    border: 1px solid #dadce0;
+    height: 52px;
+    border: 2px solid rgba(255, 255, 255, 0.7);
     border-radius: 10px;
     padding: 0 18px;
-    background: rgba(112, 69, 47, 0.04);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+    color: #2b2b2b;
     font: 500 18px "Montserrat", sans-serif;
+}
+
+.contract-search input::placeholder {
+    color: #8a8a8a;
+}
+
+.contract-search input:focus {
+    outline: none;
+    border-color: #1f6c2f;
+    box-shadow: 0 0 0 4px rgba(31, 108, 47, 0.14);
 }
 
 .contract-search-btn,
@@ -26,7 +43,7 @@
     height: 48px;
     border: none;
     border-radius: 8px;
-    background: rgba(23, 77, 23, 0.87);
+    background: rgba(23, 77, 23, 0.92);
     color: #fff;
     font: 700 20px "Montserrat", sans-serif;
     display: inline-flex;
@@ -34,16 +51,29 @@
     justify-content: center;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .contract-search-btn:hover,
 .contract-add-btn:hover {
     background: #27682b;
+    transform: translateY(-1px);
 }
 
-.contract-table-card {
-    background: #fff;
+.contract-search-empty {
+    display: none;
+    margin: 0 0 14px;
+    color: #8d2f2f;
+    font: 700 16px "Montserrat", sans-serif;
+}
+
+.contract-search-empty.is-visible {
+    display: block;
+}
+
+.contract-table-card,
+.contract-form-card {
+    background: rgba(255, 255, 255, 0.94);
     border-radius: 14px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
     overflow: hidden;
@@ -55,7 +85,7 @@
 }
 
 .contract-table thead th {
-    background: rgba(23, 77, 23, 0.84);
+    background: rgba(23, 77, 23, 0.88);
     color: #fff;
     font: 700 22px "Montserrat", sans-serif;
     padding: 16px 14px;
@@ -76,6 +106,10 @@
     font: 500 20px "Montserrat", sans-serif;
     color: #1a1a1a;
     vertical-align: middle;
+}
+
+.contract-row-hidden {
+    display: none;
 }
 
 .contract-actions {
@@ -121,6 +155,103 @@
     border-color: #8d6e63;
 }
 
+.contract-delete-alert-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.14);
+    z-index: 1200;
+}
+
+.contract-delete-alert-overlay.is-visible {
+    display: flex;
+}
+
+.contract-delete-alert-card {
+    position: relative;
+    width: min(580px, 100%);
+    padding: 26px 28px 34px;
+    border-radius: 26px;
+    background: #fff;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.16);
+    text-align: center;
+}
+
+.contract-delete-alert-close {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    border: none;
+    background: transparent;
+    color: #2f2f2f;
+    font-size: 34px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.contract-delete-alert-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 18px;
+    border: 3px solid #f04a00;
+    border-radius: 50%;
+    color: #f04a00;
+    font: 700 34px/42px "Montserrat", sans-serif;
+}
+
+.contract-delete-alert-card h3 {
+    margin: 0 0 14px;
+    color: #005f16;
+    font: 700 30px "Montserrat", sans-serif;
+}
+
+.contract-delete-alert-card p {
+    margin: 0;
+    color: #70757a;
+    font: 400 22px "Montserrat", sans-serif;
+}
+
+.contract-delete-success-toast {
+    position: fixed;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 520px;
+    max-width: calc(100vw - 32px);
+    padding: 18px 22px;
+    border-radius: 26px;
+    background: #fff;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    z-index: 1200;
+}
+
+.contract-delete-success-toast.is-visible {
+    display: flex;
+}
+
+.contract-delete-success-text {
+    color: #252525;
+    font: 700 24px "Montserrat", sans-serif;
+}
+
+.contract-delete-success-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #11d46a;
+    color: #fff;
+    font: 700 28px/44px "Montserrat", sans-serif;
+    text-align: center;
+    flex-shrink: 0;
+}
+
 @media (max-width: 1024px) {
     .contract-toolbar {
         grid-template-columns: 1fr;
@@ -132,5 +263,30 @@
 
     .contract-table {
         min-width: 920px;
+    }
+}
+
+@media (max-width: 768px) {
+    .contract-delete-alert-card {
+        padding: 22px 18px 28px;
+    }
+
+    .contract-delete-alert-card h3 {
+        font-size: 24px;
+    }
+
+    .contract-delete-alert-card p {
+        font-size: 18px;
+    }
+
+    .contract-delete-success-toast {
+        min-width: 0;
+        width: calc(100vw - 24px);
+        top: 18px;
+        padding: 16px 18px;
+    }
+
+    .contract-delete-success-text {
+        font-size: 18px;
     }
 }

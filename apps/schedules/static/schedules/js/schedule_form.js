@@ -17,21 +17,21 @@ document.addEventListener('DOMContentLoaded', function () {
         form.addEventListener('submit', function (e) {
             // Prevent actual form submission
             e.preventDefault();
-            
+
             // Get form data
             const formData = new FormData(form);
             const ngayLam = formData.get('ngay_lam');
             const khungGio = formData.get('khung_gio');
-            
+
             // Validate
             if (!ngayLam || !khungGio) {
                 alert('Vui lòng điền đầy đủ thông tin');
                 return;
             }
-            
+
             // Show success message
             alert('Tạo lịch làm việc thành công (Demo UI)');
-            
+
             // Navigate back to list after 1 second
             setTimeout(() => {
                 window.location.href = '/schedules/';
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
         checkbox.addEventListener('change', function () {
             const ma_nv = this.value;
             const positionSelect = document.querySelector(`select[name="position_${ma_nv}"]`);
-            
+
             if (this.checked && positionSelect) {
                 positionSelect.setAttribute('required', 'required');
             } else if (positionSelect) {

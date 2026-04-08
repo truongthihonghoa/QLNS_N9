@@ -4,100 +4,140 @@
 {% block title %}Sửa Hợp Đồng - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'contracts/css/contract_form.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
+    <link rel="stylesheet" href="{% static 'contracts/css/contract_form.css' %}?v=20260401f">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="contract-form-page">
-    <div class="contract-form-card">
-        <div class="contract-form-header">
-            <a href="{% url 'contract_list' %}" class="contract-back-link">
-                <img src="{% static 'images/back_icon.png' %}" alt="Quay lại">
-            </a>
-            <h2>CHỈNH SỬA HỢP ĐỒNG LAO ĐỘNG</h2>
+<div class="contract-add-page">
+    <div class="contract-form-page">
+        <div class="contract-form-card">
+            <div class="contract-edit-topbar">
+                <div class="contract-form-heading contract-form-heading--tight">
+                    <h2>Chỉnh sửa hợp đồng lao động</h2>
+                </div>
+                <button type="button" class="contract-edit-close-btn" onclick="window.location.href='{% url 'contract_list' %}'">&times;</button>
+            </div>
+
+            <form class="contract-form contract-edit-form" method="POST" data-contract-list-url="{% url 'contract_list' %}">
+                {% csrf_token %}
+
+                <div class="contract-field">
+                    <label for="ma_nv">Mã nhân viên</label>
+                    <input type="text" id="ma_nv" name="ma_nv" value="{{ contract.ma_nv }}" readonly>
+                </div>
+
+                <div class="contract-field">
+                    <label for="ma_hd">Mã hợp đồng</label>
+                    <input type="text" id="ma_hd" name="ma_hd" value="{{ contract.ma_hd }}" readonly>
+                </div>
+
+                <div class="contract-field">
+                    <label for="muc_luong">Mức lương</label>
+                    <div class="contract-money-input">
+                        <input type="number" id="muc_luong" name="muc_luong" value="{{ muc_luong_value }}" readonly>
+                        <span class="contract-money-suffix">VND</span>
+                    </div>
+                </div>
+
+                <div class="contract-field">
+                    <label for="ten_nv">Tên nhân viên <span class="required">*</span></label>
+                    <input type="text" id="ten_nv" name="ten_nv" value="{{ contract.ten_nv }}" readonly>
+                </div>
+
+                <div class="contract-field">
+                    <label for="loai_hd">Loại hợp đồng <span class="required">*</span></label>
+                    <select id="loai_hd" name="loai_hd" required>
+                        <option value="FULL_TIME" {% if contract_type_value == 'FULL_TIME' %}selected{% endif %}>FULL_TIME</option>
+                        <option value="PART_TIME" {% if contract_type_value == 'PART_TIME' %}selected{% endif %}>PART_TIME</option>
+                    </select>
+                </div>
+
+                <div class="contract-field">
+                    <label for="ngay_bd">Ngày bắt đầu <span class="required">*</span></label>
+                    <input type="date" id="ngay_bd" name="ngay_bd" value="{{ contract.ngay_bd_iso }}" required>
+                </div>
+
+                <div class="contract-field">
+                    <label for="luong_co_ban">Lương cơ bản <span class="required">*</span></label>
+                    <div class="contract-money-input">
+                        <input type="number" id="luong_co_ban" name="luong_co_ban" value="{{ luong_co_ban_value }}" min="0" step="1000">
+                        <span class="contract-money-suffix">VND</span>
+                    </div>
+                </div>
+
+                <div class="contract-field">
+                    <label for="luong_theo_gio">Lương theo giờ <span class="required">*</span></label>
+                    <select id="luong_theo_gio" name="luong_theo_gio">
+                        <option value="0" {% if luong_theo_gio_value == 0 %}selected{% endif %}>0</option>
+                        <option value="20000" {% if luong_theo_gio_value == 20000 %}selected{% endif %}>20000</option>
+                        <option value="25000" {% if luong_theo_gio_value == 25000 %}selected{% endif %}>25000</option>
+                        <option value="khac" {% if luong_theo_gio_value != 0 and luong_theo_gio_value != 20000 and luong_theo_gio_value != 25000 %}selected{% endif %}>Khác</option>
+                    </select>
+                </div>
+
+                <div class="contract-field contract-hidden-field {% if luong_theo_gio_value != 0 and luong_theo_gio_value != 20000 and luong_theo_gio_value != 25000 %}is-visible{% endif %}" id="luong-theo-gio-khac-wrapper">
+                    <label for="luong_theo_gio_khac">Lương theo giờ khác</label>
+                    <div class="contract-money-input">
+                        <input type="number" id="luong_theo_gio_khac" name="luong_theo_gio_khac" value="{% if luong_theo_gio_value != 0 and luong_theo_gio_value != 20000 and luong_theo_gio_value != 25000 %}{{ luong_theo_gio_value }}{% endif %}" min="0" step="1000">
+                        <span class="contract-money-suffix">VND</span>
+                    </div>
+                </div>
+
+                <div class="contract-field">
+                    <label for="ngay_kt">Ngày kết thúc <span class="required">*</span></label>
+                    <input type="date" id="ngay_kt" name="ngay_kt" value="{{ contract.ngay_kt_iso }}" required>
+                </div>
+
+                <div class="contract-field">
+                    <label for="so_gio_lam_toi_thieu">Số giờ làm tối thiểu <span class="required">*</span></label>
+                    <input type="number" id="so_gio_lam_toi_thieu" name="so_gio_lam_toi_thieu" value="{{ so_gio_lam_toi_thieu_value }}" min="0" step="0.5">
+                </div>
+
+                <div class="contract-field">
+                    <label for="thuong">Chế độ thưởng</label>
+                    <input type="number" id="thuong" name="thuong" value="{{ che_do_thuong_value }}" min="0" step="1">
+                </div>
+
+                <div class="contract-field">
+                    <label for="chuc_vu">Chức vụ <span class="required">*</span></label>
+                    <select id="chuc_vu" name="chuc_vu" required>
+                        {% for position in positions %}
+                        <option value="{{ position }}" {% if contract.chuc_vu == position %}selected{% endif %}>{{ position }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="contract-field">
+                    <label for="dia_diem_lam_viec">Địa điểm làm việc <span class="required">*</span></label>
+                    <select id="dia_diem_lam_viec" name="dia_diem_lam_viec" required>
+                        <option value="CN001" {% if dia_diem_lam_viec == 'CN001' %}selected{% endif %}>Chi nhánh Lê Hồng Phong</option>
+                        <option value="CN002" {% if dia_diem_lam_viec == 'CN002' %}selected{% endif %}>Chi nhánh Nguyễn Văn Cừ</option>
+                        <option value="CN003" {% if dia_diem_lam_viec == 'CN003' %}selected{% endif %}>Chi nhánh Võ Văn Ngân</option>
+                    </select>
+                </div>
+
+                <div class="contract-field">
+                    <label for="ly_do_cham_dut">Lý do chấm dứt hợp đồng</label>
+                    <textarea id="ly_do_cham_dut" name="ly_do_cham_dut" placeholder="Nhập lý do">{{ ly_do_cham_dut }}</textarea>
+                </div>
+
+                <div class="contract-form-actions">
+                    <button type="button" class="contract-cancel-btn">Hủy thao tác</button>
+                    <button type="submit" class="contract-save-btn">Lưu thông tin</button>
+                </div>
+            </form>
         </div>
-
-        <form class="contract-form" method="POST" data-contract-list-url="{% url 'contract_list' %}" data-success-title="Cập nhật hợp đồng thành công" data-success-message="Thông tin hợp đồng lao động đã được cập nhật.">
-            {% csrf_token %}
-            {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-            {% endif %}
-            <div class="contract-field">
-                <label for="ma_nv">Mã nhân viên</label>
-                <input type="text" id="ma_nv" name="ma_nv" value="{{ contract.ma_nv.ma_nv }}" readonly>
-            </div>
-            <div class="contract-field">
-                <label for="ma_hd">Mã hợp đồng</label>
-                <input type="text" id="ma_hd" name="ma_hd" value="{{ contract.ma_hd }}" readonly>
-            </div>
-            <div class="contract-field">
-                <label for="ten_nv">Họ và tên</label>
-                <input type="text" id="ten_nv" name="ten_nv" value="{{ contract.ten_nv }}" readonly>
-            </div>
-            <div class="contract-field">
-                <label for="loai_hd">Loại hợp đồng <span class="required">*</span></label>
-                <select id="loai_hd" name="loai_hd" required>
-                    {% for contract_type in contract_types %}
-                    <option value="{{ contract_type }}" {% if contract.loai_hd == contract_type %}selected{% endif %}>{{ contract_type }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="contract-field">
-                <label for="ngay_bd">Ngày bắt đầu <span class="required">*</span></label>
-                <input type="date" id="ngay_bd" name="ngay_bd" value="{{ contract.ngay_bd|date:'Y-m-d' }}" required>
-            </div>
-            <div class="contract-field">
-                <label for="ngay_kt">Ngày kết thúc <span class="required">*</span></label>
-                <input type="date" id="ngay_kt" name="ngay_kt" value="{{ contract.ngay_kt|date:'Y-m-d' }}" required>
-            </div>
-            <div class="contract-field">
-                <label for="chuc_vu">Chức vụ <span class="required">*</span></label>
-                <select id="chuc_vu" name="chuc_vu" required>
-                    {% for position in positions %}
-                    <option value="{{ position }}" {% if contract.chuc_vu == position %}selected{% endif %}>{{ position }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="contract-field">
-                <label for="luong_co_ban">Lương cơ bản</label>
-                <input type="number" id="luong_co_ban" name="luong_co_ban" value="{{ luong_co_ban }}" placeholder="0" min="0" step="1000">
-            </div>
-            <div class="contract-field">
-                <label for="luong_theo_gio">Lương/giờ</label>
-                <input type="number" id="luong_theo_gio" name="luong_theo_gio" value="{{ luong_theo_gio }}" placeholder="0" min="0" step="1000">
-            </div>
-            <div class="contract-field">
-                <label for="so_gio_lam">Số giờ làm</label>
-                <input type="number" id="so_gio_lam" name="so_gio_lam" value="{{ so_gio_lam }}" placeholder="0" min="0" step="0.5">
-            </div>
-            <div class="contract-field">
-                <label for="thuong">Thưởng (Nếu có)</label>
-                <input type="number" id="thuong" name="thuong" value="{{ thuong }}" placeholder="0" min="0" step="1000">
-            </div>
-            <div class="contract-field">
-                <label for="phat">Phạt (Nếu có)</label>
-                <input type="number" id="phat" name="phat" value="{{ phat }}" placeholder="0" min="0" step="1000">
-            </div>
-            <div class="contract-form-actions">
-                <button type="button" class="contract-cancel-btn">HỦY THAO TÁC</button>
-                <button type="submit" class="contract-save-btn">LƯU THÔNG TIN</button>
-            </div>
-        </form>
     </div>
-</div>
 
-{% include 'partials/popup_error.html' %}
-{% include 'partials/popup_confirm_cancel.html' %}
-{% include 'partials/popup_success.html' %}
+    {% include 'partials/popup_confirm_cancel.html' %}
+    {% include 'partials/popup_error.html' %}
+    {% include 'partials/popup_success.html' %}
+</div>
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'contracts/js/contract_form.js' %}"></script>
+    <script src="{% static 'contracts/js/contract_edit.js' %}?v=20260401f"></script>
 {% endblock %}

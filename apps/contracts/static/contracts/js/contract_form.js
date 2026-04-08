@@ -1,9 +1,20 @@
 document.addEventListener('DOMContentLoaded', function () {
     const contractForm = document.querySelector('.contract-form');
     const cancelBtn = document.querySelector('.contract-cancel-btn');
+    const employeeNameInput = document.getElementById('ten_nv');
+    const employeeCodeInput = document.getElementById('ma_nv');
+    const employeeOptions = Array.from(document.querySelectorAll('#employee-options option'));
     const contractTypeSelect = document.getElementById('loai_hd');
     const luongCoBanInput = document.getElementById('luong_co_ban');
-    const luongTheoGioInput = document.getElementById('luong_theo_gio');
+    const luongTheoGioSelect = document.getElementById('luong_theo_gio');
+    const luongTheoGioKhacWrapper = document.getElementById('luong-theo-gio-khac-wrapper');
+    const luongTheoGioKhacInput = document.getElementById('luong_theo_gio_khac');
+    const mucLuongInput = document.getElementById('muc_luong');
+    const soGioLamToiThieuInput = document.getElementById('so_gio_lam_toi_thieu');
+
+    const confirmCancelPopup = document.getElementById('confirm-cancel-popup');
+    const confirmNoBtn = document.getElementById('confirm-no-btn');
+    const confirmYesBtn = document.getElementById('confirm-yes-btn');
 
     const errorPopup = document.getElementById('error-popup');
     const errorPopupTitle = document.getElementById('error-popup-title');
@@ -12,129 +23,225 @@ document.addEventListener('DOMContentLoaded', function () {
     const errorPopupExitBtn = document.getElementById('error-popup-exit-btn');
     const errorPopupBackBtn = document.getElementById('error-popup-back-btn');
 
-    const confirmCancelPopup = document.getElementById('confirm-cancel-popup');
-    const confirmNoBtn = document.getElementById('confirm-no-btn');
-    const confirmYesBtn = document.getElementById('confirm-yes-btn');
-
     const successPopup = document.getElementById('success-popup');
     const successPopupTitle = document.getElementById('success-popup-title');
     const successPopupMessage = document.getElementById('success-popup-message');
     const successPopupConfirmBtn = document.getElementById('success-popup-confirm-btn');
 
-    // Handle contract type change
-    if (contractTypeSelect) {
-        contractTypeSelect.addEventListener('change', function() {
-            const contractType = this.value;
-            
-            if (contractType === 'Full-time') {
-                luongCoBanInput.required = true;
-                luongTheoGioInput.required = false;
-                luongTheoGioInput.value = '';
-            } else if (contractType === 'Part-time') {
-                luongCoBanInput.required = false;
-                luongTheoGioInput.required = true;
-                luongCoBanInput.value = '';
-            } else {
-                luongCoBanInput.required = false;
-                luongTheoGioInput.required = false;
-            }
-        });
+    function syncEmployeeCode() {
+        const selectedOption = employeeOptions.find((option) => option.value === employeeNameInput.value.trim());
+        employeeCodeInput.value = selectedOption ? selectedOption.dataset.code || '' : '';
     }
 
-    function showErrorPopup(title, message1, message2) {
-        errorPopupTitle.textContent = title;
-        errorPopupMessage1.textContent = message1;
-        errorPopupMessage2.textContent = message2;
-        errorPopup.style.display = 'flex';
+    function showErrorPopup(message) {
+        if (errorPopupTitle) {
+            errorPopupTitle.textContent = 'THÔNG BÁO LỖI';
+        }
+        if (errorPopupMessage1) {
+            errorPopupMessage1.textContent = message;
+        }
+        if (errorPopupMessage2) {
+            errorPopupMessage2.textContent = '';
+        }
+        if (errorPopupExitBtn) {
+            errorPopupExitBtn.style.display = 'none';
+        }
+        if (errorPopupBackBtn) {
+            errorPopupBackBtn.textContent = 'Đóng';
+        }
+        if (errorPopup) {
+            errorPopup.style.display = 'flex';
+        }
     }
 
     function hideErrorPopup() {
-        errorPopup.style.display = 'none';
+        if (errorPopup) {
+            errorPopup.style.display = 'none';
+        }
     }
 
-    function showSuccessPopup() {
-        successPopupTitle.textContent = contractForm.dataset.successTitle;
-        successPopupMessage.textContent = contractForm.dataset.successMessage;
-        successPopup.style.display = 'flex';
+    function showSuccessPopup(message) {
+        if (successPopupTitle) {
+            successPopupTitle.textContent = 'Thêm hợp đồng lao động thành công';
+        }
+        if (successPopup) {
+            successPopup.style.display = 'flex';
+        }
+        window.setTimeout(function () {
+            window.location.href = contractForm.dataset.contractListUrl;
+        }, 1200);
     }
 
-    function hideSuccessPopup() {
-        successPopup.style.display = 'none';
-        window.location.href = contractForm.dataset.contractListUrl;
+    function showLuongTheoGioKhac() {
+        luongTheoGioKhacWrapper.classList.add('is-visible');
+        luongTheoGioKhacInput.disabled = false;
     }
 
-    function handleFormSubmit(event) {
-        // Ngăn submit thật - chỉ xử lý UI
-        event.preventDefault();
-        
+    function hideLuongTheoGioKhac() {
+        luongTheoGioKhacWrapper.classList.remove('is-visible');
+        luongTheoGioKhacInput.value = '';
+        luongTheoGioKhacInput.disabled = true;
+    }
+
+    function getPartTimeHourlyRate() {
+        if (luongTheoGioSelect.value === 'khac') {
+            return parseFloat(luongTheoGioKhacInput.value) || 0;
+        }
+        return parseFloat(luongTheoGioSelect.value) || 0;
+    }
+
+    function updateMucLuong() {
         const contractType = contractTypeSelect.value;
-        const luongCoBan = parseFloat(luongCoBanInput.value) || 0;
-        const luongTheoGio = parseFloat(luongTheoGioInput.value) || 0;
-        
-        // Client-side validation
-        if (contractType === 'Full-time' && luongTheoGio > 0) {
-            showErrorPopup('LỖI', 'Full time không có lương/giờ', 'Vui lòng chỉ nhập lương cơ bản cho hợp đồng Full time.');
-            return;
+        let mucLuong = 0;
+
+        if (contractType === 'FULL_TIME') {
+            mucLuong = parseFloat(luongCoBanInput.value) || 0;
+        } else if (contractType === 'PART_TIME') {
+            const hourlyRate = getPartTimeHourlyRate();
+            const minimumHours = parseFloat(soGioLamToiThieuInput.value) || 0;
+            mucLuong = hourlyRate * minimumHours;
         }
-        
-        if (contractType === 'Part-time' && luongCoBan > 0) {
-            showErrorPopup('LỖI', 'Part time không có lương cơ bản', 'Vui lòng chỉ nhập lương/giờ cho hợp đồng Part time.');
-            return;
-        }
-        
-        if (contractType === 'Full-time' && luongCoBan <= 0) {
-            showErrorPopup('LỖI', 'Full time phải có lương cơ bản', 'Vui lòng nhập lương cơ bản cho hợp đồng Full time.');
-            return;
-        }
-        
-        if (contractType === 'Part-time' && luongTheoGio <= 0) {
-            showErrorPopup('LỖI', 'Part time phải có lương/giờ', 'Vui lòng nhập lương/giờ cho hợp đồng Part time.');
-            return;
-        }
-        
-        // Hiển thị popup success
-        const successTitle = contractForm.dataset.successTitle || 'Thành công';
-        const successMessage = contractForm.dataset.successMessage || 'Thao tác thành công';
-        showSuccessPopup(successTitle, successMessage);
-        
-        // Reset form sau 2 giây
-        setTimeout(() => {
-            contractForm.reset();
-        }, 2000);
+
+        mucLuongInput.value = mucLuong > 0 ? Math.round(mucLuong) : 0;
     }
 
-    // Gán handler cho form
-    contractForm.addEventListener('submit', handleFormSubmit);
+    function applyPartTimeMode() {
+        luongTheoGioSelect.disabled = false;
+        luongCoBanInput.value = 0;
+        mucLuongInput.readOnly = true;
+        soGioLamToiThieuInput.value = 80;
+        soGioLamToiThieuInput.disabled = false;
+        if (luongTheoGioSelect.value === 'khac') {
+            showLuongTheoGioKhac();
+        } else {
+            hideLuongTheoGioKhac();
+        }
+        updateMucLuong();
+    }
 
-    cancelBtn.addEventListener('click', () => {
-        confirmCancelPopup.style.display = 'flex';
-    });
+    function applyFullTimeMode() {
+        luongCoBanInput.value = 3480000;
+        luongTheoGioSelect.value = '0';
+        luongTheoGioSelect.disabled = true;
+        hideLuongTheoGioKhac();
+        soGioLamToiThieuInput.value = 174;
+        soGioLamToiThieuInput.disabled = false;
+        mucLuongInput.readOnly = true;
+        updateMucLuong();
+    }
 
-    confirmNoBtn.addEventListener('click', () => {
-        confirmCancelPopup.style.display = 'none';
-    });
+    function applyContractTypeRules() {
+        if (contractTypeSelect.value === 'PART_TIME') {
+            applyPartTimeMode();
+            return;
+        }
+        if (contractTypeSelect.value === 'FULL_TIME') {
+            applyFullTimeMode();
+            return;
+        }
+        luongTheoGioSelect.disabled = false;
+        soGioLamToiThieuInput.disabled = false;
+        hideLuongTheoGioKhac();
+        mucLuongInput.value = 0;
+    }
 
-    confirmYesBtn.addEventListener('click', () => {
-        window.location.href = contractForm.dataset.contractListUrl;
-    });
+    function handleLuongTheoGioChange() {
+        if (contractTypeSelect.value !== 'PART_TIME') {
+            hideLuongTheoGioKhac();
+            updateMucLuong();
+            return;
+        }
+        if (luongTheoGioSelect.value === 'khac') {
+            showLuongTheoGioKhac();
+        } else {
+            hideLuongTheoGioKhac();
+        }
+        updateMucLuong();
+    }
 
-    confirmCancelPopup.addEventListener('click', (event) => {
-        if (event.target === confirmCancelPopup) {
+    async function submitForm(event) {
+        event.preventDefault();
+        syncEmployeeCode();
+        updateMucLuong();
+
+        try {
+            const response = await fetch(contractForm.action || window.location.href, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': contractForm.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+                body: new FormData(contractForm),
+            });
+
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                showErrorPopup(data.message || 'Không thể tạo hợp đồng. Vui lòng thử lại sau.');
+                return;
+            }
+
+            showSuccessPopup(data.message || 'Thêm hợp đồng lao động thành công');
+        } catch (_error) {
+            showErrorPopup('Không thể tạo hợp đồng. Vui lòng thử lại sau.');
+        }
+    }
+
+    if (employeeNameInput) {
+        employeeNameInput.addEventListener('input', syncEmployeeCode);
+        employeeNameInput.addEventListener('change', syncEmployeeCode);
+    }
+    if (contractTypeSelect) {
+        contractTypeSelect.addEventListener('change', applyContractTypeRules);
+    }
+    if (luongCoBanInput) {
+        luongCoBanInput.addEventListener('input', updateMucLuong);
+    }
+    if (luongTheoGioSelect) {
+        luongTheoGioSelect.addEventListener('change', handleLuongTheoGioChange);
+    }
+    if (luongTheoGioKhacInput) {
+        luongTheoGioKhacInput.addEventListener('input', updateMucLuong);
+    }
+    if (soGioLamToiThieuInput) {
+        soGioLamToiThieuInput.addEventListener('input', updateMucLuong);
+    }
+    if (contractForm) {
+        contractForm.addEventListener('submit', submitForm);
+    }
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function () {
+            confirmCancelPopup.style.display = 'flex';
+        });
+    }
+    if (confirmNoBtn) {
+        confirmNoBtn.addEventListener('click', function () {
             confirmCancelPopup.style.display = 'none';
-        }
-    });
-
-    errorPopupExitBtn.addEventListener('click', () => {
-        window.location.href = contractForm.dataset.contractListUrl;
-    });
-
-    errorPopupBackBtn.addEventListener('click', hideErrorPopup);
-
-    errorPopup.addEventListener('click', (event) => {
-        if (event.target === errorPopup) {
-            hideErrorPopup();
-        }
-    });
-
-    successPopupConfirmBtn.addEventListener('click', hideSuccessPopup);
+        });
+    }
+    if (confirmYesBtn) {
+        confirmYesBtn.addEventListener('click', function () {
+            window.location.href = contractForm.dataset.contractListUrl;
+        });
+    }
+    if (confirmCancelPopup) {
+        confirmCancelPopup.addEventListener('click', function (event) {
+            if (event.target === confirmCancelPopup) {
+                confirmCancelPopup.style.display = 'none';
+            }
+        });
+    }
+    if (errorPopupBackBtn) {
+        errorPopupBackBtn.addEventListener('click', hideErrorPopup);
+    }
+    if (errorPopup) {
+        errorPopup.addEventListener('click', function (event) {
+            if (event.target === errorPopup) {
+                hideErrorPopup();
+            }
+        });
+    }
+    hideLuongTheoGioKhac();
+    syncEmployeeCode();
+    applyContractTypeRules();
+    updateMucLuong();
 });

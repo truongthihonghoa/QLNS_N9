@@ -9,10 +9,10 @@ class HopDongLaoDong(models.Model):
     ]
 
     CHUC_VU_CHOICES = [
-        ('THU_NGAN', 'Thu ngân'),
         ('QUAN_LY', 'Quản lý'),
         ('PHUC_VU', 'Phục vụ'),
         ('PHA_CHE', 'Pha chế'),
+        ('GIU_XE', 'Giữ xe'),
     ]
 
     TRANG_THAI_CHOICES = [

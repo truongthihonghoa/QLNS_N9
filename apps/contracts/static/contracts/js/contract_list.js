@@ -6,6 +6,34 @@ document.addEventListener('DOMContentLoaded', function () {
     const deleteButtons = document.querySelectorAll('.delete-btn');
     const deleteNoBtn = document.getElementById('delete-popup-no-btn');
     const deleteYesBtn = document.getElementById('delete-popup-yes-btn');
+    const deleteAlert = document.getElementById('contract-delete-alert');
+    const deleteAlertClose = document.getElementById('contract-delete-alert-close');
+    const deleteSuccessToast = document.getElementById('contract-delete-success-toast');
+    const searchInput = document.getElementById('contract-search-input');
+    const searchBtn = document.getElementById('contract-search-btn');
+    const searchEmpty = document.getElementById('contract-search-empty');
+
+    function getCookie(name) {
+        const cookieValue = document.cookie
+            .split(';')
+            .map((cookie) => cookie.trim())
+            .find((cookie) => cookie.startsWith(`${name}=`));
+        return cookieValue ? decodeURIComponent(cookieValue.split('=').slice(1).join('=')) : '';
+    }
+
+    function getTableRows() {
+        return Array.from(document.querySelectorAll('#contract-table-body tr'));
+    }
+
+    function normalizeText(value) {
+        return String(value || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/đ/g, 'd')
+            .replace(/Đ/g, 'D')
+            .toLowerCase()
+            .trim();
+    }
 
     function populateDetailModal(data) {
         const elements = {
@@ -55,6 +83,96 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function updateVisibleIndexes() {
+        let visibleIndex = 1;
+
+        getTableRows().forEach((row) => {
+            if (row.classList.contains('contract-row-hidden')) {
+                return;
+            }
+
+            const sttCell = row.querySelector('.contract-stt');
+            if (sttCell) {
+                sttCell.textContent = visibleIndex;
+            }
+            visibleIndex += 1;
+        });
+    }
+
+    function performSearch() {
+        const keyword = normalizeText(searchInput ? searchInput.value : '');
+        let visibleCount = 0;
+
+        getTableRows().forEach((row) => {
+            const cells = Array.from(row.querySelectorAll('td'));
+            const searchText = normalizeText(cells
+                .slice(1, 5)
+                .map((cell) => cell.textContent || '')
+                .join(' '));
+            const isMatch = !keyword || searchText.includes(keyword);
+
+            row.classList.toggle('contract-row-hidden', !isMatch);
+            if (isMatch) {
+                visibleCount += 1;
+            }
+        });
+
+        updateVisibleIndexes();
+
+        if (searchEmpty) {
+            searchEmpty.classList.toggle('is-visible', visibleCount === 0);
+        }
+    }
+
+    function parseDisplayDate(value) {
+        const parts = String(value || '').split('/');
+        if (parts.length !== 3) {
+            return null;
+        }
+
+        const [day, month, year] = parts.map((part) => parseInt(part, 10));
+        if (!day || !month || !year) {
+            return null;
+        }
+
+        return new Date(year, month - 1, day);
+    }
+
+    function isContractStillActive(endDateText) {
+        const endDate = parseDisplayDate(endDateText);
+        if (!endDate) {
+            return true;
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+        return endDate >= today;
+    }
+
+    function showDeleteAlert() {
+        if (deleteAlert) {
+            deleteAlert.classList.add('is-visible');
+        }
+    }
+
+    function hideDeleteAlert() {
+        if (deleteAlert) {
+            deleteAlert.classList.remove('is-visible');
+        }
+    }
+
+    function showDeleteSuccessToast() {
+        if (!deleteSuccessToast) {
+            return;
+        }
+
+        deleteSuccessToast.classList.add('is-visible');
+        window.setTimeout(function () {
+            deleteSuccessToast.classList.remove('is-visible');
+        }, 2200);
+    }
+
     detailButtons.forEach((button) => {
         button.addEventListener('click', function () {
             openDetailFromButton(this);
@@ -75,6 +193,19 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    if (searchBtn) {
+        searchBtn.addEventListener('click', performSearch);
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                performSearch();
+            }
+        });
+    }
+
     deleteButtons.forEach((button) => {
         button.addEventListener('click', function () {
             if (deletePopup) {
@@ -91,9 +222,57 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (deleteYesBtn) {
-        deleteYesBtn.addEventListener('click', function () {
-            alert('Thanh cong: Da xoa hop dong thanh cong');
+        deleteYesBtn.addEventListener('click', async function () {
             deletePopup.style.display = 'none';
+
+            const deleteId = deletePopup.dataset.deleteId || '';
+            const targetButton = Array.from(document.querySelectorAll('.delete-btn')).find((button) => (button.dataset.deleteId || '') === deleteId);
+            if (!targetButton) return;
+
+            try {
+                const response = await fetch(`/contracts/${deleteId}/delete/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                });
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    if (data.error_code === 'ACTIVE_CONTRACT' || isContractStillActive(targetButton.dataset.endDate || '')) {
+                        showDeleteAlert();
+                    }
+                    return;
+                }
+
+                const targetRow = targetButton.closest('tr');
+                if (targetRow) {
+                    targetRow.remove();
+                }
+                updateVisibleIndexes();
+                if (searchEmpty) {
+                    const visibleRows = Array.from(document.querySelectorAll('#contract-table-body tr')).filter((row) => !row.classList.contains('contract-row-hidden'));
+                    searchEmpty.classList.toggle('is-visible', visibleRows.length === 0);
+                }
+                showDeleteSuccessToast();
+            } catch (_error) {
+                if (isContractStillActive(targetButton.dataset.endDate || '')) {
+                    showDeleteAlert();
+                }
+            }
+        });
+    }
+
+    if (deleteAlertClose) {
+        deleteAlertClose.addEventListener('click', hideDeleteAlert);
+    }
+
+    if (deleteAlert) {
+        deleteAlert.addEventListener('click', function (event) {
+            if (event.target === deleteAlert) {
+                hideDeleteAlert();
+            }
         });
     }
 });
