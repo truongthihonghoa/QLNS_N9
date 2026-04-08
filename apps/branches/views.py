@@ -61,4 +61,3 @@ def branch_delete(request, pk):
     branch.save(update_fields=['trang_thai'])
     messages.success(request, 'Ngưng hoạt động chi nhánh thành công')
     return redirect('branches:branch_list')
-
