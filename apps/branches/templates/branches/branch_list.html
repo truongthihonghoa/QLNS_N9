@@ -11,10 +11,9 @@
 <div class="container">
     <div class="toolbar">
         <form method="get" class="search-box">
-            <input type="text" name="q" value="{{ keyword }}" placeholder="Nhập tên chi nhánh...">
-            <button type="submit" class="btn-search">Tìm kiếm</button>
+            <input type="text" name="q" value="{{ keyword }}" placeholder="Nhập tên chi nhánh">
         </form>
-
+        <button type="submit" class="btn-search">Tìm kiếm</button>
         <a href="{% url 'branches:branch_create' %}" class="btn-primary">+ Thêm</a>
     </div>
 
