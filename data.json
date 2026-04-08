@@ -657,16 +657,16 @@
     "model": "auth.user",
     "pk": 2,
     "fields": {
-      "password": "123456",
+      "password": "pbkdf2_sha256$1200000$AvuPzvIao6z3gfjP0BRaP1$Zs4Ei1TemaYTSK9WS8Z2x7Gcp10BVmwu4twWQTq13kA=",
       "last_login": null,
-      "is_superuser": null,
+      "is_superuser": false,
       "username": "ThuyLai",
       "first_name": "Thị Thúy Lài",
       "last_name": "Nguyễn",
       "email": "lai123456@gmail.com",
       "is_staff": true,
       "is_active": true,
-      "date_joined": null,
+      "date_joined": "2026-04-03T02:03:47.503837Z",
       "groups": [
         1
       ],
@@ -677,16 +677,16 @@
     "model": "auth.user",
     "pk": 3,
     "fields": {
-      "password": "123456",
+      "password": "pbkdf2_sha256$1200000$QryIdTlBcdg6C0SdhA3F1t$ljDcVIhSNSuQwNn3jXi2OY28ehza0KDjZtJ3Jo0KJYU=",
       "last_login": null,
-      "is_superuser": null,
+      "is_superuser": false,
       "username": "ThuyNa",
       "first_name": "Nguyễn Thúy Na",
       "last_name": "Lê",
       "email": "nale@gmail.com",
-      "is_staff": null,
+      "is_staff": false,
       "is_active": true,
-      "date_joined": null,
+      "date_joined": "2026-04-03T02:03:48.270727Z",
       "groups": [
         1
       ],
@@ -697,16 +697,16 @@
     "model": "auth.user",
     "pk": 4,
     "fields": {
-      "password": "123456",
+      "password": "pbkdf2_sha256$1200000$qIyz7eohrBs7WXgUZ3I8sC$bImvI8vewtQ6LCLzNQBr/HZnJc8YlHfRzomPGgbocAo=",
       "last_login": null,
-      "is_superuser": null,
+      "is_superuser": false,
       "username": "ThanhTai",
       "first_name": "Thanh Tài",
       "last_name": "Nguyễn",
       "email": "nguyenthanhtai@gmail.com",
-      "is_staff": null,
+      "is_staff": false,
       "is_active": true,
-      "date_joined": null,
+      "date_joined": "2026-04-03T02:03:48.991851Z",
       "groups": [
         1
       ],
@@ -717,16 +717,16 @@
     "model": "auth.user",
     "pk": 5,
     "fields": {
-      "password": "123456",
+      "password": "pbkdf2_sha256$1200000$5Cyx5exoS5WGW3Hr1toiNI$0l9aSrJIzNVypzUj1GwSrlrTYPHpbftxPnEzhNA/bSU=",
       "last_login": null,
-      "is_superuser": null,
+      "is_superuser": false,
       "username": "Huy",
       "first_name": "Huy Nguyên",
       "last_name": "Lê",
       "email": "lehuynguyen@gmail.com",
       "is_staff": false,
       "is_active": true,
-      "date_joined": null,
+      "date_joined": "2026-04-03T02:03:49.719087Z",
       "groups": [],
       "user_permissions": []
     }
@@ -735,16 +735,16 @@
     "model": "auth.user",
     "pk": 6,
     "fields": {
-      "password": "123456",
+      "password": "pbkdf2_sha256$1200000$glMZ3YxaPsZJDP4KLd6eBp$+jtRTl8BRmGTcjwecFNEFWqk4pC1kb1TTxzAL6HrD7E=",
       "last_login": null,
-      "is_superuser": null,
+      "is_superuser": false,
       "username": "TamLe",
       "first_name": "Tâm Lê",
       "last_name": "Nguyễn",
       "email": "tamkute@gmail.com",
-      "is_staff": null,
+      "is_staff": false,
       "is_active": true,
-      "date_joined": null,
+      "date_joined": "2026-04-03T02:03:50.533405Z",
       "groups": [],
       "user_permissions": []
     }

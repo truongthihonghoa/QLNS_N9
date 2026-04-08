@@ -3,6 +3,11 @@
 from django.db import models
 
 class ChiNhanh(models.Model):
+    TRANG_THAI_CHOICES = [
+        ('active', 'Đang hoạt động'),
+        ('inactive', 'Ngưng hoạt động'),
+    ]
+
     ma_chi_nhanh = models.CharField(max_length=20, primary_key=True)
     ten_chi_nhanh = models.CharField(max_length=255)
     dia_chi = models.TextField()
@@ -12,6 +17,11 @@ class ChiNhanh(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True
+    )
+    trang_thai = models.CharField(
+        max_length=10,
+        choices=TRANG_THAI_CHOICES,
+        default='active',
     )
 
     def save(self, *args, **kwargs):

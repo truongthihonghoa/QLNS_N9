@@ -3,6 +3,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'payroll/css/payroll_list.css' %}">
+<link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete_payroll.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -29,7 +30,9 @@
         <select class="branch-dropdown-ge" name="branch" onchange="this.form.submit()"
                 style="background: white; font-size: 18px; padding: 10px 15px; border-radius: 6px; border: 1px solid #DADCE0; min-width: 200px; cursor: pointer;">
           {% for branch in branches %}
-            <option value="{{ branch.id }}" {% if request.GET.branch == branch.id|slugify or not request.GET.branch and forloop.first %}selected{% endif %}>{{ branch.ten_chi_nhanh }}</option>
+            <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>{{ branch.ten_chi_nhanh }}</option>
+          {% empty %}
+            <option value="" selected>Chưa có chi nhánh đang hoạt động</option>
           {% endfor %}
         </select>
       </div>
@@ -100,21 +103,51 @@
           <td>{{ payroll.phat }}</td>
           <td><strong>{{ payroll.tong_luong }}</strong></td>
           <td>
-            <div class="status-badge {{ payroll.trang_thai_key|default:'cho-duyet' }}">
-                {% if payroll.trang_thai_key == 'da-duyet' %}
-                    <i class="fas fa-circle-check"></i> {{ payroll.trang_thai }}
-                {% elif payroll.trang_thai_key == 'da-tu-choi' %}
-                    <i class="fas fa-circle-xmark"></i> {{ payroll.trang_thai }}
-                {% else %}
-                    <button class="btn-action-ge btn-approve-ge" title="Duyệt"><i class="fas fa-check"></i></button>
-                    <button class="btn-action-ge btn-reject-ge" title="Từ chối"><i class="fas fa-times"></i></button>
-                {% endif %}
-            </div>
-          </td>
+    <div class="status-badge {{ payroll.trang_thai_key|default:'cho-duyet' }}">
+
+        {% if payroll.trang_thai_key == 'da-duyet' %}
+            <i class="fas fa-circle-check" title="Đã duyệt"></i>
+
+        {% elif payroll.trang_thai_key == 'da-tu-choi' %}
+            <i class="fas fa-circle-xmark" title="Đã từ chối"></i>
+
+        {% else %}
+            <!-- ✔ DUYỆT -->
+            <form method="post" action="{% url 'payroll_update_status' payroll.ma_luong %}" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="da-duyet">
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button class="btn-action-ge btn-approve-ge" type="submit" title="Duyệt">
+                    <i class="fas fa-check"></i>
+                </button>
+            </form>
+
+            <!-- ❌ TỪ CHỐI -->
+            <form method="post" action="{% url 'payroll_update_status' payroll.ma_luong %}" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="da-tu-choi">
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button class="btn-action-ge btn-reject-ge" type="submit" title="Từ chối">
+                    <i class="fas fa-times"></i>
+                </button>
+            </form>
+        {% endif %}
+    </div>
+</td>
           <td>
             <div class="action-buttons">
                 <button type="button" class="btn-action-ge btn-edit-ge" title="Sửa" onclick="openEditPayrollModal(this)"><i class="fas fa-pen"></i></button>
-                <button type="button" class="btn-action-ge btn-delete-ge" title="Xóa" onclick="openDeletePayrollPopup('{{ payroll.ma_luong }}')"><i class="fas fa-trash-alt"></i></button>
+                {% if payroll.trang_thai_key == 'cho-duyet' %}
+                <button
+                    type="button"
+                    class="btn-action-ge btn-delete-ge"
+                    title="Xóa"
+                    data-payroll-id="{{ payroll.ma_luong }}"
+                    data-emp-name="{{ payroll.ten_nv }}"
+                    data-delete-url="{% url 'payroll_delete' payroll.ma_luong %}"
+                    onclick="openDeletePayrollPopup(this)"
+                ><i class="fas fa-trash-alt"></i></button>
+                {% endif %}
             </div>
           </td>
         </tr>
@@ -214,11 +247,11 @@
             <div class="detail-row">
                 <div class="detail-group">
                     <label>Lương cơ bản</label>
-                    <input type="text" id="detail-lcb" readonly>
+                    <input type="text" id="detail-lcb" oninput="recalculateTotal()">
                 </div>
                 <div class="detail-group">
                     <label>Lương theo giờ</label>
-                    <input type="text" id="detail-ltg" readonly>
+                    <input type="text" id="detail-ltg" oninput="recalculateTotal()">
                 </div>
             </div>
             <div class="detail-row">
@@ -249,14 +282,21 @@
         </div>
 
         <div class="detail-footer">
-            <button type="button" class="btn-save-detail" onclick="saveSalaryDetail()">Lưu</button>
+            <button type="button" class="btn-save-detail" onclick="saveSalaryDetailDb()">Lưu</button>
             <button type="button" class="btn-close-detail" onclick="openCancelConfirmPopup()">Hủy</button>
         </div>
     </div>
 </div>
 
+{{ branch_employees|json_script:"branch-employees" }}
+{{ calc_info_url|json_script:"payroll-calc-info-url" }}
+{{ period_employees_url|json_script:"payroll-period-employees-url" }}
+{{ payroll_save_url|json_script:"payroll-save-url" }}
+
+{% include 'partials/popup_confirm_delete_payroll.html' %}
+
 <!-- POPUP XÁC NHẬN XÓA BẢNG LƯƠNG - THEME ĐỎ HỒNG PASTEL -->
-<div class="confirm-popup-overlay" id="confirm-delete-payroll-popup">
+<div class="confirm-popup-overlay" id="confirm-delete-payroll-popup-old">
     <div class="confirm-popup-box delete-payroll-theme">
         <div class="delete-header">
             Xóa bảng lương
@@ -266,11 +306,11 @@
                 <i class="fas fa-times"></i>
             </div>
             <p class="main-msg">Bạn có chắc chắn muốn xóa bản ghi này không?</p>
-            <div class="info-display" id="delete-payroll-info"></div>
+            <div class="info-display" id="delete-payroll-info-old"></div>
         </div>
         <div class="delete-footer">
             <button type="button" class="btn-cancel-delete" onclick="closeDeletePayrollPopup()">Hủy</button>
-            <button type="button" class="btn-confirm-delete" id="confirm-delete-payroll-btn" data-payroll-id="" onclick="confirmDeletePayroll()">Xác nhận xóa</button>
+            <button type="button" class="btn-confirm-delete" id="confirm-delete-payroll-btn-old" data-payroll-id="" onclick="confirmDeletePayroll()">Xác nhận xóa</button>
         </div>
     </div>
 </div>
@@ -294,5 +334,5 @@
     </div>
 </div>
 
-<script src="{% static 'payroll/js/payroll_list.js' %}"></script>
+<script src="{% static 'payroll/js/payroll_list.js' %}?v=2026-04-07-1"></script>
 {% endblock %}

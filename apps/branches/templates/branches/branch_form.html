@@ -1,42 +1,55 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Thêm chi nhánh{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'branches/css/branch_form.css' %}">
+<link rel="stylesheet" href="{% static 'css/components/popup_confirm_inactive_branch.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="container">
-    <h2>Thêm chi nhánh</h2>
+    <h2>{{ title }}</h2>
 
     <form method="post">
         {% csrf_token %}
 
+        {% if form.instance.ma_chi_nhanh %}
         <div>
-            <label>Tên chi nhánh:</label>
-            <input type="text" name="ten_chi_nhanh" placeholder="Nhập tên chi nhánh..." required>
+            <label>Mã chi nhánh:</label>
+            <input type="text" value="{{ form.instance.ma_chi_nhanh }}" readonly>
+        </div>
+        {% endif %}
+
+        <div>
+            <label for="{{ form.ten_chi_nhanh.id_for_label }}">Tên chi nhánh:</label>
+            {{ form.ten_chi_nhanh }}
+            {{ form.ten_chi_nhanh.errors }}
         </div>
 
         <div>
-            <label>Địa chỉ:</label>
-            <input type="text" name="dia_chi" placeholder="Nhập địa chỉ..." required>
+            <label for="{{ form.dia_chi.id_for_label }}">Địa chỉ:</label>
+            {{ form.dia_chi }}
+            {{ form.dia_chi.errors }}
         </div>
 
         <div>
-            <label>SĐT:</label>
-            <input type="text" name="sdt" placeholder="Nhập số điện thoại..." required>
+            <label for="{{ form.sdt.id_for_label }}">Số điện thoại:</label>
+            {{ form.sdt }}
+            {{ form.sdt.errors }}
         </div>
 
         <div>
-            <label>Quản lý:</label>
-            <select name="ma_nv_ql">
-                <option value="">-- Chọn quản lý --</option>
-                {% for nv in nhanviens %}
-                    <option value="{{ nv.id }}">{{ nv.ten_nv }}</option>
-                {% endfor %}
-            </select>
+            <label for="{{ form.ma_nv_ql.id_for_label }}">Mã quản lý CN:</label>
+            {{ form.ma_nv_ql }}
+            {{ form.ma_nv_ql.errors }}
+        </div>
+
+        <div>
+            <label for="{{ form.trang_thai.id_for_label }}">Trạng thái:</label>
+            {{ form.trang_thai }}
+            {{ form.trang_thai.errors }}
         </div>
 
         <div class="form-actions">
@@ -45,4 +58,75 @@
         </div>
     </form>
 </div>
+
+{% if form.instance.ma_chi_nhanh %}
+    {% include 'partials/popup_confirm_inactive_branch.html' %}
+{% endif %}
 {% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const branchId = "{{ form.instance.ma_chi_nhanh|default:'' }}";
+    if (!branchId) {
+        return; // Only confirm deactivate on edit screen.
+    }
+
+    const statusSelect = document.getElementById('id_trang_thai');
+    const branchNameInput = document.getElementById('id_ten_chi_nhanh');
+
+    const popup = document.getElementById('confirm-inactive-popup');
+    const popupCancel = document.getElementById('inactive-popup-cancel-btn');
+    const popupConfirm = document.getElementById('inactive-popup-confirm-btn');
+    const popupBranchName = document.getElementById('inactive-branch-name');
+
+    if (!statusSelect || !popup || !popupCancel || !popupConfirm || !popupBranchName) {
+        return;
+    }
+
+    function openPopup() {
+        const branchName = (branchNameInput && branchNameInput.value ? branchNameInput.value : '').trim();
+        popupBranchName.textContent = branchName ? branchName : '(chưa đặt tên)';
+        popup.style.display = 'flex';
+        popup.setAttribute('aria-hidden', 'false');
+    }
+
+    function closePopup() {
+        popup.style.display = 'none';
+        popup.setAttribute('aria-hidden', 'true');
+    }
+
+    let committedStatus = statusSelect.value;
+
+    statusSelect.addEventListener('change', function () {
+        const next = statusSelect.value;
+
+        if (next === 'inactive' && committedStatus !== 'inactive') {
+            openPopup();
+            return;
+        }
+
+        committedStatus = next;
+    });
+
+    popupCancel.addEventListener('click', function () {
+        statusSelect.value = committedStatus;
+        closePopup();
+    });
+
+    popupConfirm.addEventListener('click', function () {
+        committedStatus = 'inactive';
+        statusSelect.value = 'inactive';
+        closePopup();
+    });
+
+    popup.addEventListener('click', function (event) {
+        if (event.target === popup) {
+            statusSelect.value = committedStatus;
+            closePopup();
+        }
+    });
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,124 @@
+.confirm-inactive-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0, 0, 0, 0.6);
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 1100;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* 🔥 Popup to hơn */
+.confirm-inactive-popup-box {
+    width: min(650px, 100%);
+    background: #fde8ea;
+    border: 1px solid rgba(139, 0, 0, 0.3);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+
+    font-family: Arial;
+}
+
+/* 🔥 Header: title góc trái */
+.confirm-inactive-popup-header {
+    padding: 20px 24px 10px;
+    background:#f8d7da;
+}
+
+/* 🔴 Title đậm hơn */
+.confirm-inactive-title {
+    color: #8b0000;
+    font-size: 23px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-weight: 600;
+    text-align: left;
+}
+
+/* 🔽 Body căn giữa */
+.confirm-inactive-popup-body {
+    padding: 10px 24px 20px;
+    text-align: center;
+    font-family:"Arial";
+}
+
+/* 🔥 Icon nằm giữa */
+.confirm-inactive-badge {
+    width: 64px;
+    height: 64px;
+    margin: 10px auto 15px;
+
+    border-radius: 50%;
+    background: #f4a3ad;
+    color: #8b0000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: 900;
+    font-size: 30px;
+
+    border: 1px solid rgba(139, 0, 0, 0.3);
+}
+
+/* Nội dung */
+.confirm-inactive-message {
+    margin: 0;
+    color: #5b0c15;
+    font-size: 20px;
+    line-height: 1.6;
+}
+
+
+/* 🔴 Footer đỏ nhẹ + căn giữa */
+.confirm-inactive-popup-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+    padding: 18px;
+    background: #f8d7da;
+}
+
+/* Button chung */
+.confirm-inactive-btn {
+    border: none;
+    border-radius: 12px;
+    height: 46px;
+    width:120px;
+    padding: 0 22px;
+    font-family: Arial;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s ease, filter 0.15s ease;
+}
+
+.confirm-inactive-btn:active {
+    transform: translateY(1px);
+}
+
+/* Cancel */
+.confirm-inactive-btn.cancel {
+    background: #ffffff;
+    color: #8b0000;
+    font-size:18px;
+}
+
+/* 🔥 Confirm đỏ đậm */
+.confirm-inactive-btn.confirm {
+    background: #b23a48;
+    color: #ffffff;
+    font-size:18px;
+}
+
+.confirm-inactive-btn:hover {
+    filter: brightness(0.95);
+}

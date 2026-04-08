@@ -40,7 +40,6 @@ def _build_employee_cards(queryset):
                 "sdt": employee.sdt,
                 "tk_ngan_hang": employee.tk_ngan_hang,
                 "chuc_vu": employee.chuc_vu,
-                "vi_tri_vl": employee.vi_tri_vl,
                 "chi_nhanh": employee.ma_chi_nhanh,
                 "dia_chi": employee.dia_chi,
                 "detail_url": f"{employee.ma_nv}/",
@@ -62,7 +61,6 @@ def employee_list_view(request):
             | Q(ma_nv__icontains=search_query)
             | Q(sdt__icontains=search_query)
             | Q(chuc_vu__icontains=search_query)
-            | Q(vi_tri_vl__icontains=search_query)
             | Q(ma_chi_nhanh__Ten_ChiNhanh__icontains=search_query)
         )
 

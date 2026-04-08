@@ -1,0 +1,112 @@
+/* OVERLAY */
+.branch-detail-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 40px auto;
+    background: rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 1200;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* POPUP BOX */
+.branch-detail-popup-box {
+    width: 600px;
+    background: #e8f5e9;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+}
+
+/* HEADER */
+.branch-detail-popup-header {
+    background: #c8e6c9;
+    color: #2e7d32;
+    font-size: 23px;
+    font-weight: 600;
+    padding: 22px 22px;
+    font-family : Arial, sans-serif;
+}
+
+/* BODY */
+.branch-detail-popup-body {
+    padding: 18px 22px;
+}
+
+/* 🔥 ROW kiểu hiển thị thông tin */
+.detail-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    padding: 10px 0;
+    align-items: center;
+    color: #000000;
+}
+
+/* LABEL */
+.label {
+    font-weight: 700;
+    color: #2e7d32;
+}
+
+/* 🔥 VALUE (đã bỏ style input) */
+.value {
+    background: transparent;   /* bỏ nền trắng */
+    border: none;              /* bỏ viền */
+    padding: 0;                /* bỏ padding input */
+
+    font-weight: 600;
+    color: #1b4332;
+}
+
+/* Hover nhẹ cho đẹp */
+.detail-row:hover {
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 6px;
+}
+
+/* FOOTER */
+.branch-detail-popup-footer {
+    background: #c8e6c9;
+    padding: 14px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* BUTTON */
+.close-btn {
+    background: #2e7d32;
+    color: white;
+    height:46px;
+    width:120px;
+    font-size: 20px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-right:20px;
+    text-decoration: none;
+}
+
+.close-btn:hover {
+    background: #1b5e20;
+}
+
+/* MOBILE */
+@media (max-width: 640px) {
+    .branch-detail-popup-box {
+        width: 90%;
+    }
+
+    .detail-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+}

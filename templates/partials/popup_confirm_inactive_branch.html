@@ -1,0 +1,19 @@
+{% load static %}
+<div class="confirm-inactive-popup-overlay" id="confirm-inactive-popup" aria-hidden="true">
+    <div class="confirm-inactive-popup-box" role="dialog" aria-modal="true" aria-labelledby="confirm-inactive-title">
+        <div class="confirm-inactive-popup-header">
+            <div class="confirm-inactive-title" id="confirm-inactive-title">Ngưng hoạt động</div>
+        </div>
+        <div class="confirm-inactive-popup-body">
+            <div class="confirm-inactive-badge" aria-hidden="true">!</div>
+            <p class="confirm-inactive-message">
+                Bạn muốn ngưng hoạt động chi nhánh <span class="confirm-inactive-branch" id="inactive-branch-name"></span>?
+            </p>
+        </div>
+        <div class="confirm-inactive-popup-footer">
+            <button type="button" class="confirm-inactive-btn cancel" id="inactive-popup-cancel-btn">Hủy</button>
+            <button type="button" class="confirm-inactive-btn confirm" id="inactive-popup-confirm-btn">Đồng ý</button>
+        </div>
+    </div>
+</div>
+

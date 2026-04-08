@@ -9,8 +9,6 @@
 
 {% block content %}
 <div class="container">
-
-    <!-- 🔍 TOOLBAR -->
     <div class="toolbar">
         <form method="get" class="search-box">
             <input type="text" name="q" value="{{ keyword }}" placeholder="Nhập tên chi nhánh...">
@@ -20,7 +18,6 @@
         <a href="{% url 'branches:branch_create' %}" class="btn-primary">+ Thêm</a>
     </div>
 
-    <!-- 📊 TABLE -->
     <div class="branch-table-card">
         <table class="branch-table">
             <thead>
@@ -29,8 +26,9 @@
                     <th>Mã chi nhánh</th>
                     <th>Tên chi nhánh</th>
                     <th>Địa chỉ</th>
-                    <th>SĐT</th>
-                    <th>Quản lý CN</th>
+                    <th>Số điện thoại</th>
+                    <th>Tên quản lý CN</th>
+                    <th>Trạng thái</th>
                     <th>Hành động</th>
                 </tr>
             </thead>
@@ -43,31 +41,23 @@
                     <td>{{ branch.ten_chi_nhanh }}</td>
                     <td>{{ branch.dia_chi }}</td>
                     <td>{{ branch.sdt }}</td>
-
                     <td>
-                        {{ branch.ma_nv_ql.ten_nv|default:"Chưa có" }}
+                        {% if branch.ma_nv_ql %}
+                            {{ branch.ma_nv_ql.ho_ten }}
+                        {% else %}
+                            Chưa có
+                        {% endif %}
                     </td>
+                    <td>{{ branch.get_trang_thai_display }}</td>
 
                     <td class="branch-actions">
-                        <!-- 🔍 TÌM KIẾM -->
-                        <a href="{% url 'branches:branch_update' branch.ma_chi_nhanh %}" class="btn-action btn-search-icon" title="Xem chi tiết">
-                            <img src="{% static 'images/search_icon.png' %}" alt="Tìm kiếm">
+                        <a href="{% url 'branches:branch_detail' branch.ma_chi_nhanh %}" class="btn-action btn-search-icon" title="Xem chi tiết">
+                            <img src="{% static 'images/search_icon.png' %}" alt="Xem">
                         </a>
 
-                        <!-- ✏️ SỬA -->
                         <a href="{% url 'branches:branch_update' branch.ma_chi_nhanh %}" class="btn-action btn-edit-icon" title="Chỉnh sửa">
-                            <img src="{% static 'images/edit_icon.png' %}" alt="Chỉnh sửa">
+                            <img src="{% static 'images/edit_icon.png' %}" alt="Sửa">
                         </a>
-
-                        <!-- ❌ NGƯNG -->
-                        {% if branch.trang_thai == 'active' %}
-                        <a href="{% url 'branches:branch_delete' branch.ma_chi_nhanh %}"
-                           class="btn-action btn-delete-icon"
-                           onclick="return confirm('Bạn có chắc muốn ngưng hoạt động chi nhánh này?')"
-                           title="Xóa">
-                            <img src="{% static 'images/delete_icon.png' %}" alt="Xóa">
-                        </a>
-                        {% endif %}
                     </td>
                 </tr>
 
@@ -81,26 +71,30 @@
             </tbody>
         </table>
     </div>
-
 </div>
-{% if messages %}
-    <div class="toast-container">
-        {% for message in messages %}
-            <div class="toast-message" id="success-toast">
-                <p>{{ message }}</p>
-                <div class="toast-icon">✓</div>
-            </div>
-        {% endfor %}
-    </div>
+{% endblock %}
 
-    <script>
-        // Tự động ẩn thông báo sau 3 giây
-        setTimeout(function() {
-            var toast = document.getElementById('success-toast');
-            if (toast) {
-                toast.style.display = 'none';
-            }
-        }, 3000);
-    </script>
+{% block extra_js %}
+{% if messages %}
+{% for message in messages %}
+{{ message|stringformat:"s"|json_script:"branch-toast-msg" }}
+{% endfor %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const msgEl = document.getElementById('branch-toast-msg');
+    const toast = document.getElementById('toast-notification');
+    if (!msgEl || !toast) return;
+
+    let msg = '';
+    try { msg = JSON.parse(msgEl.textContent || '""'); } catch (e) { msg = ''; }
+    if (!msg) return;
+
+    const content = toast.querySelector('.toast-content');
+    if (content) content.textContent = msg;
+
+    toast.classList.add('show');
+    setTimeout(function () { toast.classList.remove('show'); }, 3000);
+});
+</script>
 {% endif %}
 {% endblock %}

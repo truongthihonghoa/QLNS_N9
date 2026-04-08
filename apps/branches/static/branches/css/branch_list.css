@@ -57,7 +57,8 @@
 }
 
 .btn-primary {
-    height: 48px;
+    height: 54px;
+    min-width: 156px;
     border: none;
     border-radius: 8px;
     background: rgba(23, 77, 23, 0.87);
