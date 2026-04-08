@@ -8,6 +8,20 @@
     <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
+    <style>
+        /* CSS noi bo de dam bao hien thi 2 cot nam ngang */
+        .schedule-form-grid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 30px !important;
+            margin-bottom: 20px !important;
+        }
+        @media (max-width: 768px) {
+            .schedule-form-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -45,15 +59,15 @@
             <section class="schedule-section">
                 <h3>Thông tin nhân viên</h3>
                 <div class="schedule-employee-table">
-                    <div class="schedule-employee-head" style="display: flex; background: #f4f4f4; padding: 10px; font-weight: bold; border-bottom: 2px solid #ddd;">
+                    <div class="schedule-employee-head" style="display: flex; background: #f4f4f4; padding: 12px; font-weight: bold; border-bottom: 2px solid #ddd;">
                         <span style="flex: 0.5; text-align: center;">Chọn</span>
                         <span style="flex: 1;">Mã Nhân Viên</span>
                         <span style="flex: 2;">Tên Nhân Viên</span>
                         <span style="flex: 1.5;">Vị Trí Việc Làm</span>
                     </div>
-                    <div class="schedule-employee-body">
+                    <div class="schedule-employee-body" style="max-height: 400px; overflow-y: auto;">
                         {% for employee in employee_options %}
-                        <div class="schedule-employee-item" style="display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee;">
+                        <div class="schedule-employee-item" style="display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee;">
                             <div style="flex: 0.5; text-align: center;">
                                 <input type="checkbox" name="selected_employees" value="{{ employee.ma_nv }}" class="employee-checkbox">
                             </div>
