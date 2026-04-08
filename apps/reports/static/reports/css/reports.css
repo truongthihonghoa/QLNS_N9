@@ -348,23 +348,43 @@
 .popup-overlay {
     display: none;
     position: fixed;
-    top: 0;
+    top: 158px; /* Bắt đầu sau Header (88px) + Navbar (70px) */
     left: 0;
     width: 100%;
-    height: 100%;
+    height: calc(100vh - 158px);
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    z-index: 998; /* Thấp hơn navbar (999) một chút để navbar luôn đè lên */
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Căn lề trên để dễ kiểm soát vị trí */
+    padding-top: 30px;
 }
 
 .popup-content {
     background: white;
     border-radius: 8px;
     box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.20);
-    max-width: 90%;
-    max-height: 90%;
-    overflow: auto;
+    width: 1000px;
+    max-width: 95vw;
+    max-height: calc(100vh - 220px); /* Giới hạn độ cao để không vượt quá màn hình */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Form row cụ thể cho popup để đảm bảo nằm ngang */
+.popup-body .form-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.popup-body .form-row .container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .confirm-popup {
@@ -416,6 +436,8 @@
 
 .popup-body {
     padding: 24px;
+    flex: 1;
+    overflow-y: auto;
 }
 
 .popup-footer,

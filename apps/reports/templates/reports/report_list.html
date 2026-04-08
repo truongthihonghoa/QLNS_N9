@@ -4,89 +4,254 @@
 {% block title %}Báo cáo Tổng hợp - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'reports/css/reports.css' %}?v=2.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="{% static 'reports/css/reports.css' %}?v=2.2">
+<style>
+    :root {
+        --ge-green-dark: #174D17;
+        --ge-green-light: #CDE0C9;
+        --border-color: #DADCE0;
+        --text-color: #333;
+    }
+
+    .report-management-container {
+        padding: 20px;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    /* Header Row: Branch filter + Create button */
+    .report-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .dropdown-ge {
+        background: white;
+        font-size: 18px;
+        padding: 0 15px;
+        height: 52px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        min-width: 300px;
+        cursor: pointer;
+    }
+
+    .btn-create-report {
+        height: 52px;
+        padding: 0 24px;
+        background-color: var(--ge-green-dark);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.2s ease;
+    }
+
+    .btn-create-report:hover {
+        background-color: #1B5E20;
+    }
+
+    /* Table */
+    .ge-table-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow-x: auto; /* Giữ cuộn ngang nếu bảng quá rộng */
+        width: 100%;
+        position: relative;
+    }
+
+    /* Tùy chỉnh thanh cuộn ngang cho bảng chính */
+    .ge-table-card::-webkit-scrollbar {
+        height: 8px;
+    }
+    .ge-table-card::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 10px;
+    }
+
+    .ge-main-table {
+        width: 100%;
+        min-width: 1100px;
+        border-collapse: collapse; /* Quay lại collapse nếu không dùng sticky header nội bộ */
+        table-layout: fixed;
+    }
+
+    .ge-main-table th, .ge-main-table td {
+        padding: 12px 15px; /* Giảm padding từ 20px xuống 12px */
+        text-align: left;
+        font-size: 15px;    /* Giảm font size từ 18px xuống 15px */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border-bottom: 1px solid #eee;
+    }
+
+    /* Định nghĩa độ rộng cố định cho từng cột bảng chính */
+    .ge-main-table th:nth-child(1), .ge-main-table td:nth-child(1) { width: 50px; text-align: center; }
+    .ge-main-table th:nth-child(2), .ge-main-table td:nth-child(2) { width: 120px; }
+    .ge-main-table th:nth-child(3), .ge-main-table td:nth-child(3) { width: auto; }
+    .ge-main-table th:nth-child(4), .ge-main-table td:nth-child(4) { width: 130px; }
+    .ge-main-table th:nth-child(5), .ge-main-table td:nth-child(5) { width: 140px; }
+    .ge-main-table th:nth-child(6), .ge-main-table td:nth-child(6) { width: 150px; }
+
+    .ge-main-table th {
+        background-color: var(--ge-green-dark);
+        color: white;
+        font-weight: 600;
+        border-bottom: 2px solid #143d14;
+    }
+
+    .ge-main-table td {
+        color: var(--text-color);
+    }
+
+    .ge-main-table tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    /* Action buttons */
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-action-ge {
+        background: white;
+        border: 1px solid #333;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 16px;
+    }
+
+    .btn-view-ge { color: #174D17; border-color: #174D17; }
+    .btn-edit-ge { color: #f59e0b; border-color: #f59e0b; }
+    .btn-excel-ge { color: white; background-color: #174D17; border-color: #174D17; }
+
+    /* Search bar */
+    .search-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .search-input-ge {
+        height: 52px;
+        padding: 0 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 18px;
+        outline: none;
+        min-width: 280px;
+    }
+
+    .btn-search-ge {
+        height: 52px;
+        padding: 0 20px;
+        background-color: var(--ge-green-dark);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.2s ease;
+    }
+
+    .btn-search-ge:hover {
+        background-color: #1B5E20;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="mn-hnh-bao-cao">
-  <div class="background">
-    <!-- Header Section -->
-    <div class="heading-4">
-      <div class="bo-co-tng-hp"><span class="bocotnghp_span">Báo cáo Tổng hợp</span></div>
+<div class="report-management-container">
+
+    <!-- Toolbar: Branch filter + Search + Create button -->
+    <div class="report-toolbar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <!-- Branch dropdown -->
+            <form method="GET" action="{% url 'reports:report_list' %}" id="branch-form">
+                <input type="hidden" name="q" value="{{ q }}">
+                <select name="branch" class="dropdown-ge" onchange="this.form.submit()">
+                    <option value="">-- Tất cả chi nhánh --</option>
+                    {% for branch in branches %}
+                        <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>
+                            {{ branch.ten_chi_nhanh }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+
+            <!-- Search form -->
+            <form method="GET" action="{% url 'reports:report_list' %}" class="search-row">
+                <input type="hidden" name="branch" value="{{ selected_branch }}">
+                <input type="text" name="q" class="search-input-ge" placeholder="Nhập mã báo cáo..." value="{{ q }}">
+                <button type="submit" class="btn-search-ge">Tìm kiếm</button>
+            </form>
+        </div>
+
+        <button class="btn-create-report" id="btn-create-report">
+            <i class="fas fa-plus"></i> Tạo báo cáo
+        </button>
     </div>
 
-    <!-- Table Container -->
-    <div class="table-wrapper">
-      <div class="table-header-bar">
-        <div class="danh-sch-bo-co-lu"><span class="danhschbocolu_span">DANH SÁCH BÁO CÁO ĐÃ LƯU</span></div>
-      </div>
-    <div class="table">
-        <div class="header">
-          <div class="row">
-            <div class="cell"><div class="m-bc"><span class="mbc_span">Mã báo cáo</span></div></div>
-            <div class="cell_01"><div class="thng-nm"><span class="thngnm_span">Kỳ báo cáo</span></div></div>
-            <div class="cell_02"><div class="ngy-bt-u"><span class="ngybtu_span">Từ ngày</span></div></div>
-            <div class="cell_03"><div class="ngy-kt-thc"><span class="ngyktthc_span">Đến ngày</span></div></div>
-            <div class="cell_04"><div class="tng-nhn-vin"><span class="tngnhnvin_span">Số NV</span></div></div>
-            <div class="cell_05"><div class="tng-gi-lm"><span class="tnggilam_span">Tổng giờ</span></div></div>
-            <div class="cell_06"><div class="trng-thi"><span class="trngthi_span">Trạng thái</span></div></div>
-            <div class="cell_action"><div class="thao-tc"><span class="thaotc_span">Chức năng</span></div></div>
-          </div>
-        </div>
-      </div>
-      <div class="body" id="report-table-body">
-        <!-- Row 1 -->
-        <div class="row_01" data-report-id="BC001" data-status="saved">
-            <div class="data"><div class="bc001"><span class="bc001_span">#BC001</span></div></div>
-            <div class="data_01"><div class="thng-012026"><span class="thng012026_span">01/2026</span></div></div>
-            <div class="data_02"><div class="text-01012026"><span class="f1012026_span">01/01/2026</span></div></div>
-            <div class="data_03"><div class="text-31012026"><span class="f31012026_span">31/01/2026</span></div></div>
-            <div class="data_04"><div class="text-5"><span class="f5_span">5</span></div></div>
-            <div class="data_05"><div class="text-851"><span class="f851_span">851</span></div></div>
-            <div class="data_06"><div class="statussaved"><span class="statussaved_span">Đã lưu</span></div></div>
-            <div class="data_action">
-                <button type="button" class="btn-view" data-report-id="BC001" title="Xem">
-                    <img src="{% static 'images/search_icon.png' %}" alt="Xem">
-                </button>
-                <button type="button" class="btn-edit" data-report-id="BC001" title="Sửa">
-                    <img src="{% static 'images/edit_icon.png' %}" alt="Sửa">
-                </button>
-                <button type="button" class="btn-delete" data-report-id="BC001" title="Xóa">
-                    <img src="{% static 'images/delete_icon.png' %}" alt="Xóa">
-                </button>
-                <button type="button" class="btn-export" data-report-id="BC001" title="Xuất/In">
-                    <img src="{% static 'images/edit_icon.png' %}" alt="Xuất/In">
-                </button>
-            </div>
-        </div>
-        <!-- Row 2 -->
-        <div class="row_02" data-report-id="BC002" data-status="draft">
-            <div class="data"><div class="bc002"><span class="bc002_span">#BC002</span></div></div>
-            <div class="data_01"><div class="thng-022026"><span class="thng022026_span">02/2026</span></div></div>
-            <div class="data_02"><div class="text-01022026"><span class="f1022026_span">01/02/2026</span></div></div>
-            <div class="data_03"><div class="text-28022026"><span class="f28022026_span">28/02/2026</span></div></div>
-            <div class="data_04"><div class="text-5_01"><span class="f5_01_span">5</span></div></div>
-            <div class="data_05"><div class="text-768"><span class="f768_span">768</span></div></div>
-            <div class="data_06"><div class="statusdraft"><span class="statusdraft_span">Nháp</span></div></div>
-            <div class="data_action">
-                <button type="button" class="btn-view" data-report-id="BC002" title="Xem">
-                    <img src="{% static 'images/search_icon.png' %}" alt="Xem">
-                </button>
-                <button type="button" class="btn-edit" data-report-id="BC002" title="Sửa">
-                    <img src="{% static 'images/edit_icon.png' %}" alt="Sửa">
-                </button>
-                <button type="button" class="btn-delete" data-report-id="BC002" title="Xóa">
-                    <img src="{% static 'images/delete_icon.png' %}" alt="Xóa">
-                </button>
-                <button type="button" class="btn-export" data-report-id="BC002" title="Xuất/In">
-                    <img src="{% static 'images/edit_icon.png' %}" alt="Xuất/In">
-                </button>
-            </div>
-        </div>
-      </div>
+    <!-- Reports Table -->
+    <div class="ge-table-card">
+        <table class="ge-main-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Mã BC</th>
+                    <th>Khoảng thời gian</th>
+                    <th>Ngày tạo</th>
+                    <th>Người tạo</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="report-table-body">
+                {% for bc in baocaos %}
+                <tr data-report-id="{{ bc.ma_bc }}">
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ bc.ma_bc }}</strong></td>
+                    <td>{{ bc.ngay_bd|date:"d/m/Y" }} - {{ bc.ngay_kt|date:"d/m/Y" }}</td>
+                    <td>{{ bc.ngay_tao|date:"d/m/Y" }}</td>
+                    <td>{{ bc.ma_tk.ten_dang_nhap }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button type="button" class="btn-action-ge btn-view-ge" title="Xem"><i class="fas fa-eye"></i></button>
+                            <button type="button" class="btn-action-ge btn-edit-ge" title="Sửa"><i class="fas fa-edit"></i></button>
+                            <button type="button" class="btn-action-ge btn-excel-ge" title="Xuất Excel"><i class="fas fa-file-excel"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 48px; color: #888;">Chưa có báo cáo nào.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-  </div>
+
 </div>
 
 <!-- ==================== POPUP TẠO BÁO CÁO ==================== -->
@@ -94,10 +259,11 @@
   <div class="to-bc popup-content">
     <div class="paragraphbackground popup-header">
       <div class="heading-5-to-bo-co-tng-hp"><span class="heading5tobocotnghp_span">Tạo Báo Cáo Tổng Hợp</span></div>
-      <button type="button" class="btn-close-popup" id="create-close-btn"><span class="symbol_span">&#xf00d;</span></button>
+      <button type="button" class="btn-close-popup" id="create-close-btn"><span
+          class="symbol_span">&#xf00d;</span></button>
     </div>
     <div class="popup-body">
-      <div class="form-row">
+      <div class="form-row" style="align-items: flex-end;">
         <div class="container">
           <div class="label-ngy-bt-u-"><span class="labelngybtu_span">Ngày bắt đầu</span></div>
           <div class="input">
@@ -110,10 +276,140 @@
             <input type="date" id="create-end-date" class="text-input">
           </div>
         </div>
+        <div class="container" style="flex: 0 0 auto;">
+          <button type="button" class="btn-tong-hop" id="create-tonghop-btn"
+            style="height: 44px; margin-bottom: 0; display: flex; align-items: center; justify-content: center; padding: 0 20px;">
+            <span class="tnghp_span">Tổng hợp</span>
+          </button>
+        </div>
       </div>
+
+      <!-- PHẦN CHI TIẾT TỔNG HỢP (XEM TRƯỚC) -->
+      <style>
+        .details-summary-title {
+          font-size: 14px;
+          font-weight: 600;
+          color: #6C757D;
+          margin-top: 24px;
+          margin-bottom: 12px;
+          font-family: 'Montserrat', sans-serif;
+        }
+
+        .details-table-wrapper {
+          border: 1px solid #dee2e6;
+          border-radius: 12px;
+          background: #fff;
+          overflow-x: auto;
+          overflow-y: auto;
+          max-height: 280px; /* Giảm thêm độ cao */
+          position: relative;
+        }
+
+        /* Tùy chỉnh thanh cuộn cho bảng chi tiết */
+        .details-table-wrapper::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        .details-table-wrapper::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 0 12px 12px 0;
+        }
+        .details-table-wrapper::-webkit-scrollbar-thumb {
+          background: #ccc;
+          border-radius: 10px;
+        }
+        .details-table-wrapper::-webkit-scrollbar-thumb:hover {
+          background: #bbb;
+        }
+
+        .details-table {
+          width: 100%;
+          min-width: 1000px; /* Chiều rộng tối thiểu cho bảng chi tiết */
+          border-collapse: separate;
+          border-spacing: 0;
+          font-family: 'Montserrat', sans-serif;
+          table-layout: fixed; /* Cố định cột */
+        }
+
+        .details-table thead th {
+          position: sticky;
+          top: 0;
+          background-color: #f8f9fa;
+          z-index: 10;
+          border-bottom: 2px solid #dee2e6;
+        }
+
+        .details-table th, .details-table td {
+          border-bottom: 1px solid #dee2e6;
+          padding: 12px;
+          font-size: 13px;
+          text-align: center;
+          border-right: 1px solid #dee2e6;
+          vertical-align: middle;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        /* Độ rộng cột bảng chi tiết */
+        .details-table th:nth-child(1), .details-table td:nth-child(1) { width: 110px; }
+        .details-table th:nth-child(2), .details-table td:nth-child(2) { width: 180px; }
+        .details-table th:nth-child(3), .details-table td:nth-child(3) { width: 100px; }
+        .details-table th:nth-child(4), .details-table td:nth-child(4) { width: 90px; }
+        .details-table th:nth-child(5), .details-table td:nth-child(5) { width: 90px; }
+        .details-table th:nth-child(6), .details-table td:nth-child(6) { width: 90px; }
+        .details-table th:nth-child(7), .details-table td:nth-child(7) { width: 90px; }
+        .details-table th:nth-child(8), .details-table td:nth-child(8) { width: auto; }
+
+        .details-table th:last-child, .details-table td:last-child {
+          border-right: none;
+        }
+
+        .details-table th {
+          font-weight: 700;
+          color: #333;
+        }
+
+        .details-table tbody tr:hover {
+          background-color: #f1f8f1; /* Hover effect cho hàng */
+        }
+
+        .empty-state-row {
+          height: 120px;
+          text-align: center;
+          color: #888;
+          font-style: italic;
+        }
+      </style>
+
+      <div class="details-summary-title">Chi tiết tổng hợp (Xem trước)</div>
+      <div class="details-table-wrapper">
+        <table class="details-table" id="preview-report-table">
+          <thead>
+            <tr>
+              <th style="width: 10%">Mã nhân viên</th>
+              <th style="width: 15%">Tên nhân viên</th>
+              <th style="width: 10%">Mã CC</th>
+              <th style="width: 10%">Số giờ</th>
+              <th style="width: 10%">Số ca</th>
+              <th style="width: 10%">Đi muộn</th>
+              <th style="width: 10%">Đúng giờ</th>
+              <th style="width: auto">Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody id="preview-report-body">
+            <tr>
+              <td colspan="8" class="empty-state-row">
+                Vui lòng chọn ngày bắt đầu và kết thúc để hệ thống tổng hợp dữ liệu...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- KẾT THÚC PHẦN CHI TIẾT TỔNG HỢP -->
+
     </div>
-    <div class="background_01 popup-footer">
-      <button type="button" class="btn-tong-hop" id="create-tonghop-btn"><span class="tnghp_span">Tổng hợp</span></button>
+    <div class="background_01 popup-footer" style="justify-content: flex-end;">
       <div class="button-group">
         <button type="button" class="button" id="create-cancel-btn"><span class="hy_span">Hủy</span></button>
         <button type="button" class="button_01" id="create-save-btn"><span class="lu_span">Lưu</span></button>
@@ -126,11 +422,13 @@
 <div id="popup-edit" class="popup-overlay" style="display: none;">
   <div class="chinh-sua-bc popup-content">
     <div class="paragraphbackground popup-header">
-      <div class="heading-5-chnh-sa-bo-co-tng-hp"><span class="heading5chnhsabocotnghp_span">Chỉnh sửa báo cáo tổng hợp</span></div>
-      <button type="button" class="btn-close-popup" id="edit-close-btn"><span class="symbol_span">&#xf00d;</span></button>
+      <div class="heading-5-chnh-sa-bo-co-tng-hp"><span class="heading5chnhsabocotnghp_span">Chỉnh sửa báo cáo tổng
+          hợp</span></div>
+      <button type="button" class="btn-close-popup" id="edit-close-btn"><span
+          class="symbol_span">&#xf00d;</span></button>
     </div>
     <div class="popup-body">
-      <div class="form-row">
+      <div class="form-row" style="align-items: flex-end;">
         <div class="container">
           <div class="label-ngy-bt-u-"><span class="labelngybtu_span_01">Ngày bắt đầu</span></div>
           <div class="input">
@@ -143,66 +441,128 @@
             <input type="date" id="edit-end-date" class="text-input">
           </div>
         </div>
+        <div class="container" style="flex: 0 0 auto;">
+          <button type="button" class="btn-tong-hop" id="edit-tonghop-btn"
+            style="height: 44px; margin-bottom: 0; display: flex; align-items: center; justify-content: center; padding: 0 20px;">
+            <span class="tnghp_span">Tổng hợp</span>
+          </button>
+        </div>
       </div>
-      <div class="border">
-        <div class="table data-table">
-          <div class="header-row">
-            <div class="cell"><div class="m-nv"><span class="mnv_span">Mã NV</span></div></div>
-            <div class="cell_01"><div class="tn-nhn-vin"><span class="tnnhnvin_span">Tên Nhân Viên</span></div></div>
-            <div class="cell_02"><div class="gi-lm-thc-t"><span class="gilmthct_span">Giờ làm</span></div></div>
-            <div class="cell_03"><div class="s-ca-sct"><span class="scasct_span">Số ca</span></div></div>
-            <div class="cell_05"><div class="thng"><span class="thng_span">Thưởng</span></div></div>
-            <div class="cell_06"><div class="pht-i-munvng"><span class="phtimunvng_span">Phạt</span></div></div>
+
+      <div class="details-summary-title">Chi tiết báo cáo (Đang chỉnh sửa)</div>
+      <div class="details-table-wrapper">
+        <table class="details-table" id="edit-report-table">
+          <thead>
+            <tr>
+              <th style="width: 10%">Mã nhân viên</th>
+              <th style="width: 15%">Tên nhân viên</th>
+              <th style="width: 10%">Mã CC</th>
+              <th style="width: 10%">Số giờ</th>
+              <th style="width: 10%">Số ca</th>
+              <th style="width: 10%">Đi muộn</th>
+              <th style="width: 10%">Đúng giờ</th>
+              <th style="width: auto">Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody id="edit-report-body">
+            <tr>
+              <td colspan="8" class="empty-state-row">
+                Vui lòng bấm Tổng hợp để lấy dữ liệu...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="background_01 popup-footer" style="justify-content: flex-end;">
+      <div class="button-group">
+        <button type="button" class="button" id="edit-cancel-btn"><span class="hy_span">Hủy</span></button>
+        <button type="button" class="button_01" id="edit-save-btn"><span class="lu_span">Lưu thay đổi</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== POPUP XEM BÁO CÁO ==================== -->
+<div id="popup-view" class="popup-overlay" style="display: none;">
+  <div class="to-bc popup-content">
+    <div class="paragraphbackground popup-header">
+      <div class="heading-5-to-bo-co-tng-hp"><span class="heading5tobocotnghp_span">Chi tiết báo cáo tổng hợp</span>
+      </div>
+      <button type="button" class="btn-close-popup" id="view-close-btn"><span
+          class="symbol_span">&#xf00d;</span></button>
+    </div>
+    <div class="popup-body">
+      <div class="form-row" style="align-items: flex-end;">
+        <div class="container">
+          <div class="label-ngy-bt-u-"><span class="labelngybtu_span">Ngày bắt đầu</span></div>
+          <div class="input">
+            <input type="date" id="view-start-date" class="text-input" disabled>
           </div>
-          <div class="body" id="edit-data-body">
-            <div class="row">
-              <div class="data"><div class="nv001"><span class="nv001_span">NV001</span></div></div>
-              <div class="data_01"><div class="nguyn-vn-a"><span class="nguynvna_span">Nguyễn Văn A</span></div></div>
-              <div class="data_02"><div class="text-176"><span class="f76_span">176</span></div></div>
-              <div class="data_03"><div class="text-15105"><span class="f5105_span">15/10/5</span></div></div>
-              <div class="data_05"><div class="text-500000-"><span class="f00000_span">500,000 ₫</span></div></div>
-              <div class="data_06"><div class="text-0-"><span class="f_span">0 ₫</span></div></div>
-            </div>
-            <div class="row row_01">
-              <div class="data_07"><div class="nv002"><span class="nv002_span">NV002</span></div></div>
-              <div class="data_08"><div class="trn-th-b"><span class="trnthb_span">Trần Thị B</span></div></div>
-              <div class="data_09"><div class="text-160"><span class="f60_span">160</span></div></div>
-              <div class="data_10"><div class="text-10200"><span class="f0200_span">10/20/0</span></div></div>
-              <div class="data_12"><div class="text-200000-"><span class="f00000_span_01">200,000 ₫</span></div></div>
-              <div class="data_13"><div class="text-50000-"><span class="f0000_span">50,000 ₫</span></div></div>
-            </div>
-            <div class="row row_02">
-              <div class="data_14"><div class="nv003"><span class="nv003_span">NV003</span></div></div>
-              <div class="data_15"><div class="l-vn-c"><span class="lvnc_span">Lê Văn C</span></div></div>
-              <div class="data_16"><div class="text-180"><span class="f80_span">180</span></div></div>
-              <div class="data_17"><div class="text-101010"><span class="f01010_span">10/10/10</span></div></div>
-              <div class="data_19"><div class="text-1000000-"><span class="f000000_span">1,000,000 ₫</span></div></div>
-              <div class="data_20"><div class="text-0-_01"><span class="f_01_span">0 ₫</span></div></div>
-            </div>
-            <div class="row row_03">
-              <div class="data_21"><div class="nv004"><span class="nv004_span">NV004</span></div></div>
-              <div class="data_22"><div class="phm-th-d"><span class="phmthd_span">Phạm Thị D</span></div></div>
-              <div class="data_23"><div class="text-165"><span class="f65_span">165</span></div></div>
-              <div class="data_24"><div class="text-12810"><span class="f2810_span">12/8/10</span></div></div>
-              <div class="data_25"><div class="text-300000-"><span class="f00000_span_02">300,000 ₫</span></div></div>
-              <div class="data_26"><div class="text-100000-"><span class="f00000_span_03">100,000 ₫</span></div></div>
-            </div>
-            <div class="row row_04">
-              <div class="data_27"><div class="nv005"><span class="nv005_span">NV005</span></div></div>
-              <div class="data_28"><div class="hoang-vn-e"><span class="hoangvne_span">Hoàng Văn E</span></div></div>
-              <div class="data_29"><div class="text-170"><span class="f70_span">170</span></div></div>
-              <div class="data_30"><div class="text-14124"><span class="f4124_span">14/12/4</span></div></div>
-              <div class="data_31"><div class="text-400000-"><span class="f00000_span_04">400,000 ₫</span></div></div>
-              <div class="data_32"><div class="text-0-_02"><span class="f_02_span">0 ₫</span></div></div>
-            </div>
+        </div>
+        <div class="container">
+          <div class="label-ngy-kt-thc"><span class="labelngyktthc_span">Ngày kết thúc</span></div>
+          <div class="input">
+            <input type="date" id="view-end-date" class="text-input" disabled>
           </div>
         </div>
       </div>
+
+      <div class="details-summary-title">Danh sách chi tiết (Chỉ xem)</div>
+      <div class="details-table-wrapper">
+        <table class="details-table" id="view-report-table">
+          <thead>
+            <tr>
+              <th style="width: 10%">Mã nhân viên</th>
+              <th style="width: 15%">Tên nhân viên</th>
+              <th style="width: 10%">Mã CC</th>
+              <th style="width: 10%">Số giờ</th>
+              <th style="width: 10%">Số ca</th>
+              <th style="width: 10%">Đi muộn</th>
+              <th style="width: 10%">Đúng giờ</th>
+              <th style="width: auto">Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody id="view-report-body">
+            <tr>
+              <td colspan="8" class="empty-state-row">Đang tải dữ liệu...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div class="background popup-footer">
-      <button type="button" class="button" id="edit-cancel-btn"><span class="hy_span">Hủy</span></button>
-      <button type="button" class="button_01" id="edit-save-btn"><span class="lu_span">Lưu</span></button>
+    <div class="background_01 popup-footer" style="justify-content: flex-end;">
+      <div class="button-group">
+        <button type="button" class="button" id="view-cancel-btn"><span class="hy_span">Đóng</span></button>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- ==================== POPUP TẢI XUỐNG ==================== -->
+<div id="popup-downloading" class="popup-overlay"
+  style="display: none; align-items: center; justify-content: center; z-index: 9999; top: 0; height: 100vh;">
+  <div class="popup-content"
+    style="width: auto; background: none; box-shadow: none; display: flex; flex-direction: column; align-items: center;">
+    <div
+      style="background: white; padding: 30px 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; width: 300px;">
+      <i class="fas fa-spinner fa-spin" style="font-size: 40px; color: #1a4d2e; margin-bottom: 15px;"></i>
+      <div style="font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 600; color: #333;">Đang tạo file báo cáo...</div>
+      <div style="font-size: 13px; color: #666; margin-top: 5px;">Hệ thống đang trích xuất dữ liệu, vui lòng chờ.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== POPUP THÀNH CÔNG ==================== -->
+<div id="popup-success" class="popup-overlay"
+  style="display: none; align-items: center; justify-content: center; z-index: 10000; top: 0; height: 100vh;">
+  <div class="popup-content" style="width: 400px; padding: 40px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+      <div style="width: 80px; height: 80px; background: #e6f1e6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+          <i class="fas fa-check" style="font-size: 40px; color: #174D17;"></i>
+      </div>
+      <div style="font-size: 22px; font-weight: 700; color: #174D17;">Tải xuống thành công!</div>
+      <p style="color: #666; font-size: 15px; margin: 0;">File báo cáo của bạn đã được tạo và tải xuống thành công.</p>
+      <button type="button" class="btn-create-report" id="success-close-btn" style="width: 100%; justify-content: center;">Đồng ý</button>
   </div>
 </div>
 
@@ -215,4 +575,274 @@
 
 {% block extra_js %}
 <script src="{% static 'reports/js/reports.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const startDateInput = document.getElementById('create-start-date');
+    const endDateInput = document.getElementById('create-end-date');
+    const previewBody = document.getElementById('preview-report-body');
+    const mainTableBody = document.getElementById('report-table-body');
+
+    let currentReportData = [];
+    let isDataFetched = false;
+
+    function resetForm() {
+      if (startDateInput) startDateInput.value = '';
+      if (endDateInput) endDateInput.value = '';
+      if (previewBody) previewBody.innerHTML = `<tr><td colspan="6" class="empty-state-row">Vui lòng chọn ngày bắt đầu và kết thúc để hệ thống tổng hợp dữ liệu...</td></tr>`;
+      isDataFetched = false;
+      currentReportData = [];
+    }
+
+    function renderTable(tbodyId, data) {
+      const tbody = document.getElementById(tbodyId);
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="empty-state-row">Không có dữ liệu chấm công nào trong khoảng thời gian này.</td></tr>`;
+        return;
+      }
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.empId}</td>
+          <td>${row.empName}</td>
+          <td>${row.timeId || '-'}</td>
+          <td>${row.hours}</td>
+          <td>${row.shifts}</td>
+          <td>${row.late || 0}</td>
+          <td>${row.early || 0}</td>
+          <td>${row.note || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function fetchAggregateData(start, end, tbodyId, callback) {
+      const tbody = document.getElementById(tbodyId);
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-state-row">Đang tải dữ liệu...</td></tr>`;
+
+      const branchId = new URLSearchParams(window.location.search).get('branch') || 'CN01';
+
+      try {
+        const response = await fetch('/reports/api/aggregate/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ start_date: start, end_date: end, branch_id: branchId })
+        });
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+          renderTable(tbodyId, result.data);
+          if(callback) callback(result.data);
+        } else {
+          tbody.innerHTML = `<tr><td colspan="6" class="empty-state-row" style="color:red;">Lỗi: ${result.message}</td></tr>`;
+        }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="6" class="empty-state-row" style="color:red;">Đã có lỗi xảy ra! Không thể kết nối.</td></tr>`;
+      }
+    }
+
+    // Xử lý nút Tổng Hợp (Tạo)
+    const oldTongHopBtn = document.getElementById('create-tonghop-btn');
+    if (oldTongHopBtn) {
+      const newTongHopBtn = oldTongHopBtn.cloneNode(true);
+      oldTongHopBtn.parentNode.replaceChild(newTongHopBtn, oldTongHopBtn);
+      newTongHopBtn.addEventListener('click', () => {
+        const start = startDateInput.value;
+        const end = endDateInput.value;
+        if (!start || !end) {
+          alert("Vui lòng chọn ngày"); return;
+        }
+        fetchAggregateData(start, end, 'preview-report-body', (data) => {
+          currentReportData = data;
+          isDataFetched = true;
+        });
+      });
+    }
+
+    // Xử lý nút Hủy (Tạo)
+    const oldCancelBtn = document.getElementById('create-cancel-btn');
+    if (oldCancelBtn) {
+      const newCancelBtn = oldCancelBtn.cloneNode(true);
+      oldCancelBtn.parentNode.replaceChild(newCancelBtn, oldCancelBtn);
+      newCancelBtn.addEventListener('click', function () {
+        document.getElementById('popup-create').style.display = 'none';
+        resetForm();
+      });
+    }
+
+    // Xử lý nút Lưu (Tạo)
+    const oldSaveBtn = document.getElementById('create-save-btn');
+    if (oldSaveBtn) {
+      const newSaveBtn = oldSaveBtn.cloneNode(true);
+      oldSaveBtn.parentNode.replaceChild(newSaveBtn, oldSaveBtn);
+      newSaveBtn.addEventListener('click', async function () {
+        if (!isDataFetched || currentReportData.length === 0) {
+          alert('Vui lòng tổng hợp dữ liệu trước khi lưu!');
+          return;
+        }
+
+        const start = startDateInput.value;
+        const end = endDateInput.value;
+        
+        try {
+          const res = await fetch('/reports/api/save/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ start_date: start, end_date: end, report_data: currentReportData, branch_id: new URLSearchParams(window.location.search).get('branch') || 'CN01' })
+          });
+          const data = await res.json();
+          if (data.status === 'success') {
+            document.getElementById('popup-create').style.display = 'none';
+            resetForm();
+            window.location.reload();
+          } else {
+            alert('Lỗi: ' + data.message);
+          }
+        } catch(e) {
+          alert('Lỗi mạng!');
+        }
+      });
+    }
+
+    // =============== LOGIC CHO XEM VÀ SỬA ===============
+    function parseDateToISO(dStr) {
+      if(!dStr) return '';
+      const parts = dStr.split('/');
+      if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+      return dStr;
+    }
+
+    if (mainTableBody) {
+      mainTableBody.addEventListener('click', async function (e) {
+        
+        // Xem
+        if (e.target.closest('.btn-view-ge')) {
+          const row = e.target.closest('tr');
+          const reportId = row.getAttribute('data-report-id');
+          const dates = row.cells[2].textContent.trim().split(' - ');
+          
+          document.getElementById('view-start-date').value = parseDateToISO(dates[0]);
+          document.getElementById('view-end-date').value = parseDateToISO(dates[1]);
+          document.getElementById('popup-view').style.display = 'flex';
+          
+          document.getElementById('view-report-body').innerHTML = `<tr><td colspan="6" class="empty-state-row">Đang tải dữ liệu...</td></tr>`;
+
+          try {
+            const res = await fetch(`/reports/api/get/${reportId}/`);
+            const data = await res.json();
+            if (data.status === 'success') {
+              renderTable('view-report-body', data.data);
+            }
+          } catch(e) {}
+        }
+        
+        // Sửa
+        if (e.target.closest('.btn-edit-ge')) {
+          const row = e.target.closest('tr');
+          const reportId = row.getAttribute('data-report-id');
+          const dates = row.cells[2].textContent.trim().split(' - ');
+          
+          document.getElementById('edit-start-date').value = parseDateToISO(dates[0]);
+          document.getElementById('edit-end-date').value = parseDateToISO(dates[1]);
+          document.getElementById('popup-edit').style.display = 'flex';
+          document.getElementById('edit-report-body').innerHTML = `<tr><td colspan="6" class="empty-state-row">Đang tải dữ liệu...</td></tr>`;
+
+          window.currentEditingRow = row;
+          window.currentEditingId = reportId;
+          
+          try {
+            const res = await fetch(`/reports/api/get/${reportId}/`);
+            const data = await res.json();
+            if (data.status === 'success') {
+              renderTable('edit-report-body', data.data);
+              window.editReportData = data.data;
+              window.isEditDataFetched = true;
+            }
+          } catch(e) {}
+        }
+
+        // Xuất Excel
+        if (e.target.closest('.btn-excel-ge')) {
+          const downloadPopup = document.getElementById('popup-downloading');
+          const successPopup = document.getElementById('popup-success');
+          
+          if (downloadPopup) {
+            downloadPopup.style.display = 'flex';
+            
+            // Giả lập thời gian tải xuống
+            setTimeout(() => {
+              downloadPopup.style.display = 'none';
+              if (successPopup) {
+                successPopup.style.display = 'flex';
+              }
+            }, 2000);
+          }
+        }
+      });
+    }
+
+    // Đóng popup thành công
+    document.getElementById('success-close-btn')?.addEventListener('click', function() {
+      document.getElementById('popup-success').style.display = 'none';
+    });
+
+    // ĐÓNG XEM
+    const closeViewPopup = () => { document.getElementById('popup-view').style.display = 'none'; };
+    document.getElementById('view-cancel-btn')?.addEventListener('click', closeViewPopup);
+    document.getElementById('view-close-btn')?.addEventListener('click', closeViewPopup);
+
+    // CHỈNH SỬA - TỔNG HỢP
+    document.getElementById('edit-tonghop-btn')?.addEventListener('click', function () {
+      const start = document.getElementById('edit-start-date').value;
+      const end = document.getElementById('edit-end-date').value;
+      if (!start || !end) {
+        alert("Vui lòng chọn ngày"); return;
+      }
+      fetchAggregateData(start, end, 'edit-report-body', (data) => {
+        window.editReportData = data;
+        window.isEditDataFetched = true;
+      });
+    });
+
+    // CHỈNH SỬA - HỦY
+    const closeEditPopup = () => { document.getElementById('popup-edit').style.display = 'none'; };
+    document.getElementById('edit-cancel-btn')?.addEventListener('click', closeEditPopup);
+    document.getElementById('edit-close-btn')?.addEventListener('click', closeEditPopup);
+
+    // CHỈNH SỬA - LƯU
+    document.getElementById('edit-save-btn')?.addEventListener('click', async function () {
+      if (!window.isEditDataFetched || !window.editReportData) {
+        alert("Vui lòng bấm Tổng hợp trước khi lưu!");
+        return;
+      }
+
+      const start = document.getElementById('edit-start-date').value;
+      const end = document.getElementById('edit-end-date').value;
+      
+      try {
+          const res = await fetch('/reports/api/save/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                start_date: start, 
+                end_date: end, 
+                report_data: window.editReportData,
+                report_id: window.currentEditingId
+            })
+          });
+          const data = await res.json();
+          if (data.status === 'success') {
+            closeEditPopup();
+            window.location.reload();
+          } else {
+            alert('Lỗi: ' + data.message);
+          }
+        } catch(e) {
+          alert('Lỗi mạng!');
+      }
+    });
+
+  });
+</script>
 {% endblock %}

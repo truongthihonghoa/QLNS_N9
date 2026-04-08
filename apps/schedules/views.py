@@ -8,7 +8,7 @@ from django.views.decorators.http import require_http_methods
 from django import forms
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from .models import LichLamViec, LichLamViec_CT
+from .models import LichLamViec
 from apps.employees.models import NhanVien
 from apps.branches.models import ChiNhanh
 import datetime
@@ -30,6 +30,27 @@ def _get_sample_employees():
         {'ma_nv': 'NV004', 'ho_ten': 'Phạm Khánh D', 'vi_tri_mac_dinh': 'Quản lý'},
         {'ma_nv': 'NV005', 'ho_ten': 'Đỗ Hoàng E', 'vi_tri_mac_dinh': 'Thu ngân'},
     ]
+
+def _get_week_boundaries():
+    """Trả về ngày bắt đầu và kết thúc của tuần hiện tại (Thứ 2 - Chủ nhật)"""
+    today = datetime.date.today()
+    # Tìm ngày thứ 2 của tuần hiện tại
+    start_of_week = today - datetime.timedelta(days=today.weekday())
+    # Ngày chủ nhật của tuần hiện tại
+    end_of_week = start_of_week + datetime.timedelta(days=6)
+    return start_of_week, end_of_week
+
+def _get_month_boundaries():
+    """Trả về ngày đầu tháng và cuối tháng hiện tại"""
+    today = datetime.date.today()
+    # Ngày đầu tháng
+    start_of_month = today.replace(day=1)
+    # Ngày cuối tháng
+    if today.month == 12:
+        end_of_month = today.replace(year=today.year + 1, month=1, day=1) - datetime.timedelta(days=1)
+    else:
+        end_of_month = today.replace(month=today.month + 1, day=1) - datetime.timedelta(days=1)
+    return start_of_month, end_of_month
 
 
 def schedule_list_view(request):

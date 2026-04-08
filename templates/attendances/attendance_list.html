@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Danh Sách Chấm Công - GÉ CAFE HRM{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --ge-green-dark: #174D17;
+        --ge-green-light: #CDE0C9;
+        --border-color: #DADCE0;
+        --text-color: #333;
+    }
+
+    .attendance-management-container {
+        padding: 20px;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    /* Toolbar Row: Only Branch Filter */
+    .toolbar-row-filters {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 25px;
+    }
+
+    .dropdown-ge {
+        background: white;
+        font-size: 18px;
+        padding: 0 15px; /* Adjust padding for fixed height */
+        height: 52px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        min-width: 300px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Table Styles */
+    .ge-table-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .ge-main-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .ge-main-table th {
+        background-color: var(--ge-green-dark);
+        color: white;
+        padding: 20px 15px;
+        text-align: left;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .ge-main-table td {
+        padding: 22px 15px;
+        border-bottom: 1px solid #eee;
+        font-size: 18px;
+        color: var(--text-color);
+    }
+
+    .ge-main-table tr:hover {
+        background-color: #f9f9f9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="attendance-management-container">
+    <div class="toolbar-row-filters">
+        <form method="GET" action="{% url 'attendance_list' %}">
+            <select name="branch" class="dropdown-ge" onchange="this.form.submit()">
+                <option value="">-- Tất cả chi nhánh --</option>
+                {% for branch in branches %}
+                    <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>
+                        {{ branch.ten_chi_nhanh }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <div class="ge-table-card">
+        <table class="ge-main-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Mã Chấm Công</th>
+                    <th>Nhân Viên</th>
+                    <th>Ngày Làm</th>
+                    <th>Giờ Vào</th>
+                    <th>Giờ Ra</th>
+                    <th>Số Giờ Làm</th>
+                    <th>Trạng Thái</th>
+                    <th>Ghi Chú</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attendance in attendances %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ attendance.ma_cc }}</td>
+                    <td>{{ attendance.ma_nv.ho_ten }}</td>
+                    <td>{{ attendance.ngay_lam|date:"d/m/Y" }}</td>
+                    <td>{{ attendance.gio_vao|time:"H:i"|default:"-" }}</td>
+                    <td>{{ attendance.gio_ra|time:"H:i"|default:"-" }}</td>
+                    <td><strong>{{ attendance.so_gio_lam }}</strong></td>
+                    <td>{{ attendance.trang_thai|default:"-" }}</td>
+                    <td>{{ attendance.ghi_chu|default:"-" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" style="text-align: center;">Không có dữ liệu chấm công.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
