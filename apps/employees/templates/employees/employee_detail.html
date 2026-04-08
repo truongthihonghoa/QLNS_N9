@@ -4,84 +4,125 @@
 {% block title %}Chi tiết nhân viên - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'employees/css/employee_detail.css' %}?v=1.0">
+    <link rel="stylesheet" href="{% static 'employees/css/employee_detail.css' %}?v=2.3">
 {% endblock %}
 
 {% block content %}
 <section class="employee-detail-page">
-    <a href="{% url 'employee_list' %}" class="detail-back-btn">+ Danh sách nhân viên</a>
-
-    <h1 class="detail-heading">Thông tin chi tiết nhân viên: {{ employee.ho_ten }}</h1>
-
-    <div class="detail-card">
-        <div class="detail-avatar-panel">
-            <div class="detail-avatar">
-                {% if image_path %}
-                    <img src="{% static image_path %}" alt="{{ employee.ho_ten }}">
-                {% else %}
-                    <span>{{ initials }}</span>
-                {% endif %}
-            </div>
+    <div class="employee-detail-card">
+        <div class="page-header">
+            <a href="{% url 'employee_list' %}" class="back-link">
+                <img src="{% static 'images/back_icon.png' %}" alt="Back" class="back-icon">
+                <span>Danh sách nhân viên</span>
+            </a>
+            <h1 class="page-title">Thông tin chi tiết nhân viên: {{ employee.ho_ten }}</h1>
         </div>
 
-        <div class="detail-form-grid">
-            <div class="detail-field">
-                <label>Mã nhân viên</label>
-                <input type="text" value="{{ employee.ma_nv }}" readonly>
-            </div>
-            <div class="detail-field">
-                <label>Họ tên<span>*</span></label>
-                <input type="text" value="{{ employee.ho_ten }}" readonly>
-            </div>
-            <div class="detail-field">
-                <label>Giới tính<span>*</span></label>
-                <input type="text" value="{{ employee.gioi_tinh|default:'' }}" readonly>
+        <div class="employee-detail-content">
+            <div class="form-left">
+                <div class="avatar-preview-card">
+                    {% if image_path %}
+                        <img src="{% static image_path %}" alt="{{ employee.ho_ten }}" class="avatar-preview-image">
+                    {% else %}
+                        <div class="detail-avatar-fallback">{{ initials }}</div>
+                    {% endif %}
+                </div>
             </div>
 
-            <div class="detail-field">
-                <label>CCCD<span>*</span></label>
-                <input type="text" value="{{ employee.cccd }}" readonly>
-            </div>
-            <div class="detail-field">
-                <label>Số điện thoại<span>*</span></label>
-                <input type="text" value="{{ employee.sdt }}" readonly>
-            </div>
-            <div class="detail-field">
-                <label>Ngày sinh<span>*</span></label>
-                <input type="text" value="{{ employee.ngay_sinh|date:'d/m/Y' }}" readonly>
-            </div>
+            <div class="form-right">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Mã nhân viên</label>
+                        <input type="text" value="{{ employee.ma_nv }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Họ tên <span class="required">*</span></label>
+                        <input type="text" value="{{ employee.ho_ten }}" readonly>
+                    </div>
+                </div>
 
-            <div class="detail-field detail-field-full">
-                <label>Địa chỉ</label>
-                <textarea readonly>{{ employee.dia_chi|default:'' }}</textarea>
-            </div>
-            <div class="detail-field">
-                <label>Tài khoản ngân hàng<span>*</span></label>
-                <input type="text" value="{{ employee.tk_ngan_hang }}" readonly>
-            </div>
-            <div class="detail-field">
-                <label>Vị trí việc làm<span>*</span></label>
-                <input type="text" value="{{ employee.vi_tri_vl }}" readonly>
-            </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Giới tính <span class="required">*</span></label>
+                        <input type="text" value="{{ employee.gioi_tinh|default:'' }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày sinh <span class="required">*</span></label>
+                        <input type="text" value="{{ employee.ngay_sinh|date:'d/m/Y' }}" readonly>
+                    </div>
+                </div>
 
-            <div class="detail-field detail-field-full">
-                <label>Địa chỉ làm việc</label>
-                <textarea readonly>{% if employee.ma_chi_nhanh %}{{ employee.ma_chi_nhanh }}{% if employee.ma_chi_nhanh.dia_chi %} - {{ employee.ma_chi_nhanh.dia_chi }}{% endif %}{% endif %}</textarea>
-            </div>
-            <div class="detail-field">
-                <label>Người quản lý</label>
-                <input type="text" value="{{ manager_name }}" readonly>
-            </div>
-            <div class="detail-field">
-                <label>Chức vụ<span>*</span></label>
-                <input type="text" value="{{ employee.chuc_vu }}" readonly>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>CCCD <span class="required">*</span></label>
+                        <input type="text" value="{{ employee.cccd }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại <span class="required">*</span></label>
+                        <input type="text" value="{{ employee.sdt }}" readonly>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tài khoản ngân hàng <span class="required">*</span></label>
+                        <input type="text" value="{{ employee.tk_ngan_hang }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Chức vụ <span class="required">*</span></label>
+                        <input type="text" value="{{ employee.chuc_vu }}" readonly>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Người quản lý</label>
+                        <input type="text" value="{{ manager_name }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Chi nhánh <span class="required">*</span></label>
+                        <input type="text" value="{{ employee.ma_chi_nhanh|default:'' }}" readonly>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Địa chỉ</label>
+                        <textarea readonly>{{ employee.dia_chi|default:'' }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Địa chỉ làm việc</label>
+                        <textarea readonly>{% if employee.ma_chi_nhanh %}{{ employee.ma_chi_nhanh }}{% if employee.ma_chi_nhanh.dia_chi %} - {{ employee.ma_chi_nhanh.dia_chi }}{% endif %}{% endif %}</textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{% url 'employee_list' %}" class="detail-btn detail-btn-muted">Hủy</a>
+                    <a href="{% url 'employee_edit' employee_id=employee.ma_nv %}" class="detail-btn detail-btn-primary">Chỉnh sửa</a>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div class="detail-actions">
-        <a href="{% url 'employee_list' %}" class="detail-btn detail-btn-muted">Hủy</a>
-        <a href="{% url 'employee_edit' employee_id=employee.ma_nv %}" class="detail-btn detail-btn-primary">Chỉnh sửa</a>
     </div>
 </section>
+
+<div class="employee-success-toast" id="employee-success-toast" role="status" aria-live="polite">
+    <div class="employee-success-toast-content">
+        <p class="employee-success-toast-message" id="employee-success-toast-message"></p>
+    </div>
+    <div class="employee-success-toast-icon">
+        <i class="fa-solid fa-check"></i>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        {% if message.level_tag == 'success' %}
+            <div id="employee-success-message" data-message="{{ message|striptags }}" hidden></div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'employees/js/employee_detail.js' %}?v=1.0"></script>
 {% endblock %}

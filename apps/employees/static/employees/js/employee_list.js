@@ -1,9 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const SUCCESS_TOAST_AUTO_HIDE_MS = 3000;
     const confirmDeletePopup = document.getElementById('confirm-delete-popup');
     const deletePopupNoBtn = document.getElementById('delete-popup-no-btn');
     const deletePopupYesBtn = document.getElementById('delete-popup-yes-btn');
     const deleteButtons = document.querySelectorAll('.delete-btn');
-    const employeeCards = document.querySelectorAll('.employee-card');
+    const employeeCards = document.querySelectorAll('.employee-card-modern-row');
+    const successToast = document.getElementById('employee-success-toast');
+    const successToastMessage = document.getElementById('employee-success-toast-message');
+    let successToastTimer = null;
 
     function hideConfirmDeletePopup() {
         if (confirmDeletePopup) {
@@ -14,6 +18,37 @@ document.addEventListener('DOMContentLoaded', function () {
     function showConfirmDeletePopup() {
         if (confirmDeletePopup) {
             confirmDeletePopup.style.display = 'flex';
+        }
+    }
+
+    function showSuccessToast(message) {
+        if (!successToast) {
+            return;
+        }
+
+        if (successToastMessage) {
+            successToastMessage.textContent = message;
+        }
+
+        successToast.classList.add('is-visible');
+
+        if (successToastTimer) {
+            window.clearTimeout(successToastTimer);
+        }
+
+        successToastTimer = window.setTimeout(function () {
+            hideSuccessToast();
+        }, SUCCESS_TOAST_AUTO_HIDE_MS);
+    }
+
+    function hideSuccessToast() {
+        if (successToast) {
+            successToast.classList.remove('is-visible');
+        }
+
+        if (successToastTimer) {
+            window.clearTimeout(successToastTimer);
+            successToastTimer = null;
         }
     }
 
@@ -60,5 +95,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 hideConfirmDeletePopup();
             }
         });
+    }
+
+    if (successToast && successToast.classList.contains('is-visible') && successToastMessage && successToastMessage.textContent.trim()) {
+        showSuccessToast(successToastMessage.textContent.trim());
     }
 });

@@ -1,6 +1,8 @@
 from django.contrib import messages
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from .forms import EmployeeCreateForm, EmployeeUpdateForm
 from .models import NhanVien
@@ -13,16 +15,34 @@ CARD_THEMES = (
     "theme-rose",
 )
 
-EMPLOYEE_IMAGE_MAP = {
-    "NV00001": "employees/img/Nguyen_Van_An.png",
-    "NV00002": "employees/img/Nguyen_Van_Tien.jpg",
-    "NV00003": "employees/img/Tran_Vu_Anh.jpg",
-    "NV00004": "employees/img/Vo_Thi_Anh_Thi.jpg",
-    "NV00005": "employees/img/Le_Thuy_Vy.jpg",
-    "NV00006": "employees/img/Trinh_Phan_Vu.jpg",
-    "NV00007": "employees/img/Tran_Thi_Ly.jpg",
-    "NV00008": "employees/img/Nguyen_Le_My.jpg",
-}
+EMPLOYEE_IMAGE_MAP = {}
+
+
+def get_next_employee_id():
+    last_employee = NhanVien.objects.order_by("-ma_nv").first()
+    if last_employee and last_employee.ma_nv:
+        try:
+            import re
+
+            match = re.search(r"\d+", last_employee.ma_nv)
+            if match:
+                last_num = int(match.group())
+                next_num = last_num + 1
+            else:
+                next_num = 1
+        except (ValueError, AttributeError):
+            next_num = 1
+    else:
+        next_num = 1
+
+    return f"NV{next_num:05d}"
+
+
+def api_next_employee_id(request):
+    if request.method == "GET":
+        next_id = get_next_employee_id()
+        return JsonResponse({"next_id": next_id})
+    return JsonResponse({"error": "Invalid method"}, status=400)
 
 
 def _build_employee_cards(queryset):
@@ -30,6 +50,14 @@ def _build_employee_cards(queryset):
     for index, employee in enumerate(queryset):
         words = [part for part in employee.ho_ten.split() if part]
         initials = "".join(word[0] for word in words[:2]).upper() if words else "NV"
+
+        detail_url = "#"
+        if employee.ma_nv:
+            try:
+                detail_url = reverse("employee_detail", kwargs={"employee_id": employee.ma_nv})
+            except Exception:
+                pass
+
         cards.append(
             {
                 "ma_nv": employee.ma_nv,
@@ -42,7 +70,7 @@ def _build_employee_cards(queryset):
                 "chuc_vu": employee.chuc_vu,
                 "chi_nhanh": employee.ma_chi_nhanh,
                 "dia_chi": employee.dia_chi,
-                "detail_url": f"{employee.ma_nv}/",
+                "detail_url": detail_url,
                 "initials": initials,
                 "theme_class": CARD_THEMES[index % len(CARD_THEMES)],
                 "image_path": EMPLOYEE_IMAGE_MAP.get(employee.ma_nv, ""),
@@ -73,15 +101,19 @@ def employee_list_view(request):
 
 
 def employee_add_view(request):
-    form = EmployeeCreateForm(request.POST or None)
-
     if request.method == "POST":
+        form = EmployeeCreateForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Thêm nhân viên thành công!")
+            employee = form.save(commit=False)
+            if not employee.ma_nv:
+                employee.ma_nv = get_next_employee_id()
+            employee.save()
+            messages.success(request, "Thêm nhân viên mới thành công!")
             return redirect("employee_list")
 
         messages.error(request, "Thông tin nhân viên không hợp lệ.", extra_tags="invalid_info_error")
+    else:
+        form = EmployeeCreateForm(initial={"ma_nv": get_next_employee_id()})
 
     return render(request, "employees/employee_add.html", {"form": form})
 
@@ -91,10 +123,11 @@ def employee_detail_view(request, employee_id):
         NhanVien.objects.select_related("ma_chi_nhanh", "ma_chi_nhanh__ma_nv_ql"),
         pk=employee_id,
     )
+    manager = employee.ma_chi_nhanh.ma_nv_ql if employee.ma_chi_nhanh else None
     words = [part for part in employee.ho_ten.split() if part]
     context = {
         "employee": employee,
-        "manager_name": employee.ma_chi_nhanh.ma_nv_ql.ho_ten if employee.ma_chi_nhanh and employee.ma_chi_nhanh.ma_nv_ql else "",
+        "manager_name": manager.ho_ten if manager else "",
         "initials": "".join(word[0] for word in words[:2]).upper() if words else "NV",
         "image_path": EMPLOYEE_IMAGE_MAP.get(employee.ma_nv, ""),
     }
@@ -108,13 +141,14 @@ def employee_edit_view(request, employee_id):
     if request.method == "POST":
         if form.is_valid():
             form.save()
-            messages.success(request, "Cập nhật thông tin thành công!")
-            return redirect("employee_list")
+            messages.success(request, "Cập nhật thông tin nhân viên thành công")
+            return redirect("employee_detail", employee_id=employee.ma_nv)
 
         messages.error(request, "Thông tin nhân viên không hợp lệ.", extra_tags="invalid_info_error")
 
     context = {
         "employee": employee,
         "form": form,
+        "image_path": EMPLOYEE_IMAGE_MAP.get(employee.ma_nv, ""),
     }
     return render(request, "employees/employee_edit.html", context)

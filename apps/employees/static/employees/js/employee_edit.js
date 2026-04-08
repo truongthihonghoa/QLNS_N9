@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (errorPopup) errorPopup.style.display = 'none';
     }
 
-    if (errorPopupExitBtn) errorPopupExitBtn.addEventListener('click', () => window.location.href = employeeForm.dataset.employeeListUrl);
+    if (errorPopupExitBtn) errorPopupExitBtn.addEventListener('click', () => window.location.href = employeeForm.dataset.returnUrl || employeeForm.dataset.employeeListUrl);
     if (errorPopupBackBtn) errorPopupBackBtn.addEventListener('click', hideErrorPopup);
     if (errorPopup) errorPopup.addEventListener('click', (e) => { if (e.target === errorPopup) hideErrorPopup(); });
 
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (cancelBtn) cancelBtn.addEventListener('click', showConfirmCancelPopup);
     if (confirmNoBtn) confirmNoBtn.addEventListener('click', hideConfirmCancelPopup);
-    if (confirmYesBtn) confirmYesBtn.addEventListener('click', () => window.location.href = employeeForm.dataset.employeeListUrl);
+    if (confirmYesBtn) confirmYesBtn.addEventListener('click', () => window.location.href = employeeForm.dataset.returnUrl || employeeForm.dataset.employeeListUrl);
     if (confirmCancelPopup) confirmCancelPopup.addEventListener('click', (e) => { if (e.target === confirmCancelPopup) hideConfirmCancelPopup(); });
 
     // --- Form Submission ---

@@ -1,8 +1,63 @@
 document.addEventListener('DOMContentLoaded', function() {
     const employeeForm = document.querySelector('.employee-form');
+    const maNvInput = document.getElementById('id_ma_nv');
     const saveBtn = document.querySelector('.save-btn');
-    
-    // --- Generic Error Popup ---
+    const cancelBtn = document.querySelector('.cancel-btn');
+    const confirmCancelPopup = document.getElementById('confirm-cancel-popup');
+    const confirmNoBtn = document.getElementById('confirm-no-btn');
+    const confirmYesBtn = document.getElementById('confirm-yes-btn');
+
+    // --- Cancel Button Handler ---
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            if (confirmCancelPopup) {
+                confirmCancelPopup.style.display = 'flex';
+                return;
+            }
+            window.location.href = employeeForm.dataset.employeeListUrl;
+        });
+    }
+
+    if (confirmNoBtn) {
+        confirmNoBtn.addEventListener('click', function() {
+            confirmCancelPopup.style.display = 'none';
+        });
+    }
+
+    if (confirmYesBtn) {
+        confirmYesBtn.addEventListener('click', function() {
+            window.location.href = employeeForm.dataset.employeeListUrl;
+        });
+    }
+
+    if (confirmCancelPopup) {
+        confirmCancelPopup.addEventListener('click', function(event) {
+            if (event.target === confirmCancelPopup) {
+                confirmCancelPopup.style.display = 'none';
+            }
+        });
+    }
+
+    // ...existing code...
+    if (maNvInput) {
+        // Fetch mã nhân viên tiếp theo khi page load
+        fetch('/nhan-vien/api/next-id/', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.next_id) {
+                maNvInput.value = data.next_id;
+            }
+        })
+        .catch(error => console.error('Error fetching next employee ID:', error));
+    }
+
+    // ...existing code...
     const errorPopup = document.getElementById('error-popup');
     const errorPopupTitle = document.getElementById('error-popup-title');
     const errorPopupMsg1 = document.getElementById('error-popup-message1');
