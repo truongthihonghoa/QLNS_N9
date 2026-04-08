@@ -5,6 +5,12 @@
   background-color: #ffffff;
   border-radius: 20px;
   overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.background-shadow:hover {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 
 .background-shadow .image {
@@ -126,6 +132,37 @@
   border-radius: 6px;
   border: 1px solid;
   border-color: #cccccc;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.background-shadow .input:hover {
+  border-color: #999999;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.background-shadow .input:focus-within {
+  border-color: #4b2e1fde;
+  box-shadow: 0 0 0 3px rgba(75, 46, 31, 0.1);
+  transform: translateY(-1px);
+}
+
+.background-shadow .input input {
+  border: none;
+  background: transparent;
+  padding: 0 10px;
+  font-size: 14px;
+  font-family: "Montserrat-Regular", Helvetica;
+  color: #000000;
+  transition: all 0.2s ease;
+}
+
+.background-shadow .input input:focus {
+  outline: none;
 }
 
 .background-shadow .label-m-t-kh-u {
@@ -154,6 +191,37 @@
   border-radius: 6px;
   border: 1px solid;
   border-color: #cccccc;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.background-shadow .container-wrapper:hover {
+  border-color: #999999;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.background-shadow .container-wrapper:focus-within {
+  border-color: #4b2e1fde;
+  box-shadow: 0 0 0 3px rgba(75, 46, 31, 0.1);
+  transform: translateY(-1px);
+}
+
+.background-shadow .container-wrapper input {
+  border: none;
+  background: transparent;
+  padding: 0 10px;
+  font-size: 14px;
+  font-family: "Montserrat-Regular", Helvetica;
+  color: #000000;
+  transition: all 0.2s ease;
+}
+
+.background-shadow .container-wrapper input:focus {
+  outline: none;
 }
 
 .background-shadow .symbol-wrapper {
@@ -164,6 +232,19 @@
   position: absolute;
   top: 28.95%;
   right: 15px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.background-shadow .symbol-wrapper:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(1.1);
+}
+
+.background-shadow .symbol-wrapper img {
+  transition: opacity 0.2s ease;
 }
 
 .background-shadow .symbol-2 {
@@ -202,11 +283,29 @@
 .background-shadow .ng-nhp {
   margin-left: 106px;
   margin-right: 106px;
-  flex: 1;
+  width: calc(100% - 212px);
   max-height: 42px;
   margin-top: 14.8px;
   display: flex;
   background-color: #174d17de;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(23, 77, 23, 0.2);
+  border: none;
+}
+
+.background-shadow .ng-nhp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(23, 77, 23, 0.3);
+  background-color: #1a5a1ade;
+}
+
+.background-shadow .ng-nhp:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(23, 77, 23, 0.2);
 }
 
 .background-shadow .text-wrapper-2 {
@@ -247,4 +346,14 @@
   text-align: center;
   letter-spacing: 0;
   line-height: normal;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.background-shadow .link-qu-n-m-t-kh-u:hover {
+  background-color: rgba(42, 106, 223, 0.1);
+  transform: translateY(-1px);
+  color: #1a5a9f;
 }

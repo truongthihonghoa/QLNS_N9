@@ -1,4 +1,4 @@
-% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -70,7 +70,6 @@
             <a href="{% url 'schedule_list' %}" class="nav-item">Lịch Làm Việc</a>
             <a href="{% url 'request_list' %}" class="nav-item">Yêu Cầu</a>
             <a href="{% url 'payroll_list' %}" class="nav-item">Bảng Lương</a>
-            <a href="{% url 'attendance_list' %}" class="nav-item">Chấm công</a>
             <a href="{% url 'reports:report_list' %}" class="nav-item">Báo Cáo</a>
         </nav>
 
@@ -80,6 +79,7 @@
         </main>
     </div>
 
+    {% include 'partials/popup_confirm_logout.html' %}
     {% include 'partials/toast_notification.html' %}
 
     <script src="{% static 'js/base.js' %}"></script>
