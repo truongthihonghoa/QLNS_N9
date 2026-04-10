@@ -75,6 +75,20 @@ def payroll_list_view(request):
             NhanVien.objects.filter(ma_chi_nhanh_id=selected_branch).order_by('ma_nv').values('ma_nv', 'ho_ten')
         )
 
+    # Get data from session if modal was submitted
+    eligible_employees = []
+    calculated_employees = []
+    show_modal = request.GET.get('show_modal') == 'true'
+    
+    if show_modal:
+        eligible_employees = request.session.get('eligible_employees', [])
+        calculated_employees = request.session.get('calculated_employees', [])
+        # Clear session data after using
+        request.session.pop('eligible_employees', None)
+        request.session.pop('calculated_employees', None)
+        request.session.pop('selected_month', None)
+        request.session.pop('selected_year', None)
+
     return render(
         request,
         'payroll/payroll_list.html',
@@ -83,6 +97,9 @@ def payroll_list_view(request):
             'branches': branches,
             'selected_branch': selected_branch,
             'branch_employees': branch_employees,
+            'eligible_employees': eligible_employees,
+            'calculated_employees': calculated_employees,
+            'show_modal': show_modal,
             'calc_info_url': reverse('payroll_calc_info'),
             'period_employees_url': reverse('payroll_period_employees'),
             'payroll_save_url': reverse('payroll_save'),
@@ -163,49 +180,125 @@ def payroll_calc_info_view(request):
 
 def payroll_period_employees_view(request):
     """
-    For a selected branch and period, return:
-      - eligible_employees: employees in that branch that do not yet have payroll for this period
-      - calculated_employees: employees already calculated for this period
-    Query params:
-      - branch: ma_chi_nhanh
-      - month: 01..12
-      - year: yyyy
+    Handle POST/GET requests for payroll period employees
+    POST: Get employees with valid contracts for selected period and render template
+    GET: Return JSON response for AJAX requests
     """
-    branch = (request.GET.get('branch') or '').strip()
-    month = (request.GET.get('month') or '').strip()
-    year = (request.GET.get('year') or '').strip()
+    if request.method == 'POST':
+        # Handle form POST from modal
+        branch = (request.POST.get('branch') or '').strip()
+        month = (request.POST.get('month') or '').strip()
+        year = (request.POST.get('year') or '').strip()
+        
+        print(f"DEBUG: POST request - branch: {branch}, month: {month}, year: {year}")
+        
+        if not branch or not month.isdigit() or not year.isdigit():
+            print(f"DEBUG: Invalid POST params - branch: {branch}, month: {month}, year: {year}")
+            return redirect('payroll_list')
+        
+        m = int(month)
+        y = int(year)
+        if m < 1 or m > 12 or y < 1900 or y > 2100:
+            print(f"DEBUG: Invalid date range - month: {m}, year: {y}")
+            return redirect('payroll_list')
+        
+        # Get employees with valid contracts during selected period
+        period_start = datetime.date(y, m, 1)
+        period_end = datetime.date(y, m, calendar.monthrange(y, m)[1])
+        
+        print(f"DEBUG: Period range - start: {period_start}, end: {period_end}")
+        
+        employees_qs = NhanVien.objects.filter(
+            ma_chi_nhanh_id=branch,
+            hop_dong__ngay_bat_dau__lte=period_end,
+            hop_dong__ngay_ket_thuc__gte=period_start
+        ).distinct().order_by('ma_nv')
+        
+        print(f"DEBUG: Found {employees_qs.count()} employees with active contracts")
+        
+        calculated_ids = set(
+            Luong.objects.filter(chi_nhanh_id=branch, thang=m, nam=y).values_list('nhan_vien_id', flat=True)
+        )
+        
+        print(f"DEBUG: Found {len(calculated_ids)} calculated employee IDs: {calculated_ids}")
+        
+        calculated_employees = list(
+            employees_qs.filter(ma_nv__in=calculated_ids).values('ma_nv', 'ho_ten')
+        )
+        eligible_employees = list(
+            employees_qs.exclude(ma_nv__in=calculated_ids).values('ma_nv', 'ho_ten')
+        )
+        
+        print(f"DEBUG: Eligible employees: {eligible_employees}")
+        print(f"DEBUG: Calculated employees: {calculated_employees}")
+        
+        # Store data in session to display in modal
+        request.session['eligible_employees'] = eligible_employees
+        request.session['calculated_employees'] = calculated_employees
+        request.session['selected_month'] = month
+        request.session['selected_year'] = year
+        
+        # Redirect back to payroll list with query params to show modal
+        return redirect(f'{reverse("payroll_list")}?branch={branch}&month={month}&year={year}&show_modal=true')
+    
+    else:
+        # Handle GET request (AJAX)
+        branch = (request.GET.get('branch') or '').strip()
+        month = (request.GET.get('month') or '').strip()
+        year = (request.GET.get('year') or '').strip()
 
-    if not branch or not month.isdigit() or not year.isdigit():
-        return JsonResponse({'error': 'invalid_params'}, status=400)
+        print(f"DEBUG: GET request - branch: {branch}, month: {month}, year: {year}")
 
-    m = int(month)
-    y = int(year)
-    if m < 1 or m > 12 or y < 1900 or y > 2100:
-        return JsonResponse({'error': 'invalid_params'}, status=400)
+        if not branch or not month.isdigit() or not year.isdigit():
+            print(f"DEBUG: Invalid GET params - branch: {branch}, month: {month}, year: {year}")
+            return JsonResponse({'error': 'invalid_params'}, status=400)
 
-    # Employees in selected branch
-    employees_qs = NhanVien.objects.filter(ma_chi_nhanh_id=branch).order_by('ma_nv')
+        m = int(month)
+        y = int(year)
+        if m < 1 or m > 12 or y < 1900 or y > 2100:
+            print(f"DEBUG: Invalid date range - month: {m}, year: {y}")
+            return JsonResponse({'error': 'invalid_params'}, status=400)
 
-    calculated_ids = set(
-        Luong.objects.filter(chi_nhanh_id=branch, thang=m, nam=y).values_list('nhan_vien_id', flat=True)
-    )
+        # Employees in selected branch with valid contracts during selected period
+        period_start = datetime.date(y, m, 1)
+        period_end = datetime.date(y, m, calendar.monthrange(y, m)[1])
+        
+        print(f"DEBUG: Period range - start: {period_start}, end: {period_end}")
+        
+        employees_qs = NhanVien.objects.filter(
+            ma_chi_nhanh_id=branch,
+            hop_dong__ngay_bat_dau__lte=period_end,
+            hop_dong__ngay_ket_thuc__gte=period_start
+        ).distinct().order_by('ma_nv')
+        
+        print(f"DEBUG: Found {employees_qs.count()} employees with active contracts")
 
-    calculated_employees = list(
-        employees_qs.filter(ma_nv__in=calculated_ids).values('ma_nv', 'ho_ten')
-    )
-    eligible_employees = list(
-        employees_qs.exclude(ma_nv__in=calculated_ids).values('ma_nv', 'ho_ten')
-    )
+        calculated_ids = set(
+            Luong.objects.filter(chi_nhanh_id=branch, thang=m, nam=y).values_list('nhan_vien_id', flat=True)
+        )
 
-    return JsonResponse(
-        {
+        print(f"DEBUG: Found {len(calculated_ids)} calculated employee IDs: {calculated_ids}")
+
+        calculated_employees = list(
+            employees_qs.filter(ma_nv__in=calculated_ids).values('ma_nv', 'ho_ten')
+        )
+        eligible_employees = list(
+            employees_qs.exclude(ma_nv__in=calculated_ids).values('ma_nv', 'ho_ten')
+        )
+
+        print(f"DEBUG: Eligible employees: {eligible_employees}")
+        print(f"DEBUG: Calculated employees: {calculated_employees}")
+
+        response_data = {
             'branch': branch,
             'month': m,
             'year': y,
             'eligible_employees': eligible_employees,
             'calculated_employees': calculated_employees,
         }
-    )
+
+        print(f"DEBUG: Response data: {response_data}")
+        return JsonResponse(response_data)
 
 
 def _parse_money(value: str) -> float:
