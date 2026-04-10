@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Thêm bảng lương{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'payroll/css/payroll_add.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="payroll-add-page">
+    <div class="payroll-form-page">
+        <div class="payroll-form-card">
+
+            <!-- BACK -->
+            <button class="payroll-back-button"
+                onclick="window.location.href='{% url 'payroll_list' %}'">
+                ← Danh sách bảng lương
+            </button>
+
+            <div class="payroll-form-heading">
+                <h2>Nhập thông tin bảng lương</h2>
+            </div>
+
+            <form method="POST" action="{% url 'payroll_save' %}" class="payroll-form">
+                {% csrf_token %}
+
+                <!-- NHÂN VIÊN -->
+                <div class="payroll-field payroll-field-full">
+                    <label>Nhân viên <span class="required">*</span></label>
+                    <input type="text" id="ten_nv" list="employee-options" placeholder="Chọn nhân viên" required>
+                    <input type="hidden" name="ma_nv" id="ma_nv">
+
+                    <datalist id="employee-options">
+                        {% for emp in employees %}
+                        <option value="{{ emp.ho_ten }}" data-code="{{ emp.ma_nv }}"></option>
+                        {% endfor %}
+                    </datalist>
+                </div>
+
+                <!-- CHI NHÁNH -->
+                <div class="payroll-field">
+                    <label>Chi nhánh</label>
+                    <select name="branch">
+                        {% for b in branches %}
+                        <option value="{{ b.ma_chi_nhanh }}">{{ b.ten_chi_nhanh }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- THÁNG -->
+                <div class="payroll-field">
+                    <label>Tháng <span class="required">*</span></label>
+                    <input type="number" name="month" id="month" min="1" max="12" required>
+                </div>
+
+                <!-- NĂM -->
+                <div class="payroll-field">
+                    <label>Năm <span class="required">*</span></label>
+                    <input type="number" name="year" id="year" value="2026" required>
+                </div>
+
+                <!-- LCB -->
+                <div class="payroll-field">
+                    <label>Lương cơ bản</label>
+                    <div class="payroll-money-input">
+                        <input type="number" name="luong_co_ban" id="lcb">
+                        <span class="payroll-money-suffix">VND</span>
+                    </div>
+                </div>
+
+                <!-- LTG -->
+                <div class="payroll-field">
+                    <label>Lương theo giờ</label>
+                    <div class="payroll-money-input">
+                        <input type="number" name="luong_theo_gio" id="ltg">
+                        <span class="payroll-money-suffix">VND</span>
+                    </div>
+                </div>
+
+                <!-- GIỜ -->
+                <div class="payroll-field">
+                    <label>Số giờ làm</label>
+                    <input type="number" name="so_gio_lam" id="gio">
+                </div>
+
+                <!-- THƯỞNG -->
+                <div class="payroll-field">
+                    <label>Thưởng</label>
+                    <input type="number" name="thuong" id="thuong" value="0">
+                </div>
+
+                <!-- PHẠT -->
+                <div class="payroll-field">
+                    <label>Phạt</label>
+                    <input type="number" name="phat" id="phat" value="0">
+                </div>
+
+                <!-- TỔNG -->
+                <div class="payroll-field payroll-field-full">
+                    <label>Tổng lương</label>
+                    <div class="payroll-money-input">
+                        <input type="number" name="tong_luong" id="tong" readonly>
+                        <span class="payroll-money-suffix">VND</span>
+                    </div>
+                </div>
+
+                <!-- BUTTON -->
+                <div class="payroll-form-actions">
+                    <button type="button" class="payroll-cancel-btn" onclick="history.back()">
+                        Hủy
+                    </button>
+                    <button type="submit" class="payroll-save-btn">
+                        Lưu bảng lương
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+
+/// ===== CHỌN NHÂN VIÊN =====
+document.getElementById("ten_nv").addEventListener("input", function () {
+    const val = this.value;
+    const opts = document.querySelectorAll("#employee-options option");
+
+    document.getElementById("ma_nv").value = "";
+
+    opts.forEach(o => {
+        if (o.value === val) {
+            document.getElementById("ma_nv").value = o.dataset.code;
+        }
+    });
+});
+
+
+/// ===== AUTO TÍNH LƯƠNG =====
+function calcTotal() {
+    const lcb = parseFloat(document.getElementById("lcb").value) || 0;
+    const ltg = parseFloat(document.getElementById("ltg").value) || 0;
+    const gio = parseFloat(document.getElementById("gio").value) || 0;
+    const thuong = parseFloat(document.getElementById("thuong").value) || 0;
+    const phat = parseFloat(document.getElementById("phat").value) || 0;
+
+    const tong = lcb + (ltg * gio) + thuong - phat;
+
+    document.getElementById("tong").value = tong;
+}
+
+["lcb","ltg","gio","thuong","phat"].forEach(id => {
+    document.getElementById(id).addEventListener("input", calcTotal);
+});
+
+</script>
+{% endblock %}

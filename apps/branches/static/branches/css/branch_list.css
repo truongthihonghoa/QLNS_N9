@@ -54,7 +54,7 @@
     border: none;
     background: rgb(46, 125, 50);
     color: #fff;
-    font: 600 14px "Montserrat", sans-serif;
+    font: 600 14px Arial, sans-serif;
 
 }
 
@@ -65,7 +65,7 @@
     border-radius: 8px;
     background: rgb(46, 125, 50);
     color: #fff;
-    font: 600 14px "Montserrat", sans-serif;
+    font: 600 14px Arial, sans-serif;
     display: flex;
     align-items: center;
     text-decoration: none;

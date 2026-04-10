@@ -8,19 +8,19 @@
 
 {% block content %}
 <div class="request-management-container">
-  <!-- Thanh công cụ: Tìm kiếm và Các nút chức năng - Tăng gap hàng lên 35px -->
-  <form method="get" action="." class="top-control-bar" style="display: flex; flex-direction: column; gap: 35px;">
-    <!-- Hàng 1: Tìm kiếm và các nút chính -->
-    <div class="toolbar-row-top">
-      <div class="control-left">
-        <div class="search-wrapper">
-          <input type="text" name="q" class="search-input-ge" placeholder="Tìm kiếm nhân viên hoặc mã lương..." value="{{ request.GET.q|default:'' }}">
+
+  <form method="get" action="." class="top-control-bar">
+
+    <div class="toolbar">
+
+        <div class="search-box">
+            <input type="text" name="q" value="{{ keyword }}" placeholder="Nhập bảng lương">
         </div>
-        <button class="btn-search-ge">Tìm kiếm</button>
-      </div>
-      <div class="control-right">
-        <button type="button" class="btn-create-request" onclick="openSalaryModal()">Tính lương</button>
-      </div>
+
+        <div class="toolbar-actions">
+            <button type="submit" class="btn-search">Tìm kiếm</button>
+            <a href="#" class="btn-primary">Tính lương</a>
+        </div>
     </div>
 
 
@@ -225,9 +225,7 @@
 
     <div class="salary-modal-footer">
       <button type="button" class="btn-cancel-salary" onclick="closeSalaryModal()">Hủy</button>
-      <button type="button" id="btnConfirmCalculate" class="btn-confirm-salary" onclick="processCalculation()" disabled>Tính
-        lương</button>
-    </div>
+      <a href="{% url 'payroll_calc_info' %}" class="btn-create-request">Tính lương</a></div>
   </div>
 </div>
 <!-- TINH LUONG CHO MOT NHAN VIEN -->

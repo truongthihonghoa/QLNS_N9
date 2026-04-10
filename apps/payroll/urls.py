@@ -11,4 +11,6 @@ urlpatterns = [
     path('period-employees/', views.payroll_period_employees_view, name='payroll_period_employees'),
     path('save/', views.payroll_save_view, name='payroll_save'),
     path('delete/<str:ma_luong>/', views.payroll_delete_view, name='payroll_delete'),
+# path('add/', views.payroll_add_view, name='payroll_add'),
+
 ]

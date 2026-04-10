@@ -1,0 +1,154 @@
+/* ===== CONTAINER ===== */
+.payroll-add-page {
+    padding: 30px;
+    background: #f6f8fb;
+    min-height: 100vh;
+}
+
+.payroll-form-page {
+    display: flex;
+    justify-content: center;
+}
+
+.payroll-form-card {
+    width: 100%;
+    max-width: 900px;
+    background: #ffffff;
+    padding: 30px 35px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+/* ===== BACK BUTTON ===== */
+.payroll-back-button {
+    background: none;
+    border: none;
+    color: #5f6368;
+    font-size: 15px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: 0.2s;
+}
+
+.payroll-back-button:hover {
+    color: #202124;
+}
+
+/* ===== HEADING ===== */
+.payroll-form-heading h2 {
+    font-size: 22px;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+/* ===== FORM ===== */
+.payroll-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 25px;
+}
+
+/* FULL WIDTH FIELD */
+.payroll-field-full {
+    grid-column: span 2;
+}
+
+/* ===== FIELD ===== */
+.payroll-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.payroll-field label {
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #444;
+    font-weight: 500;
+}
+
+.payroll-field input,
+.payroll-field select {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #dadce0;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.payroll-field input:focus,
+.payroll-field select:focus {
+    border-color: #1a73e8;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(26,115,232,0.15);
+}
+
+/* ===== MONEY STYLE ===== */
+.payroll-money-input {
+    position: relative;
+}
+
+.payroll-money-input input {
+    padding-right: 55px;
+}
+
+.payroll-money-suffix {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    color: #777;
+}
+
+/* ===== ACTION BUTTONS ===== */
+.payroll-form-actions {
+    grid-column: span 2;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.payroll-cancel-btn {
+    padding: 10px 18px;
+    border-radius: 6px;
+    border: 1px solid #dadce0;
+    background: #fff;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.payroll-cancel-btn:hover {
+    background: #f1f3f4;
+}
+
+.payroll-save-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    background: #1a73e8;
+    color: #fff;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.payroll-save-btn:hover {
+    background: #1669c1;
+}
+
+/* ===== REQUIRED ===== */
+.required {
+    color: red;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .payroll-form {
+        grid-template-columns: 1fr;
+    }
+
+    .payroll-field-full {
+        grid-column: span 1;
+    }
+}
