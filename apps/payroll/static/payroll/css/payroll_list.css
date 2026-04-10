@@ -242,7 +242,7 @@
 .salary-modal-overlay {
     position: fixed;
     /* Dịch xuống dưới thanh Nav (Giả sử Nav cao 120px) */
-    top: 120px;
+    top: 150px;
     left: 0;
     width: 100%;
     height: calc(100vh - 120px);
@@ -255,7 +255,7 @@
 
 .salary-modal-content {
     /* MÀU XANH PASTEL NHẠT CHO TOÀN BỘ FORM */
-    background-color: #F0F7EF;
+    background-color: white;
     width: 100%;
     max-width: 650px;
     /* DỊCH FORM XUỐNG DƯỚI MỘT CHÚT */
@@ -268,7 +268,7 @@
 
 /* Header: MÀU PASTEL ĐẬM HƠN */
 .salary-modal-header {
-    background-color: var(--ge-green-light); /* Mã màu #CDE0C9 */
+    background-color: white; /* Mã màu #CDE0C9 */
     padding: 18px 25px;
     display: flex;
     justify-content: space-between;
@@ -280,6 +280,8 @@
     color: var(--ge-green-dark);
     font-weight:600;
     font-size: 20px;
+    margin-top: 20px;
+
 }
 
 .close-modal {
@@ -293,15 +295,19 @@
     cursor: pointer;
     color: var(--ge-green-dark);
 }
+.detail { display: flex; justify-content: flex-end; gap: 15px; margin-bottom: 20px; }
+.btn-save { background: #174D17; color: white; border: none;font-size:14px; padding: 10px 40px; border-radius: 8px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 600;}
+.btn-close { background: white; color: black; border: 1.5px solid lightgray; font-size:14px; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 600;}
 
 /* Body Modal */
 .salary-modal-body {
     padding: 25px;
+    margin-top: -10px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     color: var(--ge-green-dark);
     font-weight:600;
 }
@@ -364,7 +370,7 @@
 /* Footer: Nút bấm */
 .salary-modal-footer {
     padding: 15px 25px;
-    background: rgba(205, 224, 201, 0.2);
+    background: white;
     display: flex;
     justify-content: flex-end;
     gap: 15px;
@@ -380,7 +386,7 @@
     cursor: pointer;
 }
 
-.btn-confirm-salary {
+.btn-create-request {
     background: var(--ge-green-dark);
     color: white;
     border: none;
