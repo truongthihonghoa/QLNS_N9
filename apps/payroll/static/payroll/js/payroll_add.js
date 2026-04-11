@@ -1,119 +1,83 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const card = document.querySelector(".payroll-employee-card");
+    const saveBtn = document.querySelector(".save-btn");
 
-    // 1. Hàm parse siêu sạch: giải quyết lỗi nhảy số hàng tỷ
     function parse(v) {
-    if (v === undefined || v === null || v === "") return 0;
+        if (!v) return 0;
+        return Number(String(v).replace(/[^\d.-]/g, "")) || 0;
+    }
 
-    return Number(
-        String(v)
-            .replace(/[^\d.-]/g, "") // chỉ giữ số, . và -
-    ) || 0;
-}
-
-    // 2. Tính toán lại lương cho từng thẻ nhân viên
-    function recalc(card) {
-        const hours = parse(card.dataset.hours);    // ví dụ: 16.9
-        const hourly = parse(card.dataset.hourly);  // ví dụ: 25000
-        const base = parse(card.dataset.base);      // ví dụ: 3480000.0
-
+    function recalc() {
+        if (!card) return;
+        const hours = parse(card.dataset.hours);
+        const hourly = parse(card.dataset.hourly);
+        const base = parse(card.dataset.base);
         const bonus = parse(card.querySelector(".bonus-input")?.value);
         const penalty = parse(card.querySelector(".penalty-input")?.value);
 
-        // Công thức chuẩn: (Giờ x Mức lương) + Lương cơ bản + Thưởng - Phạt
         const total = (hours * hourly) + base + bonus - penalty;
-
-        // Lưu vào dataset để chuẩn bị gửi POST
-        card.dataset.total = total;
-
-        // Cập nhật UI với định dạng VN
         const output = card.querySelector(".total-salary-input");
-        if (output) {
-            output.value = total.toLocaleString('vi-VN') + " ₫";
-        }
+        if (output) output.value = total.toLocaleString('vi-VN') + " ₫";
         return total;
     }
 
-    // 3. Gán sự kiện cho các ô nhập liệu
-    document.querySelectorAll(".payroll-employee-card").forEach(card => {
-
-    const bonus = card.querySelector(".bonus-input");
-    const penalty = card.querySelector(".penalty-input");
-
-    if (bonus && !bonus.dataset.bound) {
-        bonus.addEventListener("input", () => recalc(card));
-        bonus.dataset.bound = "1";
+    if (card) {
+        card.querySelectorAll(".bonus-input, .penalty-input").forEach(el => {
+            el.addEventListener("input", recalc);
+        });
+        recalc();
     }
 
-    if (penalty && !penalty.dataset.bound) {
-        penalty.addEventListener("input", () => recalc(card));
-        penalty.dataset.bound = "1";
-    }
+    if (saveBtn && card) {
+        saveBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]")?.value;
+            const remaining = document.getElementById("remaining_ids")?.value;
 
-    recalc(card);
-});
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG LƯU...';
 
-    // 4. Xử lý lưu dữ liệu
-    const saveBtn = document.querySelector(".save-btn");
-if (saveBtn) {
-    saveBtn.addEventListener("click", function (e) {
-        e.preventDefault();
-
-        // Kiểm tra CSRF token
-        const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]")?.value;
-        const cards = document.querySelectorAll(".payroll-employee-card");
-
-        // Lấy thông tin từ các thẻ input ẩn
-        const branch = document.querySelector("input[name='branch']")?.value;
-        const month = document.querySelector("input[name='month']")?.value;
-        const year = document.querySelector("input[name='year']")?.value;
-
-        if (!branch || !month || !year) {
-            console.error("Thiếu thông tin chi nhánh hoặc kỳ lương!");
-            return;
-        }
-
-        saveBtn.innerText = "ĐANG LƯU...";
-        saveBtn.disabled = true;
-
-        let done = 0;
-        cards.forEach(card => {
-            const ma_nv = card.dataset.maNv; // camelCase từ data-ma-nv
-            const total = recalc(card); // Đảm bảo lấy số đã tính toán
+            const payload = new URLSearchParams({
+                'ma_nv': card.dataset.maNv,
+                'branch': document.querySelector("[name='branch']")?.value,
+                'month': document.querySelector("[name='month']")?.value,
+                'year': document.querySelector("[name='year']")?.value,
+                'so_gio_lam': card.dataset.hours,
+                'luong_theo_gio': card.dataset.hourly,
+                'luong_co_ban': card.dataset.base,
+                'tong_luong': recalc(),
+                'thuong': card.querySelector(".bonus-input")?.value || 0,
+                'phat': card.querySelector(".penalty-input")?.value || 0,
+            });
 
             fetch(window.PAYROLL_SAVE_URL, {
                 method: "POST",
                 headers: {
                     "X-CSRFToken": csrfToken,
-                    "Content-Type": "application/x-www-form-urlencoded"
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-Requested-With": "XMLHttpRequest"
                 },
-                body: new URLSearchParams({
-                    'ma_nv': ma_nv,
-                    'branch': branch,
-                    'month': month,
-                    'year': year,
-                    'so_gio_lam': card.dataset.hours,
-                    'luong_theo_gio': card.dataset.hourly,
-                    'luong_co_ban': card.dataset.base,
-                    'tong_luong': total,
-                    'thuong': card.querySelector(".bonus-input")?.value || 0,
-                    'phat': card.querySelector(".penalty-input")?.value || 0,
-                })
+                body: payload
             })
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
-                done++;
-                if (done === cards.length) {
-                    // Set sessionStorage flag hi n th thông báo thành công
-
+                if (!remaining || remaining.trim() === "" || remaining === "None") {
+                    // --- KHỚP VỚI LOGIC CỦA FILE LIST BẠN GỬI ---
+                    sessionStorage.setItem('payroll_success', 'true'); // Kích hoạt biến isSuccess ở List
+                    sessionStorage.setItem('payroll_action', 'add');   // Để List hiện chữ "Thêm bảng lương thành công"
                     window.location.href = window.PAYROLL_LIST_URL;
+                } else {
+                    // Còn người thì nhảy sang người tiếp theo
+                    const nextUrl = new URL(window.location.href);
+                    nextUrl.searchParams.set('employees', remaining);
+                    window.location.href = nextUrl.toString();
                 }
             })
-            .catch(error => {
-                console.error("Lỗi khi lưu nhân viên:", ma_nv, error);
+            .catch(err => {
+                console.error("Lỗi:", err);
                 saveBtn.innerText = "LỖI LƯU (F12)";
                 saveBtn.disabled = false;
             });
         });
-    });
-}
+    }
 });

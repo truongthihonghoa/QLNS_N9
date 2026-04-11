@@ -472,90 +472,80 @@ def _next_ma_luong() -> str:
 
 @require_POST
 def payroll_save_view(request):
-    """
-    Create/update payroll record in DB from salary detail modal.
-    POST fields:
-      - ma_luong (optional for update)
-      - ma_nv (required)
-      - branch (ma_chi_nhanh, optional)
-      - month, year (required)
-      - luong_co_ban, luong_theo_gio, so_gio_lam, so_ca_lam, thuong, phat, tong_luong (optional)
-    """
+    # --- Phần kiểm tra quyền (Giữ nguyên của bạn) ---
     demo_mode = bool(getattr(settings, 'DEBUG', False))
     if not request.user.is_authenticated and not demo_mode:
-        return redirect('login')
+        return JsonResponse({'error': 'unauthenticated'}, status=401)
     if not demo_mode and not (request.user.is_staff or request.user.is_superuser):
         return JsonResponse({'error': 'forbidden'}, status=403)
 
-    ma_luong = (request.POST.get('ma_luong') or '').strip()
-    ma_nv = (request.POST.get('ma_nv') or '').strip()
-    branch = (request.POST.get('branch') or '').strip()
-    month = (request.POST.get('month') or '').strip()
-    year = (request.POST.get('year') or '').strip()
+    try:
+        # 1. Lấy dữ liệu cơ bản
+        ma_luong = (request.POST.get('ma_luong') or '').strip()
+        ma_nv = (request.POST.get('ma_nv') or '').strip()
+        branch = (request.POST.get('branch') or '').strip()
+        month = (request.POST.get('month') or '').strip()
+        year = (request.POST.get('year') or '').strip()
 
-    if not ma_nv or not month.isdigit() or not year.isdigit():
-        return JsonResponse({'error': 'invalid_params'}, status=400)
+        if not ma_nv or not month.isdigit() or not year.isdigit():
+            return JsonResponse({'status': 'error', 'message': 'Thiếu thông tin nhân viên hoặc kỳ lương'}, status=400)
 
-    m = int(month)
-    y = int(year)
-    if m < 1 or m > 12 or y < 1900 or y > 2100:
-        return JsonResponse({'error': 'invalid_params'}, status=400)
+        m, y = int(month), int(year)
+        emp = get_object_or_404(NhanVien, pk=ma_nv)
+        chi_nhanh = ChiNhanh.objects.filter(pk=branch).first() if branch else None
 
-    emp = get_object_or_404(NhanVien, pk=ma_nv)
-    chi_nhanh = None
-    if branch:
-        chi_nhanh = get_object_or_404(ChiNhanh, pk=branch)
-
-    payload = {
-        'luong_co_ban': _parse_money(request.POST.get('luong_co_ban')),
-        'luong_theo_gio': _parse_money(request.POST.get('luong_theo_gio')),
-        'so_gio_lam': float(request.POST.get('so_gio_lam') or 0) if str(request.POST.get('so_gio_lam') or '').strip() else 0.0,
-        'so_ca_lam': float(request.POST.get('so_ca_lam') or 0) if str(request.POST.get('so_ca_lam') or '').strip() else 0.0,
-        'thuong': _parse_money(request.POST.get('thuong')),
-        'phat': _parse_money(request.POST.get('phat')),
-        'tong_luong': _parse_money(request.POST.get('tong_luong')),
-    }
-
-    if ma_luong:
-        obj = get_object_or_404(Luong, pk=ma_luong)
-        if obj.trang_thai != 'cho_duyet':
-            return JsonResponse({'error': 'not_editable'}, status=409)
-        obj.nhan_vien = emp
-        obj.chi_nhanh = chi_nhanh
-        obj.thang = m
-        obj.nam = y
-        for k, v in payload.items():
-            setattr(obj, k, v)
-        obj.save()
-    else:
-        obj = Luong(
-            ma_luong=_next_ma_luong(),
-            nhan_vien=emp,
-            chi_nhanh=chi_nhanh,
-            thang=m,
-            nam=y,
-            trang_thai='cho_duyet',
-            **payload,
-        )
-        obj.save()
-
-    return JsonResponse(
-        {
-            'ma_luong': obj.ma_luong,
-            'ma_nv': obj.nhan_vien.ma_nv,
-            'ten_nv': obj.nhan_vien.ho_ten,
-            'ky_luong': f'{obj.thang:02d}/{obj.nam}',
-            'luong_co_ban': f'{obj.luong_co_ban:,.0f}',
-            'luong_theo_gio': f'{obj.luong_theo_gio:,.0f}',
-            'so_gio_lam': obj.so_gio_lam,
-            'so_ca_lam': obj.so_ca_lam,
-            'thuong': f'{obj.thuong:,.0f}',
-            'phat': f'{obj.phat:,.0f}',
-            'tong_luong': f'{obj.tong_luong:,.0f}',
-            'trang_thai': obj.get_trang_thai_display(),
-            'trang_thai_key': _status_key(obj.trang_thai),
+        # 2. Xử lý Payload dữ liệu số
+        payload = {
+            'luong_co_ban': _parse_money(request.POST.get('luong_co_ban')),
+            'luong_theo_gio': _parse_money(request.POST.get('luong_theo_gio')),
+            'so_gio_lam': float(request.POST.get('so_gio_lam') or 0),
+            'so_ca_lam': float(request.POST.get('so_ca_lam') or 0),
+            'thuong': _parse_money(request.POST.get('thuong')),
+            'phat': _parse_money(request.POST.get('phat')),
+            'tong_luong': _parse_money(request.POST.get('tong_luong')),
         }
-    )
+
+        # 3. Lưu hoặc cập nhật
+        if ma_luong:
+            obj = get_object_or_404(Luong, pk=ma_luong)
+            if obj.trang_thai != 'cho_duyet':
+                return JsonResponse({'status': 'error', 'message': 'Bản ghi đã khóa, không thể sửa'}, status=409)
+
+            for k, v in payload.items():
+                setattr(obj, k, v)
+            obj.nhan_vien = emp
+            obj.chi_nhanh = chi_nhanh
+            obj.thang, obj.nam = m, y
+            obj.save()
+        else:
+            # KIỂM TRA TRÙNG: Nếu đã tính lương cho người này rồi thì không tạo mới nữa
+            existing = Luong.objects.filter(nhan_vien=emp, thang=m, nam=y).first()
+            if existing:
+                obj = existing
+                for k, v in payload.items():
+                    setattr(obj, k, v)
+                obj.save()
+            else:
+                obj = Luong.objects.create(
+                    ma_luong=_next_ma_luong(),
+                    nhan_vien=emp,
+                    chi_nhanh=chi_nhanh,
+                    thang=m,
+                    nam=y,
+                    trang_thai='cho_duyet',
+                    **payload
+                )
+
+        # Trả về JSON chuẩn để JS nhận diện thành công
+        return JsonResponse({
+            'status': 'success',
+            'ma_luong': obj.ma_luong,
+            'ten_nv': obj.nhan_vien.ho_ten
+        })
+
+    except Exception as e:
+        # Nếu có bất kỳ lỗi gì phát sinh (DB lỗi, logic sai...), trả về lỗi 500 kèm tin nhắn
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 
 @require_POST
@@ -567,8 +557,6 @@ def payroll_delete_view(request, ma_luong: str):
         return JsonResponse({'error': 'forbidden'}, status=403)
 
     obj = get_object_or_404(Luong, pk=ma_luong)
-    if obj.trang_thai != 'cho_duyet':
-        return JsonResponse({'error': 'not_deletable'}, status=409)
 
     obj.delete()
 
@@ -587,58 +575,52 @@ def payroll_delete_view(request, ma_luong: str):
 
 @require_POST
 def payroll_update_status_view(request, ma_luong: str):
-    # This project currently uses a demo/stub login flow (no real auth session is created),
-    # so in DEBUG we allow status updates without authentication.
     demo_mode = bool(getattr(settings, 'DEBUG', False))
 
+    # Kiểm tra quyền truy cập
     if not request.user.is_authenticated and not demo_mode:
-        if request.content_type.startswith('application/json'):
-            return JsonResponse({'error': 'unauthenticated'}, status=401)
-        return redirect('login')
+        return JsonResponse({'status': 'error', 'message': 'unauthenticated'}, status=401)
 
     if not demo_mode and not (request.user.is_staff or request.user.is_superuser):
-        if request.content_type.startswith('application/json'):
-            return JsonResponse({'error': 'forbidden'}, status=403)
-        return redirect(request.POST.get('next') or request.META.get('HTTP_REFERER') or 'payroll_list')
+        return JsonResponse({'status': 'error', 'message': 'forbidden'}, status=403)
 
     obj = get_object_or_404(Luong, pk=ma_luong)
 
-    try:
-        payload = json.loads(request.body.decode('utf-8') or '{}')
-    except Exception:
-        payload = {}
+    # Đọc dữ liệu gửi lên (hỗ trợ cả JSON và Form POST)
+    if request.method == "POST":
+        try:
+            if request.content_type == 'application/json':
+                payload = json.loads(request.body.decode('utf-8') or '{}')
+            else:
+                payload = request.POST
+        except Exception:
+            payload = {}
 
-    raw_status = (payload.get('status') or request.POST.get('status') or '').strip()
-    raw_status = raw_status.replace('_', '-')
+        raw_status = (payload.get('status') or '').strip().replace('_', '-')
 
-    status_map = {
-        'cho-duyet': 'cho_duyet',
-        'da-duyet': 'da_duyet',
-        'da-tu-choi': 'da_tu_choi',
-    }
-    next_status = status_map.get(raw_status)
-    if not next_status:
-        return JsonResponse({'error': 'invalid_status'}, status=400)
+        status_map = {
+            'cho-duyet': 'cho_duyet',
+            'da-duyet': 'da_duyet',
+            'da-tu-choi': 'da_tu_choi',
+        }
 
-    obj.trang_thai = next_status
-    obj.save(update_fields=['trang_thai'])
+        next_status = status_map.get(raw_status)
+        if not next_status:
+            return JsonResponse({'status': 'error', 'message': 'Trạng thái không hợp lệ'}, status=400)
 
-    wants_json = request.content_type.startswith('application/json') or 'application/json' in (
-        request.headers.get('Accept', '') or ''
-    )
-    if wants_json:
-        return JsonResponse(
-            {
-                'ma_luong': obj.ma_luong,
-                'trang_thai': obj.get_trang_thai_display(),
-                'trang_thai_key': _status_key(obj.trang_thai),
-            }
-        )
+        # Cập nhật trạng thái
+        obj.trang_thai = next_status
+        obj.save(update_fields=['trang_thai'])
 
-    next_url = (request.POST.get('next') or request.META.get('HTTP_REFERER') or '').strip()
-    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
-        return redirect(next_url)
-    return redirect('payroll_list')
+        # PHẢN HỒI CHUẨN ĐỂ JS NHẬN BIẾT
+        return JsonResponse({
+            'status': 'success',
+            'ma_luong': obj.ma_luong,
+            'action_type': raw_status,  # Gửi về để JS biết là vừa 'da-duyet' hay 'da-tu-choi'
+            'trang_thai': obj.get_trang_thai_display()
+        })
+
+    return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
 
 @require_POST
 def payroll_calculate_view(request):
@@ -650,37 +632,37 @@ def payroll_calculate_view(request):
     month = request.POST.get('month')
     year = request.POST.get('year')
     selected_employees = request.POST.getlist('selected_employees')
-    
+
     if not all([branch, month, year, selected_employees]):
         messages.error(request, 'Vui l?ng ch n ? th�ng tin: chi nh�nh, th�ng, n m v� nh�n vi�n')
         return redirect('payroll_list')
-    
+
     try:
         # L c nh�n vi�n c� h p ng h p l trong kho ng th i gian a ch n
         eligible_employees = []
         calculated_employees = []
-        
+
         for emp_id in selected_employees:
             try:
                 employee = NhanVien.objects.get(ma_nv=emp_id)
-                
+
                 # Ki m tra h p ng c?n hi u l c trong kho ng th i gian
                 start_date = datetime.date(int(year), int(month), 1)
                 end_date = datetime.date(int(year), int(month), calendar.monthrange(int(year), int(month))[1])
-                
+
                 valid_contract = HopDongLaoDong.objects.filter(
                     ma_nv=employee,
                     ngay_bat_dau__lte=end_date,
                     ngay_ket_thuc__gte=start_date
                 ).first()
-                
+
                 if valid_contract:
                     # Ki m tra nh�n vi�n a  c t�nh luong trong ky ny
                     existing_payroll = Luong.objects.filter(
                         ma_nv=employee,
                         ky_luong=f"{month}/{year}"
                     ).first()
-                    
+
                     emp_data = {
                         'ma_nv': employee.ma_nv,
                         'ho_ten': employee.ho_ten,
@@ -693,15 +675,15 @@ def payroll_calculate_view(request):
                             'luong_theo_gio': valid_contract.luong_theo_gio,
                         }
                     }
-                    
+
                     if existing_payroll:
                         calculated_employees.append(emp_data)
                     else:
                         eligible_employees.append(emp_data)
-                        
+
             except NhanVien.DoesNotExist:
                 continue
-        
+
         # L u v�o session
         request.session['payroll_calculation_data'] = {
             'branch': branch,
@@ -711,12 +693,12 @@ def payroll_calculate_view(request):
             'calculated_employees': calculated_employees,
             'selected_employees': selected_employees
         }
-        
+
         # Redirect sang trang payroll_add v i query params
         redirect_url = reverse('payroll_add')
         query_params = f"?branch={branch}&month={month}&year={year}"
         return redirect(f"{redirect_url}{query_params}")
-        
+
     except Exception as e:
         messages.error(request, f'L i khi x l? d li u t�nh l ng: {str(e)}')
         return redirect('payroll_list')
@@ -841,4 +823,54 @@ def payroll_add_view(request):
         'year': year_int,
         'employees': employees,
         'warnings': warnings
+    })
+
+
+def payroll_edit_view(request, ma_luong):
+    # 1. Lấy bản ghi bảng lương
+    obj = get_object_or_404(Luong.objects.select_related('nhan_vien', 'chi_nhanh'), pk=ma_luong)
+
+
+    # 3. XỬ LÝ LƯU (POST)
+    if request.method == "POST":
+        # Lấy dữ liệu Thưởng/Phạt từ form gửi lên
+        # Template của bạn đang dùng name="bonus_{{ emp.ma_nv }}"
+        bonus = _parse_money(request.POST.get(f'bonus_{obj.nhan_vien.ma_nv}', 0))
+        penalty = _parse_money(request.POST.get(f'penalty_{obj.nhan_vien.ma_nv}', 0))
+
+        # Cập nhật dữ liệu
+        obj.thuong = bonus
+        obj.phat = penalty
+
+        # Tính toán lại tổng lương (Lương CB + Lương Giờ*Số Giờ + Thưởng - Phạt)
+        obj.tong_luong = (float(obj.luong_co_ban) +
+                          (float(obj.luong_theo_gio) * float(obj.so_gio_lam)) +
+                          float(bonus) - float(penalty))
+
+        obj.save()
+
+        # Sau khi lưu xong, redirect về danh sách.
+        # (JS ở trang list sẽ nhận diện sessionStorage để hiện Toast)
+        return redirect('payroll_list')
+
+    # 4. HIỂN THỊ DỮ LIỆU (GET)
+    # Mapping dữ liệu để tương thích với template payroll_add.html (hoặc edit)
+    # Vì template đang dùng vòng lặp {% for emp in employees %}
+    employee_data = {
+        'ma_nv': obj.nhan_vien.ma_nv,
+        'ho_ten': obj.nhan_vien.ho_ten,
+        'sogio': obj.so_gio_lam,
+        'luong_gio': obj.luong_theo_gio,
+        'luong_co_ban': obj.luong_co_ban,
+        'thuong': obj.thuong,
+        'phat': obj.phat,
+        'tong_luong': obj.tong_luong,
+    }
+
+    return render(request, 'payroll/payroll_edit.html', {
+        'branch': obj.chi_nhanh.ten_chi_nhanh if obj.chi_nhanh else "Chi nhánh GÉ",
+        'month': obj.thang,
+        'year': obj.nam,
+        'employees': [employee_data],  # Truyền vào list
+        'ma_luong': obj.ma_luong,
     })

@@ -61,8 +61,8 @@
     .btn-reject-ge:hover { background-color: #dc3545; color: white; }
 </style>
 <link rel="stylesheet" href="{% static 'payroll/css/payroll_list.css' %}">
-<link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete_payroll.css' %}">
-<link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
+<link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
+<link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -164,14 +164,14 @@
                             {% elif payroll.trang_thai_key == 'da-tu-choi' %}
                                 <i class="fas fa-times-circle" style="color: #dc3545; font-size: 18px;" title="Đã từ chối"></i>
                             {% else %}
-                                <form method="post" action="{% url 'payroll_update_status' payroll.ma_luong %}" style="display:inline;">
+                                <form method="post" action="{% url 'payroll_update_status' payroll.ma_luong %}" style="display:inline;" onsubmit="handlePayrollAction(event,this, 'approve'); return false;">
                                     {% csrf_token %}
                                     <input type="hidden" name="status" value="da-duyet">
                                     <button class="btn-status-action btn-approve-ge" type="submit" title="Duyệt">
                                         <i class="fas fa-check"></i>
                                     </button>
                                 </form>
-                                <form method="post" action="{% url 'payroll_update_status' payroll.ma_luong %}" style="display:inline;">
+                                <form method="post" action="{% url 'payroll_update_status' payroll.ma_luong %}" style="display:inline;" onsubmit="handlePayrollAction(event,this, 'reject'); return false;">
                                     {% csrf_token %}
                                     <input type="hidden" name="status" value="da-tu-choi">
                                     <button class="btn-status-action btn-reject-ge" type="submit" title="Từ chối">
@@ -183,12 +183,8 @@
                     </td>
                     <td class="action-column">
                         <div class="action-buttons">
-                            {% if payroll.trang_thai_key == 'cho-duyet' %}
-                                <button type="button" class="btn-action-ge btn-edit-ge" onclick="openEditPayrollModal(this)"><i class="fas fa-pen"></i></button>
+                                <a href="{% url 'payroll_edit' payroll.ma_luong %}" class="btn-action-ge btn-edit-ge" onclick="openEditPayrollModal(this)"><i class="fas fa-pen"></i></a>
                                 <button type="button" class="btn-action-ge btn-delete-ge" onclick="openDeletePayrollPopup(this)"><i class="fas fa-trash-alt"></i></button>
-                            {% else %}
-                                <span class="locked-action"><i class="fas fa-lock"></i> Đã chốt</span>
-                            {% endif %}
                         </div>
                     </td>
                 </tr>
@@ -269,10 +265,10 @@
     </div>
 </div>
 
-<div id="toast-notification" class="toast"></div>
-{% include 'partials/popup_confirm_delete_payroll.html' %}
-{% include 'partials/popup_success.html' %}
+{% include 'partials/popup_confirm_delete.html' %}
+{% include 'partials/toast_notification.html' %}
 
 <script src="{% static 'payroll/js/payroll_list.js' %}?v=2026-04-11"></script>
+<script src="{% static 'payroll/js/payroll_delete.js' %}?v=2026-04-11"></script>
 
 {% endblock %}

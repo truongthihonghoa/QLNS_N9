@@ -11,14 +11,14 @@ const PayrollHelpers = {
         const element = document.getElementById(id) || document.querySelector(selector);
         return element ? element.value : '';
     },
-    
+
     getSelectedBranch: function() {
-        let branchSelect = document.querySelector('select.branch-dropdown-ge[name="branch"]') || 
+        let branchSelect = document.querySelector('select.branch-dropdown-ge[name="branch"]') ||
                            document.querySelector('select[name="branch"]') ||
                            document.querySelector('#branch');
         return branchSelect ? branchSelect.value : '';
     },
-    
+
     // Hiển thị thông báo Toast (nếu cần gọi thủ công)
     showToast: function(message) {
         const toast = document.getElementById("toast-notification");
@@ -54,22 +54,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Xử lý Thông báo từ SessionStorage (Sau khi thêm/xóa/sửa thành công) ---
     const isSuccess = sessionStorage.getItem('payroll_success') === 'true';
     const isSaved = sessionStorage.getItem('payroll_saved') === '1';
+    const action = sessionStorage.getItem('payroll_action') || 'unknown';
 
     if (isSuccess || isSaved) {
-        const message = sessionStorage.getItem('payroll_success_message') || 'Thao tác thành công!';
+        let message = sessionStorage.getItem('payroll_success_message') || 'Thao tác thành công!';
 
-        // 1. Hiện Popup thành công
-        const successPopup = document.getElementById('success-popup');
-        const successMsg = document.getElementById('success-popup-message');
-        if (successPopup && successMsg) {
-            successMsg.textContent = message;
-            successPopup.style.display = 'flex';
-            
-            const confirmBtn = document.getElementById('success-popup-confirm-btn');
-            if (confirmBtn) { 
-                confirmBtn.onclick = () => successPopup.style.display = 'none'; 
-            }
-            setTimeout(() => { successPopup.style.display = 'none'; }, 5000);
+        // Xử lý message theo action type
+        if (action === 'add') {
+            message = 'Thêm bảng lương thành công';
+        } else if (action === 'edit') {
+            message = 'Cập nhật bảng lương thành công';
+        } else if (action === 'delete') {
+            message = 'Xóa bảng lương thành công';
+        } else if (action === 'approve') {
+            message = 'Duyệt bảng lương thành công';
+        } else if (action === 'reject') {
+            message = 'Từ chối bảng lương thành công';
         }
 
         // 2. Hiện Toast Notification
@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sessionStorage.removeItem('payroll_success');
         sessionStorage.removeItem('payroll_success_message');
         sessionStorage.removeItem('payroll_saved');
+        sessionStorage.removeItem('payroll_action');
     }
 });
 
@@ -216,7 +217,7 @@ function startSalaryCalculationFlow() {
     }
 
     const employees = Array.from(checkboxes).map(cb => cb.value);
-    
+
     // Chuyển hướng sang trang chi tiết để nhập số liệu (Django View xử lý)
     const url = `/payroll/add/?branch=${branch}&month=${month}&year=${year}&employees=${employees.join(',')}`;
     window.location.href = url;
@@ -256,6 +257,42 @@ function confirmCancel() {
     }
 }
 
+// --- Xử lý duyệt/từ chối bảng lương ---
+function handlePayrollAction(event, form, action) {
+    event.preventDefault();
+
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Set thông báo thành công
+            sessionStorage.setItem('payroll_success', 'true');
+            sessionStorage.setItem('payroll_action', action);
+            if (action === 'approve') {
+                sessionStorage.setItem('payroll_success_message', 'Duyệt bảng lương thành công!');
+            } else if (action === 'reject') {
+                sessionStorage.setItem('payroll_success_message', 'Từ chối bảng lương thành công!');
+            }
+            // Reload trang
+            window.location.reload();
+        } else {
+            alert('Thao tác thất bại: ' + (data.message || 'Lỗi không xác định'));
+        }
+    })
+    .catch(error => {
+        console.error('Lỗi khi duyệt/từ chối:', error);
+        alert('Thao tác thất bại, vui lòng thử lại!');
+    });
+}
+
 // --- Placeholder cho các nút Sửa/Xóa (Sẽ xử lý ở các view tương ứng) ---
 function openEditPayrollModal(button) { console.log('Sửa bảng lương'); }
-function openDeletePayrollPopup(button) { console.log('Xóa bảng lương'); }
