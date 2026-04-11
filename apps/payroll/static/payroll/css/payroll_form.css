@@ -1,154 +1,231 @@
-/* ===== CONTAINER ===== */
-.payroll-add-page {
-    padding: 30px;
-    background: #f6f8fb;
-    min-height: 100vh;
-}
+/* payroll_form.css */
 
-.payroll-form-page {
+.payroll-form-container {
+    padding: 30px 20px;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
+    align-items: flex-start; /* Để form không bị đẩy sát lên trên quá */
+    font-family: "Montserrat", sans-serif;
 }
 
+/* FORM NỀN TRẮNG CHÍNH */
 .payroll-form-card {
     width: 100%;
-    max-width: 900px;
+    max-width: 850px;
     background: #ffffff;
-    padding: 30px 35px;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    border-radius: 20px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+    padding: 30px; /* Padding đều các cạnh */
+    border: 1px solid rgba(15, 107, 32, 0.1);
+    box-sizing: border-box;
 }
 
-/* ===== BACK BUTTON ===== */
-.payroll-back-button {
-    background: none;
-    border: none;
-    color: #5f6368;
-    font-size: 15px;
-    cursor: pointer;
-    margin-bottom: 15px;
-    transition: 0.2s;
+/* HEADER BÊN TRONG CARD */
+.inner-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f0f0f0; /* Đường kẻ mờ phân cách tiêu đề */
 }
-
-.payroll-back-button:hover {
-    color: #202124;
-}
-
-/* ===== HEADING ===== */
-.payroll-form-heading h2 {
-    font-size: 22px;
-    margin-bottom: 25px;
-    font-weight: 600;
-}
-
-/* ===== FORM ===== */
-.payroll-form {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px 25px;
-}
-
-/* FULL WIDTH FIELD */
-.payroll-field-full {
-    grid-column: span 2;
-}
-
-/* ===== FIELD ===== */
-.payroll-field {
-    display: flex;
-    flex-direction: column;
-}
-
-.payroll-field label {
+.payroll-warning-box {
+    margin-top: 18px;
+    margin-bottom: 0px;
+    padding: 12px 16px;
+    background: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 10px;
+    color: #856404;
     font-size: 14px;
-    margin-bottom: 6px;
-    color: #444;
+    font-family: "Montserrat", sans-serif;
+}
+
+.warning-item {
+    padding: 3px 0;
     font-weight: 500;
 }
-
-.payroll-field input,
-.payroll-field select {
-    padding: 10px 12px;
-    border-radius: 6px;
-    border: 1px solid #dadce0;
-    font-size: 14px;
-    transition: 0.2s;
+.back-btn-container {
+    margin-bottom: 15px;
 }
 
-.payroll-field input:focus,
-.payroll-field select:focus {
-    border-color: #1a73e8;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(26,115,232,0.15);
-}
-
-/* ===== MONEY STYLE ===== */
-.payroll-money-input {
-    position: relative;
-}
-
-.payroll-money-input input {
-    padding-right: 55px;
-}
-
-.payroll-money-suffix {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #0f6b20;
+    font-weight: 600;
     font-size: 13px;
-    color: #777;
+    text-decoration: none;
+    padding: 8px 15px;
+    background: #f0f7f0;
+    border-radius: 8px;
+    transition: 0.3s;
 }
 
-/* ===== ACTION BUTTONS ===== */
-.payroll-form-actions {
-    grid-column: span 2;
+.back-link:hover { background: #e1efe1; }
+
+.page-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.page-title {
+    font-weight: 700;
+    color: #0f6b20;
+    font-size: 22px;
+    border-left: 5px solid #0f6b20; /* Vạch xanh đặc trưng */
+    padding-left: 15px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.payroll-subtext {
+    font-size: 16px;
+    color: #666;
+    padding-left: 20px;
+    margin-top:15px;
+}
+
+/* CARD NHÂN VIÊN (VÙNG NHẬP LIỆU) */
+.payroll-employee-card {
+    background: #fbfcfd;
+    border: 1.5px solid #eef1f4;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.emp-card-header {
+    text-align: left;
+    margin-left: 8px
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    font-weight: 700;
+}
+
+.emp-name {
+    display: block;
+    font-weight: 700;
+    font-size: 18px;
+    color: black;
+}
+
+.emp-id {
+    font-size: 15px;
+    color: black;
+    padding-top: 10px;
+}
+
+/* Layout nhập liệu 2 cột */
+.emp-card-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group label {
+    font-weight: 700;
+    font-size: 13px;
+    color: #604534;
+}
+
+.form-group input {
+    height: 48px;
+    padding: 0 15px;
+    border-radius: 10px;
+    border: 1.5px solid #d8dde3;
+    background: #fff;
+}
+
+/* Tổng lương highlight */
+.full-width { grid-column: 1 / span 2; }
+
+.total-salary-input {
+    background: #f0f7f0 !important;
+    border: 1.5px solid #0f6b20 !important;
+    color: #0f6b20 !important;
+    font-weight: 700 !important;
+    font-size: 20px;
+}
+
+/* Nút Save/Hủy */
+.form-actions {
     display: flex;
     justify-content: flex-end;
     gap: 15px;
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
-.payroll-cancel-btn {
-    padding: 10px 18px;
-    border-radius: 6px;
-    border: 1px solid #dadce0;
-    background: #fff;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.payroll-cancel-btn:hover {
-    background: #f1f3f4;
-}
-
-.payroll-save-btn {
-    padding: 10px 20px;
-    border-radius: 6px;
+.save-btn {
+    background: #0f6b20;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 700;
     border: none;
-    background: #1a73e8;
-    color: #fff;
-    font-weight: 500;
     cursor: pointer;
-    transition: 0.2s;
+    height:48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.payroll-save-btn:hover {
-    background: #1669c1;
-}
-
-/* ===== REQUIRED ===== */
-.required {
-    color: red;
+.cancel-btn {
+    background: #eee;
+    color: #555;
+    height:48px;
+    padding: 12px 30px;
+    border-radius: 10px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-    .payroll-form {
+
+    /* Card padding gọn lại */
+    .payroll-form-card {
+        padding: 20px;
+    }
+
+    /* Nhân viên card */
+    .payroll-employee-card {
+        padding: 18px;
+    }
+
+    /* 👉 CHUYỂN 2 CỘT -> 1 CỘT */
+    .emp-card-body {
         grid-template-columns: 1fr;
     }
 
-    .payroll-field-full {
+    /* Full width giữ nguyên */
+    .full-width {
         grid-column: span 1;
+    }
+
+    /* Input cho đẹp hơn trên mobile */
+    .form-group input {
+        height: 44px;
+        font-size: 14px;
+    }
+
+    /* 👉 BUTTON DÀN ĐỀU */
+    .form-actions {
+        flex-direction: row;
+    }
+
+    .form-actions .save-btn,
+    .form-actions .cancel-btn {
+        flex: 1;
+        text-align: center;
     }
 }

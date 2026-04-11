@@ -20,10 +20,9 @@
     font-family: 'Montserrat-Bold', sans-serif;
 }
 
-.toast-notification.show {
-    opacity: 1;
+#toast-notification.show {
     transform: translateY(0);
-    pointer-events: auto;
+    opacity: 1;
 }
 
 .toast-content {

@@ -1,22 +1,129 @@
+
+// HELPER FUNCTIONS
+const PayrollHelpers = {
+    // L y gi� tr t dropdown
+    getDropdownValue: function(id, selector) {
+        const element = document.getElementById(id) || document.querySelector(selector);
+        return element ? element.value : '';
+    },
+    
+    // Validate form t�nh luoong
+    validateCalculationForm: function() {
+        const month = this.getDropdownValue('salaryMonth', 'select[name="month"]');
+        const year = this.getDropdownValue('salaryYear', 'select[name="year"]');
+        
+        if (!month || !year) {
+            alert('Vui l?ng ch n ky luoong (Th�ng v� N m)');
+            return null;
+        }
+        
+        return { month, year };
+    },
+    
+    // L y danh s�ch nh�n vi�n a ch n
+    getSelectedEmployees: function() {
+        const checkboxes = document.querySelectorAll('input[name="selected_employees"]:checked');
+        
+        if (checkboxes.length === 0) {
+            alert('Vui l?ng ch n �t nh t m t nh�n vi�n  t�nh luoong');
+            return null;
+        }
+        
+        const selectedEmployees = [];
+        checkboxes.forEach(checkbox => {
+            selectedEmployees.push(checkbox.value);
+        });
+        
+        return selectedEmployees;
+    },
+    
+    // L y chi nh�nh a ch n
+    getSelectedBranch: function() {
+        const branchSelect = document.querySelector('select.branch-dropdown-ge[name="branch"]') || 
+                             document.querySelector('select[name="branch"]');
+        return branchSelect ? branchSelect.value : '';
+    },
+    
+    // T o form POST
+    createPostForm: function(url, data) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = url;
+        form.style.display = 'none';
+        
+        // Th m CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (csrfToken) {
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = csrfToken.value;
+            form.appendChild(csrfInput);
+        }
+        
+        // Th m c�c d li u
+        Object.keys(data).forEach(key => {
+            if (Array.isArray(data[key])) {
+                data[key].forEach(value => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = value;
+                    form.appendChild(input);
+                });
+            } else {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = data[key];
+                form.appendChild(input);
+            }
+        });
+        
+        return form;
+    },
+    
+    // Submit form
+    submitForm: function(url, data) {
+        const form = this.createPostForm(url, data);
+        document.body.appendChild(form);
+        form.submit();
+    },
+    
+    // Hi n th th�ng b�o
+    showMessage: function(message, type = 'info') {
+        console.log([] );
+
+    }
+};
+
+
 // Mở modal tính lương
 function openSalaryModal() {
-    console.log('Hàm openSalaryModal đã được gọi');
+    console.log('Đang mở Modal...');
     const modal = document.getElementById('salaryModal');
     if (modal) {
-        modal.style.display = 'flex';
-        console.log('Đã mở Modal');
+        modal.classList.add('show'); // Dùng class để đồng bộ với CSS của bạn
     } else {
-        console.error('Không tìm thấy Modal');
+        alert('Lỗi: Không tìm thấy phần tử #salaryModal trong HTML!');
     }
 }
 
 // Ẩn modal tính lương
 function closeSalaryModal() {
-    console.log('Hàm closeSalaryModal đã được gọi');
     const modal = document.getElementById('salaryModal');
     if (modal) {
-        modal.style.display = 'none';
-        console.log('Đã đóng Modal');
+        modal.classList.remove('show');
+    }
+}
+
+// Fix hàm confirmCancel bị viết sai tên biến (detailmodal -> detailModal)
+function confirmCancel() {
+    closeCancelConfirmPopup();
+    const detailModal = document.getElementById('salaryDetailModal');
+    if (detailModal) {
+        detailModal.classList.remove('show'); // Chú ý chữ M viết hoa
+        detailModal.style.display = 'none';
     }
 }
 
@@ -153,35 +260,39 @@ function startSalaryCalculationFlow() {
 function processCalculation(e) {
     if (e) e.preventDefault();
 
-    const monthSelect = document.getElementById('salaryMonth') || document.querySelector('select[name="month"]');
-    const yearSelect = document.getElementById('salaryYear') || document.querySelector('select[name="year"]');
-
-    const month = monthSelect ? monthSelect.value : '';
-    const year = yearSelect ? yearSelect.value : '';
+    const month = document.getElementById('salaryMonth').value;
+    const year = document.getElementById('salaryYear').value;
 
     if (!month || !year) {
-        alert('Vui lòng chọn kỳ lương (Tháng và Năm)');
+        alert('Vui lòng chọn kỳ lương');
         return;
     }
 
-    // Lấy danh sách nhân viên đã được tích chọn
     const checkboxes = document.querySelectorAll('input[name="selected_employees"]:checked');
+
     if (checkboxes.length === 0) {
-        alert('Vui lòng chọn ít nhất một nhân viên để tính lương');
+        alert('Chọn ít nhất 1 nhân viên');
         return;
     }
 
-    const selectedEmployees = [];
-    checkboxes.forEach(checkbox => {
-        selectedEmployees.push(checkbox.value);
-    });
+    const employees = [];
+    checkboxes.forEach(cb => employees.push(cb.value));
 
-    console.log('Các mã nhân viên đã chọn:', selectedEmployees);
+    // ✅ THÊM branch
+    const branch = PayrollHelpers.getSelectedBranch();
 
-    // Mở modal chi tiết cho nhân viên đầu tiên trong danh sách chọn
-    showEmployeeDetail(selectedEmployees[0], month, year);
+    if (!branch) {
+        alert('Không tìm thấy chi nhánh');
+        return;
+    }
+
+    console.log("DEBUG:", { month, year, branch, employees });
+
+
+    const url = `/payroll/add/?branch=${branch}&month=${month}&year=${year}&employees=${employees.join(',')}`;
+
+    window.location.href = url;
 }
-
 // Hiển thị modal nhập chi tiết lương cho từng nhân viên
 function showEmployeeDetail(employeeId, month, year) {
     console.log('Đang hiển thị chi tiết cho mã NV:', employeeId);
@@ -217,11 +328,6 @@ function recalculateTotal() {
 }
 
 // Lưu dữ liệu chi tiết lương vào cơ sở dữ liệu
-function saveSalaryDetailDb() {
-    console.log('Đang thực hiện lưu dữ liệu...');
-    // Sau khi xử lý API lưu xong:
-    alert('Dữ liệu lương đã được lưu thành công!');
-}
 
 // Mở popup xác nhận trước khi hủy bỏ nhập liệu
 function openCancelConfirmPopup() {
@@ -240,14 +346,6 @@ function closeCancelConfirmPopup() {
 }
 
 // Xác nhận hủy bỏ và đóng modal chi tiết
-function confirmCancel() {
-    console.log('Người dùng đã xác nhận hủy');
-    closeCancelConfirmPopup();
-    const detailModal = document.getElementById('salaryDetailModal');
-    if (detailModal) {
-        detailModal.style.display = 'none';
-    }
-}
 
 // Chọn hoặc bỏ chọn tất cả nhân viên trong danh sách
 function toggleSelectAll(source) {
@@ -285,3 +383,5 @@ function handleExportApproved() {
     console.log('Yêu cầu xuất định dạng:', format);
     alert('Tính năng xuất file định dạng ' + format.toUpperCase() + ' hiện đang được triển khai.');
 }
+
+

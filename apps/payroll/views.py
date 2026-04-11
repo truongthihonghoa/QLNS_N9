@@ -4,6 +4,7 @@ import datetime
 import re
 
 from django.conf import settings
+from django.contrib import messages
 from django.db.models import Q
 from django.db.models import Sum
 from django.http import JsonResponse
@@ -17,6 +18,139 @@ from ..employees.models import NhanVien
 from ..contracts.models import HopDongLaoDong
 from ..attendances.models import ChamCong
 from .models import Luong
+
+# HELPER FUNCTIONS - T�ch logic kinh doanh
+
+# HELPER FUNCTIONS - T�ch logic kinh doanh
+def _validate_payroll_request(request):
+
+    branch = request.POST.get('branch')
+    month = request.POST.get('month')
+    year = request.POST.get('year')
+    selected_employees = request.POST.getlist('selected_employees')
+    
+    errors = []
+    if not branch:
+        errors.append('Vui l?ng ch n chi nh�nh')
+    if not month:
+        errors.append('Vui l?ng ch n th�ng')
+    if not year:
+        errors.append('Vui l?ng ch n n m')
+    if not selected_employees:
+        errors.append('Vui l?ng ch n �t nh t m t nh�n vi�n')
+    
+    if errors:
+        for error in errors:
+            messages.error(request, error)
+        return None
+    
+    return {
+        'branch': branch,
+        'month': month, 
+        'year': year,
+        'selected_employees': selected_employees
+    }
+
+
+def _get_period_dates(month, year):
+
+    start_date = datetime.date(int(year), int(month), 1)
+    end_date = datetime.date(
+        int(year), 
+        int(month), 
+        calendar.monthrange(int(year), int(month))[1]
+    )
+    return start_date, end_date
+
+
+def _get_employee_data(employee_id, start_date, end_date, ky_luong):
+
+    try:
+        employee = NhanVien.objects.get(ma_nv=employee_id)
+        
+        # Ki m tra h p ng
+        contract = HopDongLaoDong.objects.filter(
+            ma_nv=employee,
+            ngay_bat_dau__lte=end_date,
+            ngay_ket_thuc__gte=start_date
+        ).first()
+        
+        if not contract:
+            return None
+        
+        # Ki m tra luoong ton tai
+        existing_payroll = Luong.objects.filter(
+            ma_nv=employee,
+            ky_luong=ky_luong
+        ).first()
+        
+        emp_data = {
+            'ma_nv': employee.ma_nv,
+            'ho_ten': employee.ho_ten,
+            'chi_nhanh': employee.ma_chi_nhanh.ten_chi_nhanh if employee.ma_chi_nhanh else '',
+            'hop_dong': {
+                'ma_hop_dong': contract.ma_hop_dong,
+                'ngay_bat_dau': contract.ngay_bat_dau,
+                'ngay_ket_thuc': contract.ngay_ket_thuc,
+                'luong_co_ban': contract.luong_co_ban,
+                'luong_theo_gio': contract.luong_theo_gio,
+            }
+        }
+        
+        return emp_data, existing_payroll is not None
+        
+    except NhanVien.DoesNotExist:
+        return None, False
+
+
+def _process_selected_employees(selected_employees, month, year):
+
+    start_date, end_date = _get_period_dates(month, year)
+    ky_luong = f"{month}/{year}"
+    
+    eligible_employees = []
+    calculated_employees = []
+    
+    for emp_id in selected_employees:
+        result = _get_employee_data(emp_id, start_date, end_date, ky_luong)
+        
+        if result[0]:  # C� d liu nh�n vi�n
+            emp_data, is_calculated = result
+            if is_calculated:
+                calculated_employees.append(emp_data)
+            else:
+                eligible_employees.append(emp_data)
+    
+    return eligible_employees, calculated_employees
+
+
+def _save_calculation_to_session(request, data, eligible, calculated):
+
+    request.session['payroll_calculation_data'] = {
+        'branch': data['branch'],
+        'month': data['month'],
+        'year': data['year'],
+        'eligible_employees': eligible,
+        'calculated_employees': calculated,
+        'selected_employees': data['selected_employees']
+    }
+
+
+def _build_add_context(request, branch, month, year):
+
+    calc_data = request.session.get('payroll_calculation_data', {})
+    
+    return {
+        'branch': branch,
+        'month': month,
+        'year': year,
+        'ky_luong': f"{month}/{year}",
+        'eligible_employees': calc_data.get('eligible_employees', []),
+        'calculated_employees': calc_data.get('calculated_employees', []),
+        'selected_employees': calc_data.get('selected_employees', []),
+    }
+
+
 
 
 def _status_key(db_value: str) -> str:
@@ -301,21 +435,22 @@ def payroll_period_employees_view(request):
         return JsonResponse(response_data)
 
 
-def _parse_money(value: str) -> float:
-    if value is None:
-        return 0.0
-    s = str(value).strip()
-    # Remove all non-digit characters except first minus sign
-    # Handle formats: "1234567", "1.234.567", "1,234,567", "-1234567", etc.
-    s = s.replace(',', '')  # Remove comma separators
-    s = s.replace('.', '')  # Remove all dot separators
-    # Now we should have just "-1234567" or "1234567"
-    try:
-        result = float(s) if s and s not in ('-', '') else 0.0
-        return result
-    except Exception:
-        return 0.0
+def _parse_money(value):
+    if not value:
+        return 0
 
+    value = str(value)
+
+    # bỏ dấu chấm ngăn cách nghìn
+    value = value.replace('.', '')
+
+    # đổi dấu phẩy thành chấm nếu có
+    value = value.replace(',', '.')
+
+    try:
+        return float(value)
+    except:
+        return 0
 
 def _next_ma_luong() -> str:
     # Try to generate sequential ML0001, ML0002... based on existing numeric suffixes.
@@ -504,3 +639,206 @@ def payroll_update_status_view(request, ma_luong: str):
     if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
         return redirect(next_url)
     return redirect('payroll_list')
+
+@require_POST
+def payroll_calculate_view(request):
+    """
+    X l? POST request t modal t�nh l ng
+    L c nh�n vi�n, ph�n lo i v� redirect sang payroll_add
+    """
+    branch = request.POST.get('branch')
+    month = request.POST.get('month')
+    year = request.POST.get('year')
+    selected_employees = request.POST.getlist('selected_employees')
+    
+    if not all([branch, month, year, selected_employees]):
+        messages.error(request, 'Vui l?ng ch n ? th�ng tin: chi nh�nh, th�ng, n m v� nh�n vi�n')
+        return redirect('payroll_list')
+    
+    try:
+        # L c nh�n vi�n c� h p ng h p l trong kho ng th i gian a ch n
+        eligible_employees = []
+        calculated_employees = []
+        
+        for emp_id in selected_employees:
+            try:
+                employee = NhanVien.objects.get(ma_nv=emp_id)
+                
+                # Ki m tra h p ng c?n hi u l c trong kho ng th i gian
+                start_date = datetime.date(int(year), int(month), 1)
+                end_date = datetime.date(int(year), int(month), calendar.monthrange(int(year), int(month))[1])
+                
+                valid_contract = HopDongLaoDong.objects.filter(
+                    ma_nv=employee,
+                    ngay_bat_dau__lte=end_date,
+                    ngay_ket_thuc__gte=start_date
+                ).first()
+                
+                if valid_contract:
+                    # Ki m tra nh�n vi�n a  c t�nh luong trong ky ny
+                    existing_payroll = Luong.objects.filter(
+                        ma_nv=employee,
+                        ky_luong=f"{month}/{year}"
+                    ).first()
+                    
+                    emp_data = {
+                        'ma_nv': employee.ma_nv,
+                        'ho_ten': employee.ho_ten,
+                        'chi_nhanh': employee.ma_chi_nhanh.ten_chi_nhanh if employee.ma_chi_nhanh else '',
+                        'hop_dong': {
+                            'ma_hop_dong': valid_contract.ma_hop_dong,
+                            'ngay_bat_dau': valid_contract.ngay_bat_dau,
+                            'ngay_ket_thuc': valid_contract.ngay_ket_thuc,
+                            'luong_co_ban': valid_contract.luong_co_ban,
+                            'luong_theo_gio': valid_contract.luong_theo_gio,
+                        }
+                    }
+                    
+                    if existing_payroll:
+                        calculated_employees.append(emp_data)
+                    else:
+                        eligible_employees.append(emp_data)
+                        
+            except NhanVien.DoesNotExist:
+                continue
+        
+        # L u v�o session
+        request.session['payroll_calculation_data'] = {
+            'branch': branch,
+            'month': month,
+            'year': year,
+            'eligible_employees': eligible_employees,
+            'calculated_employees': calculated_employees,
+            'selected_employees': selected_employees
+        }
+        
+        # Redirect sang trang payroll_add v i query params
+        redirect_url = reverse('payroll_add')
+        query_params = f"?branch={branch}&month={month}&year={year}"
+        return redirect(f"{redirect_url}{query_params}")
+        
+    except Exception as e:
+        messages.error(request, f'L i khi x l? d li u t�nh l ng: {str(e)}')
+        return redirect('payroll_list')
+
+
+def payroll_add_view(request):
+    # ==========================================
+    # XỬ LÝ LƯU DỮ LIỆU (KHI NHẤN NÚT LƯU)
+    # ==========================================
+    if request.method == "POST":
+        month = request.POST.get('month')
+        year = request.POST.get('year')
+        branch_id = request.POST.get('branch')
+
+        # Tìm các ID nhân viên có trong form gửi lên
+        employee_ids = [k.split('_')[1] for k in request.POST.keys() if k.startswith('bonus_')]
+
+        chi_nhanh = None
+        if branch_id:
+            chi_nhanh = ChiNhanh.objects.filter(ma_chi_nhanh=branch_id).first()
+
+        for emp_id in employee_ids:
+            try:
+                nv = NhanVien.objects.get(ma_nv=emp_id)
+
+                # Lấy dữ liệu từ các input ẩn và input nhập liệu
+                bonus = _parse_money(request.POST.get(f'bonus_{emp_id}', 0))
+                penalty = _parse_money(request.POST.get(f'penalty_{emp_id}', 0))
+                total_salary = _parse_money(request.POST.get(f'total_salary_{emp_id}', 0))
+
+                base_salary = _parse_money(request.POST.get(f'base_salary_{emp_id}', 0))
+                hourly_rate = _parse_money(request.POST.get(f'hourly_rate_{emp_id}', 0))
+                hours = float(request.POST.get(f'hours_{emp_id}', 0) or 0)
+
+                # Lưu vào Database
+                # Nếu đã tồn tại lương cho NV này trong kỳ này thì cập nhật, chưa có thì tạo mới
+                Luong.objects.update_or_create(
+                    nhan_vien=nv,
+                    thang=int(month),
+                    nam=int(year),
+                    defaults={
+                        'ma_luong': _next_ma_luong(),  # Chỉ gán mã nếu là tạo mới hoàn toàn
+                        'chi_nhanh': chi_nhanh,
+                        'luong_co_ban': base_salary,
+                        'luong_theo_gio': hourly_rate,
+                        'so_gio_lam': hours,
+                        'thuong': bonus,
+                        'phat': penalty,
+                        'tong_luong': total_salary,
+                        'trang_thai': 'cho_duyet',
+                    }
+                )
+            except (NhanVien.DoesNotExist, ValueError):
+                continue
+
+        messages.success(request, f"Đã lưu bảng lương kỳ {month}/{year} thành công!")
+
+        # ĐÂY LÀ CHỖ QUAN TRỌNG: Redirect để xóa trạng thái POST
+        return redirect('payroll_list')
+
+    # ==========================================
+    # HIỂN THỊ DỮ LIỆU TẠM THỜI (KHI MỚI VÀO TRANG)
+    # ==========================================
+    branch = request.GET.get('branch')
+    month = request.GET.get('month')
+    year = request.GET.get('year')
+    employees_param = request.GET.get('employees')
+
+    if not all([month, year, employees_param]):
+        messages.error(request, 'Dữ liệu không đầy đủ để tính lương.')
+        return redirect('payroll_list')
+
+    try:
+        month_int = int(month)
+        year_int = int(year)
+        selected_ids = employees_param.split(',')
+    except ValueError:
+        return redirect('payroll_list')
+
+    employees = []
+    warnings = []
+
+    for emp_id in selected_ids:
+        try:
+            nv = NhanVien.objects.get(ma_nv=emp_id)
+
+            # Lấy dữ liệu chấm công thực tế
+            qs_cc = ChamCong.objects.filter(ma_nv_id=emp_id, ngay_lam__year=year_int, ngay_lam__month=month_int)
+            total_hours = float(qs_cc.aggregate(total=Sum('so_gio_lam'))['total'] or 0)
+
+            if qs_cc.count() == 0:
+                warnings.append(f"Nhân viên {nv.ho_ten} ({nv.ma_nv}) không có dữ liệu chấm công.")
+
+            # Lấy hợp đồng để lấy mức lương
+            first_day = datetime.date(year_int, month_int, 1)
+            last_day = datetime.date(year_int, month_int, calendar.monthrange(year_int, month_int)[1])
+
+            contract = HopDongLaoDong.objects.select_related('chi_tiet').filter(
+                ma_nv_id=emp_id, trang_thai='CON_HAN', ngay_bat_dau__lte=last_day
+            ).filter(Q(ngay_ket_thuc__isnull=True) | Q(ngay_ket_thuc__gte=first_day)).order_by('-ngay_bat_dau').first()
+
+            luong_gio = 0
+            luong_co_ban = 0
+            if contract and hasattr(contract, 'chi_tiet'):
+                luong_gio = float(contract.chi_tiet.luong_theo_gio or 0)
+                luong_co_ban = float(contract.chi_tiet.luong_co_ban or 0)
+
+            employees.append({
+                'ma_nv': nv.ma_nv,
+                'ho_ten': nv.ho_ten,
+                'sogio': total_hours,
+                'luong_gio': luong_gio,
+                'luong_co_ban': luong_co_ban,
+                'tong_luong': (total_hours * luong_gio) + luong_co_ban,
+            })
+        except NhanVien.DoesNotExist:
+            continue
+
+    return render(request, 'payroll/payroll_add.html', {
+        'branch': branch,
+        'month': month_int,
+        'year': year_int,
+        'employees': employees,
+        'warnings': warnings
+    })
