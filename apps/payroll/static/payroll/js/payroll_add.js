@@ -103,6 +103,8 @@ if (saveBtn) {
             .then(data => {
                 done++;
                 if (done === cards.length) {
+                    // Set sessionStorage flag hi n th thông báo thành công
+
                     window.location.href = window.PAYROLL_LIST_URL;
                 }
             })

@@ -126,20 +126,65 @@
 
             <!-- ACTION -->
             <div class="form-actions">
-                <a href="{% url 'payroll_list' %}" class="cancel-btn">HỦY</a>
+                <button type="button" class="cancel-btn" onclick="openCancelConfirmPopup()">HỦY</button>
                 <button type="submit" class="save-btn">LƯU</button>
             </div>
 
         </form>
     </div>
 </div>
-<script >
+
+{% include 'partials/popup_confirm_cancel.html' %}
+<script>
+    // Khai báo URL cho JS sử dụng
     window.PAYROLL_SAVE_URL = "{% url 'payroll_save' %}";
     window.PAYROLL_LIST_URL = "{% url 'payroll_list' %}";
+
+    // Hàm mở Popup xác nhận hủy
+    function openCancelConfirmPopup() {
+        const popup = document.getElementById('confirm-cancel-popup');
+        if (popup) {
+            popup.style.display = 'flex';
+        }
+    }
+
+    function closeCancelConfirmPopup() {
+        const popup = document.getElementById('confirm-cancel-popup');
+        if (popup) {
+            popup.style.display = 'none';
+        }
+    }
+
+    // Xử lý sự kiện khi Popup đã sẵn sàng
+    document.addEventListener('DOMContentLoaded', function() {
+        const yesBtn = document.getElementById('confirm-yes-btn');
+        const noBtn = document.getElementById('confirm-no-btn');
+
+        if (yesBtn) {
+            yesBtn.addEventListener('click', function() {
+                window.location.href = window.PAYROLL_LIST_URL;
+            });
+        }
+
+        if (noBtn) {
+            noBtn.addEventListener('click', function() {
+                closeCancelConfirmPopup();
+            });
+        }
+
+        // Đóng khi click ra ngoài vùng box
+        const popup = document.getElementById('confirm-cancel-popup');
+        if (popup) {
+            popup.addEventListener('click', function(e) {
+                if (e.target === popup) {
+                    closeCancelConfirmPopup();
+                }
+            });
+        }
+    });
 </script>
 <script src="{% static 'payroll/js/payroll_add.js' %}?v=3.4">
-</script>
-{% include 'partials/popup_confirm_cancel.html' %}
+
 
 
 {% endblock %}

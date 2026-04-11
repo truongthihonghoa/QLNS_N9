@@ -199,42 +199,49 @@
     justify-content: center;
 }
 
+/* --- ĐỒNG BỘ KÍCH THƯỚC ICON --- */
+
+/* Class dùng chung cho các nút icon tròn */
+.btn-status-action,
 .btn-action-ge {
     background: white !important;
-    border: 1px solid !important;
-    border-color: #333333 !important; /* Thiết lập viền hình tròn mặc định là màu đen */
-    padding: 0;
-    width: 38px !important;
-    height: 38px !important;
+    border: 1px solid #333333 !important; /* Viền đen mặc định giống nhau */
+    width: 38px !important;  /* Tăng lên 38px cho bằng cột hành động */
+    height: 38px !important; /* Tăng lên 38px */
     border-radius: 50% !important;
-    display: flex;
+    display: inline-flex !important; /* Dùng inline-flex để không làm vỡ dòng */
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-size: 16px !important;
+    font-size: 18px !important; /* Tăng kích thước icon bên trong cho rõ nét */
+    padding: 0 !important;
+    margin: 0 2px; /* Khoảng cách nhẹ giữa các nút */
 }
 
-.btn-edit-ge {
-    border-color: #333333 !important;
-    color: #333333 !important;
-    font-weight: bold;
-}
+/* Màu sắc riêng cho từng loại khi hover hoặc icon bên trong */
+.btn-approve-ge i { color: #28a745; }
+.btn-approve-ge:hover { background-color: #28a745 !important; border-color: #28a745 !important; }
+.btn-approve-ge:hover i { color: white !important; }
 
-.btn-approve-ge {
-    border-color: #333333 !important;
-    color: #28a745 !important;
-}
+.btn-reject-ge i { color: #dc3545; }
+.btn-reject-ge:hover { background-color: #dc3545 !important; border-color: #dc3545 !important; }
+.btn-reject-ge:hover i { color: white !important; }
 
-.btn-reject-ge {
-    border-color: #333333 !important;
-    color: #dc3545 !important;
-}
+.btn-edit-ge i { color: #333333; }
+.btn-edit-ge:hover { background-color: #333333 !important; color: white !important; }
+.btn-edit-ge:hover i { color: white !important; }
 
-.btn-delete-ge {
-    border-color: #333333 !important;
-    color: #d32f2f !important;
-    font-weight: bold;
+.btn-delete-ge i { color: #d32f2f; }
+.btn-delete-ge:hover { background-color: #d32f2f !important; color: white !important; }
+.btn-delete-ge:hover i { color: white !important; }
+
+/* Căn chỉnh lại container để các nút không bị dính lẹo */
+.status-badge, .action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
 /* --- TỔNG THỂ MODAL TÍNH LƯƠNG GÉ CAFE --- */
@@ -457,21 +464,27 @@
     font-weight: 600;
 }
 
-.status-badge.da-duyet i {
-    color: #28a745; /* Màu xanh lá cho dấu tích */
+/* Container bọc icon sau khi đã duyệt */
+.status-badge.da-duyet,
+.status-badge.da-tu-choi {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100%;
+    min-height: 38px; /* Bằng chiều cao nút hành động */
 }
 
+/* Ép icon to lên (bằng size 28px) khi đã chốt */
+.status-badge.da-duyet i,
 .status-badge.da-tu-choi i {
-    color: #dc3545; /* Màu đỏ cho dấu X */
+    font-size: 28px !important;
+    line-height: 1;
+    display: block;
 }
 
-.status-badge.cho-duyet i.fa-check {
-    color: #28a745; /* Đảm bảo icon check trong hàng chờ duyệt màu xanh lá */
-}
-
-.status-badge.cho-duyet i.fa-times {
-    color: #dc3545; /* Đảm bảo icon times trong hàng chờ duyệt màu đỏ */
-}
+/* Màu chuẩn cho icon khi đã chốt */
+.status-badge.da-duyet i { color: #28a745 !important; } /* Tích xanh */
+.status-badge.da-tu-choi i { color: #dc3545 !important; } /* X đỏ */
 
 /* --- TOAST NOTIFICATION STYLES --- */
 .toast-notification {
@@ -629,43 +642,55 @@
 }
 
 /* --- EXPORT CONTROLS STYLES --- */
+/* --- ĐẨY CỤM XUẤT FILE SANG PHẢI --- */
+/* Container chính đẩy về bên phải */
 .export-data-wrapper {
     margin-top: 25px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-end; /* Đẩy cả cụm sang phải */
     padding-bottom: 30px;
+    width: 100%;
 }
 
+/* Cụm điều khiển xếp thành hàng dọc */
 .export-controls {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
+    flex-direction: column;    /* Xếp thành 2 hàng dọc */
+    gap: 12px;                /* Khoảng cách giữa dropdown và nút */
+    align-items: flex-end;     /* Căn cả dropdown và nút sát lề phải */
 }
 
+/* Dropdown chọn định dạng */
 .export-dropdown {
     height: 45px;
-    width:200px;
+    width: 200px;             /* Độ rộng bằng với nút bấm cho cân đối */
     padding: 0 15px;
     border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    background: white;
+    border: 1px solid var(--border-color);
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    background-color: white;
+    cursor: pointer;
 }
 
+/* Nút Xuất báo cáo */
 .btn-export-final {
-    height: 45px;
-    width:200px;
-    padding: 0 30px;
-    background-color: #174D17; /* Màu xanh lá */
+    height: 48px;
+    width: 200px;             /* Độ rộng cố định */
+    background-color: var(--ge-green-dark);
     color: white;
     border: none;
     border-radius: 8px;
     font-weight: 600;
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
     transition: background 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
+
 
 .btn-export-final:hover {
     background-color: #1B5E20; /* Màu xanh lá nhạt hơn khi hover */
