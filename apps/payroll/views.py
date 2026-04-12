@@ -436,16 +436,53 @@ def payroll_period_employees_view(request):
 
 
 def _parse_money(value):
+    if value is None:
+        return 0
+
+    # Fast-path for numeric values to avoid mis-parsing "3480000.0" as "34800000".
+    if isinstance(value, (int, float)):
+        try:
+            return float(value)
+        except Exception:
+            return 0
+
     if not value:
         return 0
 
-    value = str(value)
+    value = re.sub(r'[^0-9,.\-+]', '', str(value).strip())
+    if not value or value in ('-', '+'):
+        return 0
 
     # bỏ dấu chấm ngăn cách nghìn
-    value = value.replace('.', '')
+    dot = value.rfind('.')
+    comma = value.rfind(',')
+
+    if dot != -1 and comma != -1:
+        # Rightmost separator is decimal.
+        if dot > comma:
+            value = value.replace(',', '')  # commas as thousands
+        else:
+            value = value.replace('.', '').replace(',', '.')  # dots as thousands
+    elif dot != -1:
+        if value.count('.') > 1:
+            value = value.replace('.', '')  # thousands
+        else:
+            head, tail = value.split('.', 1)
+            if tail.isdigit() and len(tail) == 3 and head.lstrip('+-').isdigit():
+                value = value.replace('.', '')  # thousands
+            # else: keep decimal dot (prevents "...0" -> extra zero)
+    elif comma != -1:
+        if value.count(',') > 1:
+            value = value.replace(',', '')  # thousands
+        else:
+            head, tail = value.split(',', 1)
+            if tail.isdigit() and len(tail) == 3 and head.lstrip('+-').isdigit():
+                value = value.replace(',', '')  # thousands
+            else:
+                value = head + '.' + tail  # decimal
 
     # đổi dấu phẩy thành chấm nếu có
-    value = value.replace(',', '.')
+    # value already normalized above
 
     try:
         return float(value)
@@ -502,7 +539,13 @@ def payroll_save_view(request):
             'so_ca_lam': float(request.POST.get('so_ca_lam') or 0),
             'thuong': _parse_money(request.POST.get('thuong')),
             'phat': _parse_money(request.POST.get('phat')),
-            'tong_luong': _parse_money(request.POST.get('tong_luong')),
+            # Always compute on the server for consistency/safety.
+            'tong_luong': (
+                _parse_money(request.POST.get('luong_co_ban'))
+                + (_parse_money(request.POST.get('luong_theo_gio')) * float(request.POST.get('so_gio_lam') or 0))
+                + _parse_money(request.POST.get('thuong'))
+                - _parse_money(request.POST.get('phat'))
+            ),
         }
 
         # 3. Lưu hoặc cập nhật
