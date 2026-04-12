@@ -1,0 +1,119 @@
+/* Container chính của Popup */
+.ge-detail-card {
+    background: white;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: fadeInScale 0.3s ease;
+}
+
+/* Header xanh đặc trưng */
+.ge-detail-header {
+    background: #174d17;
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ge-detail-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* Profile nhân viên */
+.ge-employee-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+}
+
+.ge-avatar-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #70452f;
+    overflow: hidden;
+}
+
+.ge-avatar-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ge-profile-text h4 {
+    margin: 0;
+    font-size: 20px;
+    color: #000;
+}
+
+.ge-profile-text p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Rows dữ liệu xen kẽ */
+.ge-info-rows {
+    padding: 0 20px;
+}
+
+.ge-info-row {
+    display: flex;
+    padding: 12px 15px;
+}
+
+.ge-info-row.gray-bg {
+    background: #f3f0ee; /* Màu xám tro nhạt giống ảnh */
+}
+
+.ge-label {
+    width: 140px;
+    font-weight: 700;
+    color: #333;
+}
+
+.ge-value {
+    color: #4b2e1f;
+}
+
+/* Nút Duyệt và Từ chối */
+.ge-detail-actions {
+    display: flex;
+    gap: 20px;
+    padding: 25px 40px;
+}
+
+.btn-ge-approve {
+    background: #3bb54a;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    flex: 1;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-ge-reject {
+    background: #e53935;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    flex: 1;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Hiệu ứng hiện Popup */
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}

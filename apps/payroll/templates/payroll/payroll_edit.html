@@ -83,39 +83,58 @@
 
                         <div class="form-group">
                             <label>Mức lương theo giờ</label>
-                            <input type="text" readonly value="{{ emp.luong_gio }}">
+                            <div class="input-group-currency">
+                                <input type="text" readonly value="{{ emp.luong_gio }}">
+                                <div class="currency-unit">VND</div>
+                            </div>
                         </div>
 
                         <div class="form-group">
                             <label>Lương cơ bản</label>
-                            <input type="text" readonly value="{{ emp.luong_co_ban }}">
+                            <div class="input-group-currency">
+                                <input type="text" readonly value="{{ emp.luong_co_ban }}">
+                                <div class="currency-unit">VND</div>
+                            </div>
                         </div>
 
                         <!-- BONUS -->
                         <div class="form-group">
                             <label>Thưởng</label>
-                            <input type="number"
-                                   class="bonus-input"
-                                   name="bonus_{{ emp.ma_nv }}"
-                                   placeholder="0">
+                            <div class="input-group-currency">
+                                <input type="number"
+                                       class="bonus-input"
+                                       name="bonus_{{ emp.ma_nv }}"
+                                       value="{{ emp.thuong|default:0 }}"
+                                       placeholder="0">
+                                <div class="currency-unit">VND</div>
+                            </div>
                         </div>
 
                         <!-- PENALTY -->
                         <div class="form-group">
                             <label>Phạt</label>
-                            <input type="number"
-                                   class="penalty-input"
-                                   name="penalty_{{ emp.ma_nv }}"
-                                   placeholder="0">
+                            <div class="input-group-currency">
+                                <input type="number"
+                                       class="penalty-input"
+                                       name="penalty_{{ emp.ma_nv }}"
+                                       value="{{ emp.phat|default:0 }}"
+                                       placeholder="0">
+                                <span class="currency-unit">VND</span>
+                            </div>
+
                         </div>
 
                         <!-- TOTAL -->
-                        <div class="form-group full-width">
+                        <div class="form-group full-width total-salary-group">
                             <label>TỔNG LƯƠNG</label>
-                            <input type="text"
-                                   readonly
-                                   class="total-salary-input"
-                                   value="{{ emp.tong_luong|default:0 }}">
+                            <div class="input-group-currency">
+                                <input type="text"
+                                       readonly
+                                       class="total-salary-input"
+                                       value="{{ emp.tong_luong|default:0 }}">
+                                <div class="currency-unit">VND</div>
+                            </div>
+
                         </div>
 
                     </div>

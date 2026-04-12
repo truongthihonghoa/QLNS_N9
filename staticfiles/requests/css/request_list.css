@@ -1,0 +1,201 @@
+/* --- Request List GÉ CAFE Style --- */
+.request-management-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+/* 1. Toolbar */
+.top-control-bar {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    /* Thu hẹp khoảng cách giữa cụm Trái và Phải */
+}
+
+/* LEFT */
+.control-left {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    /* Thu hẹp khoảng cách giữa ô input và nút Tìm kiếm */
+}
+
+/* RIGHT */
+.control-right {
+    display: flex;
+    gap: 2px;
+    /* Thu hẹp khoảng cách giữa nút Tính lương và In/Xuất */
+}
+
+/* 2. Select + Search */
+.ge-select,
+.search-wrapper {
+    height: 48px;
+    border: 1px solid #dadce0;
+    border-radius: 10px;
+    background: #ffffff;
+    font: 500 16px "Montserrat", sans-serif;
+    color: #4b2e1f;
+}
+
+.ge-select {
+    min-width: 240px;
+    padding: 0 15px;
+    outline: none;
+    cursor: pointer;
+}
+
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 15px;
+    flex: 1;
+    max-width: 500px;
+}
+
+.search-wrapper input {
+    border: none;
+    outline: none;
+    width: 100%;
+    background: #ffffff;
+    font: 500 16px "Montserrat", sans-serif;
+}
+
+/* 3. Buttons */
+.btn-search-ge,
+.btn-create-request {
+    height: 48px;
+    padding: 0 20px;
+    /* giảm padding để nút gọn hơn */
+    border: none;
+    border-radius: 8px;
+    background: #174d17;
+    color: white;
+    font: 700 16px "Montserrat", sans-serif;
+    /* giảm font nhẹ */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+/* hover */
+.btn-search-ge:hover,
+.btn-create-request:hover {
+    background: #27682b;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+/* 4. Tabs */
+.status-filter-row {
+    display: flex;
+    gap: 6px;
+    margin: 5px 0;
+}
+
+.status-btn {
+    height: 45px;
+    padding: 0 20px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(23, 77, 23, 0.85);
+    color: #fff;
+    font: 700 16px "Montserrat", sans-serif;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.status-btn.active {
+    background: #174d17;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.status-btn:hover:not(.active) {
+    background: #0000ff;
+}
+
+/* 5. Table */
+.ge-table-card {
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: none;
+    background: transparent;
+}
+
+.ge-main-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ge-main-table th {
+    background: rgba(23, 77, 23, 0.85);
+    color: #fff;
+    padding: 18px;
+    text-align: center;
+    font: 700 20px "Montserrat", sans-serif;
+}
+
+.ge-main-table td {
+    padding: 20px 15px;
+    text-align: center;
+    font: 500 18px "Montserrat", sans-serif;
+    color: #1a1a1a;
+    border: none;
+}
+
+/* remove zebra */
+.ge-main-table tbody tr:nth-child(odd),
+.ge-main-table tbody tr:nth-child(even) {
+    background: transparent;
+}
+
+/* 6. Status */
+.stt-waiting {
+    color: #C58B00;
+    font-weight: 700;
+}
+
+.stt-approved {
+    color: #008000;
+    font-weight: 700;
+}
+
+.stt-rejected {
+    color: #E53935;
+    font-weight: 700;
+}
+
+/* 7. Detail button */
+.btn-detail-ge {
+    background: #fff;
+    color: #4b2e1f;
+    border: 1px solid #c7b4aa;
+    padding: 6px 14px;
+    /* nhỏ lại */
+    border-radius: 20px;
+    font: 600 14px "Montserrat", sans-serif;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-detail-ge:hover {
+    background: #174d17;
+    color: #fff;
+    border-color: #174d17;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .top-control-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .status-filter-row {
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+}

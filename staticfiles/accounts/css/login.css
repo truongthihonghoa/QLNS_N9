@@ -1,0 +1,250 @@
+.background-shadow {
+  width: 1440px;
+  display: flex;
+  gap: 1px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.background-shadow .image {
+  width: 787px;
+  height: 1024px;
+}
+
+.background-shadow .frame {
+  margin-top: 256px;
+  width: 652px;
+  height: 511px;
+  display: flex;
+  flex-direction: column;
+}
+
+.background-shadow .container {
+  margin-left: 106px;
+  margin-right: 106px;
+  flex: 1;
+  max-height: 61px;
+  margin-top: 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.background-shadow .heading {
+  display: flex;
+  flex: 1;
+  max-height: 30px;
+  position: relative;
+  flex-direction: column;
+  width: 440px;
+  align-items: center;
+}
+
+.background-shadow .text-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin-top: -1.00px;
+  font-family: "Montserrat-Bold", Helvetica;
+  font-weight: 700;
+  color: #000000;
+  font-size: 25px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.background-shadow .paragraph {
+  display: flex;
+  flex: 1;
+  max-height: 17px;
+  position: relative;
+  width: 440px;
+  height: 17px;
+  align-items: center;
+  justify-content: center;
+}
+
+.background-shadow .symbol {
+  justify-content: center;
+  font-family: "Font Awesome 5 Free-Solid", Helvetica;
+  font-size: 14px;
+  text-align: center;
+  line-height: 14px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  font-weight: 400;
+  color: #777777;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.background-shadow .div {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin-top: -1.00px;
+  font-family: "Montserrat-Regular", Helvetica;
+  font-weight: 400;
+  color: #4b2e1fde;
+  font-size: 14px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.background-shadow .label-t-n-ng-nh-p {
+  display: flex;
+  align-items: center;
+  margin-left: 106px;
+  width: 101.03px;
+  height: 16px;
+  margin-top: 16px;
+  font-family: "Montserrat-SemiBold", Helvetica;
+  font-weight: 600;
+  color: #000000;
+  font-size: 13px;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.background-shadow .input {
+  margin-left: 106px;
+  margin-right: 106px;
+  flex: 1;
+  max-height: 38px;
+  margin-top: 9px;
+  background-color: #ffffff;
+  border-radius: 6px;
+  border: 1px solid;
+  border-color: #cccccc;
+}
+
+.background-shadow .label-m-t-kh-u {
+  display: flex;
+  align-items: center;
+  margin-left: 106px;
+  width: 63.7px;
+  height: 16px;
+  margin-top: 16px;
+  font-family: "Montserrat-SemiBold", Helvetica;
+  font-weight: 600;
+  color: #000000;
+  font-size: 13px;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.background-shadow .container-wrapper {
+  margin-left: 106px;
+  margin-right: 106px;
+  flex: 1;
+  max-height: 38px;
+  position: relative;
+  margin-top: 9px;
+  background-color: #ffffff;
+  border-radius: 6px;
+  border: 1px solid;
+  border-color: #cccccc;
+}
+
+.background-shadow .symbol-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  height: 42.11%;
+  align-items: flex-start;
+  position: absolute;
+  top: 28.95%;
+  right: 15px;
+}
+
+.background-shadow .symbol-2 {
+  margin-top: -1.00px;
+  font-family: "Font Awesome 5 Free-Regular", Helvetica;
+  font-size: 16px;
+  line-height: 16px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  font-weight: 400;
+  color: #777777;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.background-shadow .p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -105px;
+  height: 16px;
+  width: 335px;
+  align-self: center;
+  margin-top: 13px;
+  font-family: "Montserrat-Regular", Helvetica;
+  font-weight: 400;
+  color: #555555;
+  font-size: 13px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.background-shadow .ng-nhp {
+  margin-left: 106px;
+  margin-right: 106px;
+  flex: 1;
+  max-height: 42px;
+  margin-top: 14.8px;
+  display: flex;
+  background-color: #174d17de;
+}
+
+.background-shadow .text-wrapper-2 {
+  margin-top: 3px;
+  width: 143px;
+  height: 36px;
+  margin-left: 148px;
+  font-family: "Montserrat-Bold", Helvetica;
+  font-weight: 700;
+  color: #ffffff;
+  font-size: 24px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: 36px;
+  white-space: nowrap;
+}
+
+.background-shadow .link-qu-n-m-t-kh-u-wrapper {
+  margin-left: 106px;
+  margin-right: 106px;
+  flex: 1;
+  max-height: 16px;
+  margin-top: 15.2px;
+  display: flex;
+  justify-content: center;
+}
+
+.background-shadow .link-qu-n-m-t-kh-u {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 111px;
+  height: 16px;
+  font-family: "Montserrat-Regular", Helvetica;
+  font-weight: 400;
+  color: #2a6adf;
+  font-size: 13px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+}
