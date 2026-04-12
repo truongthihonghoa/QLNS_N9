@@ -1,0 +1,735 @@
+/* Màu sắc chủ đạo GÉ CAFE */
+:root {
+    --ge-green-dark: #174D17;      /* Xanh đậm gốc */
+    --ge-green-light: #CDE0C9;     /* Xanh lá pastel bạn vừa hỏi */
+    --ge-green-hover: #1B5E20;     /* Xanh khi hover nút tìm kiếm */
+    --ge-green-btn-hover: #e8f5e9; /* Xanh cực nhẹ cho hiệu ứng hover nút trắng */
+    --text-color: #333;
+    --border-color: #DADCE0;
+}
+
+/* Layout tổng thể */
+.request-management-container {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    width:100%;
+    margin-top:-17px;
+}
+
+.top-control-bar {
+    display: flex;
+    margin-bottom: 25px;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* TOOLBAR */
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0px;
+    border-radius: 12px;
+}
+
+/* INPUT FULL */
+.search-box {
+    flex: 1;
+    display: flex;
+}
+
+.search-box input {
+    width: 100%;
+    height: 52px;
+    padding: 0 16px;
+    color:  var(--text-color);
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.92);
+    box-sizing: border-box;
+    font-size: 18px;
+    font-family: "Montserrat", sans-serif;
+}
+
+/* BUTTON GROUP */
+.toolbar-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+/* BUTTON */
+.btn-search,
+.btn-primary {
+    height: 48px;
+    padding: 0 20px;
+    margin-top: 20px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+
+    border: none;
+    border-radius: 10px;
+
+    background: rgb(46, 125, 50);
+    color: #fff;
+
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;              /* 🔥 THÊM */
+    align-items: center;        /* 🔥 CĂN GIỮA DỌC */
+    justify-content: center;
+}
+.btn-search:hover,
+.btn-primary:hover {
+    background: #27682b;
+}
+
+/* Filter bar cho dropdown loc */
+.filter-bar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding:0;
+    align-items: center;
+}
+
+.filter-dropdown {
+    height: 52px;
+    padding: 0 20px;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    background: #fff;
+    font: 500 16px "Montserrat", sans-serif;
+    cursor: pointer;
+    min-width: 150px;
+    box-sizing: border-box;
+}
+
+.filter-dropdown:focus {
+    outline: none;
+    border-color: #174d17;
+    box-shadow: 0 0 0 3px rgba(23, 77, 23, 0.1);
+}
+
+/* Hàng chứa các nút bộ lọc */
+.filter-status-row {
+    display: flex;
+    gap: 16px;
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+/* Trạng thái mặc định (Chưa nhấn) */
+.btn-filter {
+    /* Màu nền xanh lá nhẹ và chữ đen theo yêu cầu */
+    background-color: var(--ge-green-light);
+    color: #000000;
+    margin-top: 0;
+    border: none;
+    padding: 0 25px;
+    /* Bo tròn hoàn toàn (kiểu viên thuốc) */
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700; /* In đậm chữ */
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    margin: 0
+}
+
+/* Trạng thái KHI NHẤN VÀO (Active) */
+.btn-filter.active {
+    /* Màu xanh đậm và chữ trắng theo yêu cầu */
+    background-color: var(--ge-green-dark);
+    color: #FFFFFF;
+
+    box-shadow: 0 4px 12px rgba(23, 77, 23, 0.3);
+}
+
+/* Hiệu ứng hover nhẹ khi chưa chọn */
+.btn-filter:hover:not(.active) {
+    filter: brightness(0.9);
+}
+
+/* Bảng dữ liệu */
+.ge-table-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+    margin: 0 0 0px 0;
+}
+
+.ge-main-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ge-main-table th {
+    background-color: var(--ge-green-dark);
+    color: white;
+    padding: 20px 15px;
+    text-align: left;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.ge-main-table td {
+    padding: 22px 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 18px;
+    color: var(--text-color);
+}
+
+.ge-main-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* --- ACTION BUTTONS (EDIT/DELETE) --- */
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+/* --- ĐỒNG BỘ KÍCH THƯỚC ICON --- */
+
+/* Class dùng chung cho các nút icon tròn */
+.btn-status-action,
+.btn-action-ge {
+    background: white !important;
+    border: 1px solid #333333 !important; /* Viền đen mặc định giống nhau */
+    width: 38px !important;  /* Tăng lên 38px cho bằng cột hành động */
+    height: 38px !important; /* Tăng lên 38px */
+    border-radius: 50% !important;
+    display: inline-flex !important; /* Dùng inline-flex để không làm vỡ dòng */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 18px !important; /* Tăng kích thước icon bên trong cho rõ nét */
+    padding: 0 !important;
+    margin: 0 2px; /* Khoảng cách nhẹ giữa các nút */
+}
+
+/* Màu sắc riêng cho từng loại khi hover hoặc icon bên trong */
+.btn-approve-ge i { color: #28a745; }
+.btn-approve-ge:hover { background-color: #28a745 !important; border-color: #28a745 !important; }
+.btn-approve-ge:hover i { color: white !important; }
+
+.btn-reject-ge i { color: #dc3545; }
+.btn-reject-ge:hover { background-color: #dc3545 !important; border-color: #dc3545 !important; }
+.btn-reject-ge:hover i { color: white !important; }
+
+.btn-edit-ge i { color: #333333; }
+.btn-edit-ge:hover { background-color: #333333 !important; color: white !important; }
+.btn-edit-ge:hover i { color: white !important; }
+
+.btn-delete-ge i { color: #d32f2f; }
+.btn-delete-ge:hover { background-color: #d32f2f !important; color: white !important; }
+.btn-delete-ge:hover i { color: white !important; }
+
+/* Căn chỉnh lại container để các nút không bị dính lẹo */
+.status-badge, .action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --- TỔNG THỂ MODAL TÍNH LƯƠNG GÉ CAFE --- */
+
+.salary-modal-overlay {
+    position: fixed;
+    /* Dịch xuống dưới thanh Nav (Giả sử Nav cao 120px) */
+    top: 150px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 120px);
+    background: rgba(0, 0, 0, 0.4);
+    display: none; /* Hiển thị bằng JS (flex) */
+    justify-content: center;
+    align-items: flex-start;
+    z-index: 9999;
+}
+
+.salary-modal-content {
+    /* MÀU XANH PASTEL NHẠT CHO TOÀN BỘ FORM */
+    background-color: white;
+    width: 100%;
+    max-width: 650px;
+    /* DỊCH FORM XUỐNG DƯỚI MỘT CHÚT */
+    margin-top: 40px;
+    border-radius: 15px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    overflow: hidden;
+    animation: slideDown 0.3s ease-out;
+}
+
+/* Header: MÀU PASTEL ĐẬM HƠN */
+.salary-modal-header {
+    background-color: white; /* Mã màu #CDE0C9 */
+    padding: 18px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.salary-modal-header h3 {
+    margin: 0;
+    color: var(--ge-green-dark);
+    font-weight:600;
+    font-size: 20px;
+    margin-top: 20px;
+
+}
+
+.close-modal {
+    background: white;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--ge-green-dark);
+}
+.detail { display: flex; justify-content: flex-end; gap: 15px; margin-bottom: 20px; }
+.btn-save { background: #174D17; color: white; border: none;font-size:14px; padding: 10px 40px; border-radius: 8px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 600;}
+.btn-close { background: white; color: black; border: 1.5px solid lightgray; font-size:14px; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 600;}
+
+/* Body Modal */
+.salary-modal-body {
+    padding: 25px;
+    margin-top: -10px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 20px;
+    color: var(--ge-green-dark);
+    font-weight:600;
+}
+
+.salary-input {
+    width: 100%;
+    height: 45px;
+    padding: 0 15px;
+    border: 1.5px solid var(--ge-green-light);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    outline: none;
+}
+
+/* --- CSS CHO BẢNG NHÂN VIÊN --- */
+.employee-list-section {
+    max-height: 300px;
+    overflow-y: auto; /* Tạo cuộn nếu danh sách quá dài */
+    border-radius: 8px;
+    border: 1px solid var(--ge-green-light);
+    background: white;
+    font-weight:600;
+}
+
+.salary-employee-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Header bảng nhân viên */
+.salary-employee-table thead tr {
+    background-color: #E2EFE0; /* Màu trung gian */
+    position: sticky;
+    top: 0;
+    font-weight:600;
+}
+
+.salary-employee-table th {
+    padding: 12px;
+    text-align: left;
+    color: var(--ge-green-dark);
+    border-bottom: 2px solid var(--ge-green-light);
+}
+
+/* Nội dung bảng nhân viên */
+.salary-employee-table td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 15px;
+    color: #333;
+}
+
+.salary-employee-table input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--ge-green-dark);
+}
+
+/* Footer: Nút bấm */
+.salary-modal-footer {
+    padding: 15px 25px;
+    background: white;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.btn-cancel-salary {
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    border-radius: 8px;
+    /* IN ĐẬM */
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-create-request {
+    background: var(--ge-green-dark);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 8px;
+    /* IN ĐẬM */
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-confirm-salary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.warning-text {
+    color: #d32f2f;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/*TINH LUONG CHO MOT NHAN VIEN*/
+
+.salary-detail-overlay {
+    margin-top:100px;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;
+}
+.salary-detail-content {
+    background: #f1f8f1; /* Xanh pastel nhẹ */
+    width: 600px; border-radius: 8px; overflow: hidden; padding: 20px;
+}
+.detail-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+.detail-title { font-weight: bold; color: green; font-size: 20px; }
+.detail-sub { color: #174D17; font-weight: bold; }
+
+.detail-info-bar {
+    background: #dcefdc; /* Màu xanh đậm */
+    color: green;font-weight:bold; padding: 10px 15px; border-radius: 5px;font-weight:300;
+    display: flex; justify-content: space-between; margin-bottom: 20px;
+}
+.detail-row { display: flex; gap: 20px; margin-bottom: 15px; }
+.detail-group { flex: 1; }
+.detail-group label { display: block; margin-bottom: 5px; color: black; font-size: 18px;font-weight:400; }
+.detail-group input {
+    width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background: white;
+}
+.total-salary-banner {
+    background: #dcefdc; color: green;font-weight:bold; text-align: center;
+    padding: 15px; border-radius: 5px; margin-top: 20px;
+}
+.total-salary-banner p { margin: 0; font-size: 18px; }
+.detail-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+.btn-save-detail { background: #174D17; color: white; border: none;font-size:18px; padding: 10px 25px; border-radius: 5px; cursor: pointer; }
+.btn-close-detail { background: #9bb09b; color: white; border: none;font-size:18px; padding: 10px 25px; border-radius: 5px; cursor: pointer; }
+
+/* --- STATUS BADGE ICONS COLORS --- */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+/* Container bọc icon sau khi đã duyệt */
+.status-badge.da-duyet,
+.status-badge.da-tu-choi {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100%;
+    min-height: 38px; /* Bằng chiều cao nút hành động */
+}
+
+/* Ép icon to lên (bằng size 28px) khi đã chốt */
+.status-badge.da-duyet i,
+.status-badge.da-tu-choi i {
+    font-size: 28px !important;
+    line-height: 1;
+    display: block;
+}
+
+/* Màu chuẩn cho icon khi đã chốt */
+.status-badge.da-duyet i { color: #28a745 !important; } /* Tích xanh */
+.status-badge.da-tu-choi i { color: #dc3545 !important; } /* X đỏ */
+
+/* --- TOAST NOTIFICATION STYLES --- */
+.toast-notification {
+    position: fixed;
+    bottom: 30px; /* Chuyển xuống góc dưới */
+    top: auto;    /* Hủy bỏ vị trí top cũ */
+    right: -300px; /* Bắt đầu ở ngoài màn hình bên phải */
+    background: #edf8ee;
+    padding: 0 15px;
+    width: 280px;   /* Thu nhỏ chiều rộng xuống 280px */
+    height: 50px;   /* Thu nhỏ chiều cao xuống 50px */
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Đẩy text sang trái, icon sang phải */
+    gap: 10px;
+    z-index: 99999; /* Đảm bảo luôn nằm trên các Modal */
+}
+
+.toast-notification.show {
+    right: 30px; /* Vị trí dừng khi hiện ra */
+}
+
+.toast-notification.fade-out {
+    opacity: 0;
+}
+
+.toast-content {
+    color: #333;
+    font-weight: 500;
+    font-size: 14px; /* Thu nhỏ chữ để khớp với khung 50px */
+    font-family: 'Montserrat', sans-serif;
+}
+
+.toast-icon {
+    background: #174D17; /* Màu nền xanh đậm cho icon tích */
+    color: #ffffff;      /* Icon màu trắng */
+    width: 24px;         /* Thu nhỏ icon tỉ lệ với khung */
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+/* Đảm bảo bảng có animation khi chèn dòng mới */
+@keyframes highlightRow {
+    0% { background-color: #e8f5e9; }
+    100% { background-color: transparent; }
+}
+.new-row-highlight {
+    animation: highlightRow 2s ease-out;
+}
+
+/* ============================================
+   POPUP XÓA BẢNG LƯƠNG - THEME ĐỎ HỒNG PASTEL
+   ============================================ */
+
+.delete-payroll-theme {
+    background-color: #ffffff !important;
+    width: 560px;
+    height: auto !important; /* Để auto để nội dung bên trong tự cân đối */
+    padding: 0 !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+    border: none !important;
+}
+
+.delete-header {
+    background-color: #efcaca; /* Hồng nhạt */
+    color: #800000;           /* Đỏ đô đậm */
+    padding: 0 20px;          /* Bỏ padding dọc để dùng height */
+    font-weight: 700;
+    font-size: 18px;
+    height: 60px;             /* Cố định 60px */
+    display:flex;
+    justify-content: flex-start;
+    align-items: center;
+    border-bottom: 1px solid #FED7D7;
+}
+
+.delete-body {
+    padding: 30px 20px;
+    text-align: center;
+
+}
+
+.icon-circle-red {
+    background-color: #E53935; /* Đỏ rực */
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    color: white;
+    font-size: 30px;
+}
+
+.main-msg {
+    color: #2D3748;
+    margin-bottom: 10px;
+}
+
+.info-display {
+    font-weight: 700;
+    color: #C53030; /* Đỏ cảnh báo */
+}
+
+.delete-footer {
+    height: 60px;             /* Cố định 60px để bằng với Header */
+    padding: 0 20px;
+    display: flex;
+    justify-content: flex-end; /* Hủy bên trái, Xóa bên phải */
+    align-items: center;      /* Căn giữa nút bấm theo chiều dọc */
+    background-color: #efcaca;
+    border-top: 1px solid #f0f0f0;
+}
+
+.btn-cancel-delete {
+    background-color: #EDF2F7; /* Xanh xám nhạt */
+    color: #4A5568;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 6px;
+    font-weight: 600;
+    margin-right:30px;
+    height:48px;
+    font-size:18px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-cancel-delete:hover {
+    background-color: #E2E8F0;
+}
+
+.btn-confirm-delete {
+    background-color: #E53935; /* Đỏ rực */
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    height:48px;
+    font-size:18px;
+    transition: background 0.2s;
+}
+
+.btn-confirm-delete:hover {
+    background-color: #D32F2F;
+}
+
+/* --- EXPORT CONTROLS STYLES --- */
+/* --- ĐẨY CỤM XUẤT FILE SANG PHẢI --- */
+/* Container chính đẩy về bên phải */
+.export-data-wrapper {
+    margin-top: 25px;
+    display: flex;
+    justify-content: flex-end; /* Đẩy cả cụm sang phải */
+    padding-bottom: 30px;
+    width: 100%;
+}
+
+/* Cụm điều khiển xếp thành hàng dọc */
+.export-controls {
+    display: flex;
+    flex-direction: column;    /* Xếp thành 2 hàng dọc */
+    gap: 12px;                /* Khoảng cách giữa dropdown và nút */
+    align-items: flex-end;     /* Căn cả dropdown và nút sát lề phải */
+}
+
+/* Dropdown chọn định dạng */
+.export-dropdown {
+    height: 45px;
+    width: 200px;             /* Độ rộng bằng với nút bấm cho cân đối */
+    padding: 0 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    background-color: white;
+    cursor: pointer;
+}
+
+/* Nút Xuất báo cáo */
+.btn-export-final {
+    height: 48px;
+    width: 200px;             /* Độ rộng cố định */
+    background-color: var(--ge-green-dark);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+.btn-export-final:hover {
+    background-color: #1B5E20; /* Màu xanh lá nhạt hơn khi hover */
+}
+.toolbar, .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;         /* Đảm bảo gap hàng trên và dưới bằng nhau */
+    padding: 0;        /* Bỏ padding riêng để không bị thụt lề */
+    width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .toolbar {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .search-box {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .search-box input {
+        width: 100%;
+    }
+
+    .btn-search,
+    .btn-primary {
+        width: 100%;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .filter-dropdown {
+        width: 100%;
+    }
+}

@@ -1,0 +1,125 @@
+/* =================================== */
+/* NOTIFICATION UI (GITHUB STYLE)    */
+/* =================================== */
+
+/* FIX: Increased gap for better spacing in the header */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+/* Bell Icon & Badge */
+.notification-bell {
+    position: relative;
+    cursor: pointer;
+}
+
+.notification-bell .fa-bell {
+    font-size: 32px; /* Changed from 22px to 24px */
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.notification-bell:hover .fa-bell {
+    color: #007bff;
+}
+
+.notification-bell .badge {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: #d9534f;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    border: 2px solid white;
+}
+
+/* Dropdown Panel */
+.notification-dropdown {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 350px;
+    background-color: white;
+    border: 1px solid #e1e4e8;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.notification-dropdown.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Dropdown Header */
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e1e4e8;
+}
+
+.notification-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.notification-header .mark-as-read {
+    font-size: 13px;
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.notification-header .mark-as-read:hover {
+    text-decoration: underline;
+}
+
+/* Notification List */
+.notification-list {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e1e4e8;
+    transition: background-color 0.2s ease;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item:hover {
+    background-color: #f6f8fa;
+}
+
+.notification-item .title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.notification-item .description {
+    font-size: 13px;
+    color: #586069;
+    margin-bottom: 4px;
+}
+
+.notification-item .time {
+    font-size: 12px;
+    color: #6a737d;
+}

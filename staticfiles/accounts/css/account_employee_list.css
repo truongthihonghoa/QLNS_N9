@@ -1,0 +1,258 @@
+.account-page {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.account-toolbar {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.account-search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 880px;
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid #dadce0;
+    border-radius: 10px;
+    background: rgba(112, 69, 47, 0.04);
+}
+
+.account-search-box img {
+    width: 20px;
+    height: 20px;
+}
+
+.account-search-box input {
+    border: 0;
+    outline: 0;
+    width: 100%;
+    font-size: 16px;
+    font-family: "Montserrat", sans-serif;
+    background: transparent;
+}
+
+.account-btn {
+    height: 49px;
+    border-radius: 5px;
+    border: 0;
+    padding: 0 22px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.account-btn-primary {
+    background: rgba(23, 77, 23, 0.87);
+    color: #ffffff;
+}
+
+.account-btn-primary:hover {
+    background: #27682b;
+}
+
+.account-btn-light {
+    background: #e0e0e0;
+    color: #444444;
+}
+
+.account-table-card {
+    background: #fff !important;
+    border-radius: 14px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08) !important;
+    overflow: hidden !important;
+    border: none !important;
+}
+
+.account-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.account-table th {
+    background: rgba(23, 77, 23, 0.84) !important;
+    color: #fff !important;
+    font: 700 24px "Montserrat", sans-serif !important;
+    padding: 18px 14px !important;
+    text-align: center !important;
+}
+
+.account-table tbody tr:nth-child(odd) {
+    background: #ebe7e4 !important;
+}
+
+.account-table tbody tr:nth-child(even) {
+    background: rgba(243, 240, 238, 0.93) !important;
+}
+
+.account-table td {
+    padding: 24px 14px !important;
+    text-align: center !important;
+    font: 600 20px "Montserrat", sans-serif !important;
+    color: #1a1a1a !important;
+    vertical-align: middle !important;
+    border: none !important;
+}
+
+.account-status {
+    font-weight: 600;
+}
+
+.account-status.is-active {
+    color: #0b7a22;
+}
+
+.account-status.is-inactive {
+    color: #d32f2f;
+}
+
+.account-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.account-icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #c7b4aa;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.account-icon-btn:hover {
+    transform: translateY(-1px);
+}
+
+.account-icon-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+.js-edit-account:hover {
+    background: #e6f1e6;
+    border-color: #174d17;
+}
+
+.js-deactivate-account:hover {
+    background: #f3e7e4;
+    border-color: #8d6e63;
+}
+
+.account-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    padding: 20px;
+}
+
+.account-modal-overlay.is-visible {
+    display: flex;
+}
+
+.account-modal {
+    width: min(760px, 100%);
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    padding: 24px;
+}
+
+.account-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.account-modal-header h2 {
+    margin: 0;
+    color: #174d17;
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.account-modal-close {
+    border: 0;
+    background: transparent;
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+    color: #174d17;
+}
+
+.account-note {
+    margin: 12px 0 18px;
+    font-size: 16px;
+    font-style: italic;
+    color: rgba(23, 77, 23, 0.7);
+}
+
+.account-form-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.account-form-grid label {
+    display: grid;
+    gap: 8px;
+}
+
+.account-form-grid span {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.account-form-grid strong {
+    color: #ff0000;
+}
+
+.account-form-grid input,
+.account-form-grid select {
+    width: 100%;
+    height: 50px;
+    border-radius: 10px;
+    border: 2px solid #dee2e6;
+    padding: 0 16px;
+    font-size: 18px;
+    font-family: "Montserrat", sans-serif;
+    box-sizing: border-box;
+}
+
+.account-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+    margin-top: 22px;
+}
+
+@media (max-width: 1024px) {
+    .account-toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .account-table-card {
+        overflow-x: auto;
+    }
+
+    .account-table {
+        min-width: 920px;
+    }
+}
