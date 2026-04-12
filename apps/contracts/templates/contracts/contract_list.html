@@ -4,11 +4,13 @@
 {% block title %}Quản Lý Hợp Đồng - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'contracts/css/contract_list.css' %}?v=20260401b">
-    <link rel="stylesheet" href="{% static 'contracts/css/contract_detail.css' %}?v=20260401b">
+    <link rel="stylesheet" href="{% static 'contracts/css/contract_list.css' %}?v=20260401c">
+    <link rel="stylesheet" href="{% static 'contracts/css/contract_detail.css' %}?v=20260401c">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
+    <!-- Thêm Font Awesome để dùng icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 {% endblock %}
 
 {% block content %}
@@ -31,8 +33,9 @@
                         <th>STT</th>
                         <th>Mã hợp đồng</th>
                         <th>Mã nhân viên</th>
-                        <th>Tên nhân viên</th>
+                        <th class="col-ten-nv">Tên nhân viên</th>
                         <th>Chức vụ</th>
+                        <th>Trạng thái</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
@@ -42,8 +45,13 @@
                         <td class="contract-stt">{{ forloop.counter }}</td>
                         <td>{{ contract.ma_hd }}</td>
                         <td>{{ contract.ma_nv }}</td>
-                        <td>{{ contract.ten_nv }}</td>
+                        <td class="col-ten-nv">{{ contract.ten_nv }}</td>
                         <td>{{ contract.chuc_vu }}</td>
+                        <td>
+                            <span class="status-badge status-{{ contract.trang_thai_code|lower }}">
+                                {{ contract.trang_thai_display }}
+                            </span>
+                        </td>
                         <td class="contract-actions">
                             <button
                                 type="button"
@@ -56,14 +64,26 @@
                                 data-end-date="{{ contract.ngay_kt }}"
                                 data-salary="{{ contract.muc_luong }}"
                                 data-position="{{ contract.chuc_vu }}"
+                                data-cccd="{{ contract.cccd }}"
+                                data-birth-date="{{ contract.ngay_sinh }}"
+                                data-phone-nv="{{ contract.sdt_nv }}"
+                                data-address="{{ contract.dia_chi }}"
+                                data-representative="{{ contract.nguoi_dai_dien }}"
+                                data-rep-position="{{ contract.chuc_vu_dai_dien }}"
+                                data-rep-phone="{{ contract.sdt_dai_dien }}"
+                                data-work-place="{{ contract.dia_diem_lv }}"
+                                data-work-hours="{{ contract.so_gio_lam }}"
+                                data-hourly-salary="{{ contract.luong_theo_gio }}"
+                                data-notes="{{ contract.ghi_chu }}"
+                                title="Xem chi tiết"
                             >
-                                <img src="{% static 'images/search_icon.png' %}" alt="Chi tiết">
+                                <i class="fas fa-eye"></i>
                             </button>
-                            <a href="{% url 'contract_edit' contract_id=contract.ma_hd %}" class="contract-icon-btn edit-btn">
-                                <img src="{% static 'images/edit_icon.png' %}" alt="Sửa">
+                            <a href="{% url 'contract_edit' contract_id=contract.ma_hd %}" class="contract-icon-btn edit-btn" title="Chỉnh sửa">
+                                <i class="fas fa-pen"></i>
                             </a>
-                            <button type="button" class="contract-icon-btn delete-btn" data-delete-id="{{ contract.ma_hd }}" data-end-date="{{ contract.ngay_kt }}">
-                                <img src="{% static 'images/delete_icon.png' %}" alt="Xóa">
+                            <button type="button" class="contract-icon-btn delete-btn" data-delete-id="{{ contract.ma_hd }}" data-end-date="{{ contract.ngay_kt }}" title="Xóa">
+                                <i class="fas fa-trash-alt"></i>
                             </button>
                         </td>
                     </tr>
