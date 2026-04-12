@@ -1,43 +1,63 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
-from django.db import transaction
+from django.db import transaction, connection
 from django.views.decorators.http import require_http_methods
 from .models import LichLamViec
 from apps.employees.models import NhanVien
 from apps.branches.models import ChiNhanh
 import datetime
-
+import json
+import traceback
 
 def _is_admin(user):
-    return user.is_authenticated and user.is_staff
-
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
 
 def schedule_list_view(request):
+    # Đồng bộ hóa dữ liệu cũ
+    LichLamViec.objects.filter(trang_thai='Chờ duyệt').update(trang_thai='Chờ gửi')
+    
+    # Lấy tham so loc tu URL
+    branch_id = request.GET.get('branch', 'all')
+    status_filter = request.GET.get('status', 'all')
+    
     schedules = []
     try:
-        # Lay tat ca lich lam viec tu database va sap xep theo ngay lam moi nhat
-        schedule_objects = LichLamViec.objects.select_related('ma_nv').all().order_by('-ngay_lam', 'ca_lam')
+        query = LichLamViec.objects.select_related('ma_nv', 'ma_chi_nhanh').all()
+        
+        # Loc theo chi nhanh
+        if branch_id != 'all':
+            query = query.filter(ma_chi_nhanh_id=branch_id)
+            
+        # Loc theo trang thai
+        if status_filter != 'all':
+            query = query.filter(trang_thai=status_filter)
+            
+        schedule_objects = query.order_by('-ngay_lam', 'ca_lam')
+        
         for schedule in schedule_objects:
             schedules.append({
                 'ma_llv': schedule.ma_llv,
                 'ngay_lam': schedule.ngay_lam.strftime('%d/%m/%Y'),
                 'khung_gio': schedule.ca_lam,
                 'trang_thai': schedule.trang_thai,
-                'ma_nv': schedule.ma_nv.ma_nv if schedule.ma_nv else '',
-                'ten_nv': schedule.ma_nv.ho_ten if schedule.ma_nv else '',
+                'ma_nv': schedule.ma_nv.ma_nv if schedule.ma_nv else 'N/A',
+                'ten_nv': schedule.ma_nv.ho_ten if schedule.ma_nv else 'N/A',
+                'ten_chi_nhanh': schedule.ma_chi_nhanh.ten_chi_nhanh if schedule.ma_chi_nhanh else 'N/A',
             })
     except Exception as e:
         print(f"Error fetching schedules: {e}")
 
-    context = {
-        'schedules': schedules,
-        # Chinh lai khung gio chi con mốc thoi gian
-        'shift_options': ['06:00 - 12:00', '12:00 - 17:00', '17:00 - 22:00'],
-        'is_admin': _is_admin(request.user),
-    }
-    return render(request, 'schedules/schedule_list.html', context)
+    # Lay danh sach chi nhanh de hien thi dropdown
+    branches = ChiNhanh.objects.all().order_by('ten_chi_nhanh')
 
+    return render(request, 'schedules/schedule_list.html', {
+        'schedules': schedules,
+        'branches': branches,
+        'selected_branch': branch_id,
+        'selected_status': status_filter,
+        'is_admin': _is_admin(request.user),
+    })
 
 def schedule_create_view(request):
     if request.method == 'POST':
@@ -45,93 +65,80 @@ def schedule_create_view(request):
         khung_gio = request.POST.get('khung_gio')
         selected_employees = request.POST.getlist('selected_employees')
 
-        if not all([ngay_lam_str, khung_gio, selected_employees]):
-            messages.error(request, 'Vui lòng điền đầy đủ thông tin và chọn ít nhất một nhân viên')
-            return _render_create_form(request)
+        if not ngay_lam_str or not khung_gio or not selected_employees:
+            messages.error(request, 'Vui lòng nhập đầy đủ thông tin')
+            return redirect('schedule_create')
 
         try:
             ngay_lam = datetime.datetime.strptime(ngay_lam_str, '%Y-%m-%d').date()
-            
             with transaction.atomic():
                 for ma_nv in selected_employees:
                     emp = NhanVien.objects.filter(ma_nv=ma_nv).first()
-                    if not emp:
-                        continue
-                        
+                    if not emp: continue
                     vi_tri = request.POST.get(f'position_{ma_nv}', emp.chuc_vu)
-                    # Tao ma LLV theo format: LLV_MANV_YYYYMMDD
                     new_ma_llv = f"LLV_{ma_nv}_{ngay_lam.strftime('%Y%m%d')}"
                     
-                    # Su dung update_or_create de tranh loi trung khoa chinh (Primary Key)
                     LichLamViec.objects.update_or_create(
                         ma_llv=new_ma_llv,
                         defaults={
                             'ma_nv': emp,
                             'ma_chi_nhanh': emp.ma_chi_nhanh,
                             'ngay_lam': ngay_lam,
-                            'ca_lam': khung_gio, # Se luu dung mốc thoi gian ban chon
-                            'trang_thai': 'Đã xếp lịch',
+                            'ca_lam': khung_gio,
+                            'trang_thai': 'Chờ gửi', 
                             'ngay_tao': datetime.date.today(),
                             'ghi_chu': f"Vị trí: {vi_tri}"
                         }
                     )
-
-                messages.success(request, 'Đã lưu lịch làm việc cho các nhân viên được chọn')
+                messages.success(request, 'Đã tạo lịch làm việc thành công.')
                 return redirect('schedule_list')
-
         except Exception as e:
-            messages.error(request, f'Không thể lưu lịch làm việc: {str(e)}')
+            messages.error(request, f'Lỗi hệ thống: {str(e)}')
 
-    return _render_create_form(request)
-
-
-def _render_create_form(request):
     db_employees = NhanVien.objects.all().order_by('ma_nv')
-    employees = []
-
-    for emp in db_employees:
-        employees.append({
-            'ma_nv': emp.ma_nv,
-            'ho_ten': emp.ho_ten,
-            'vi_tri_mac_dinh': emp.chuc_vu or 'Nhân viên'
-        })
-
-    context = {
+    employees = [{'ma_nv': e.ma_nv, 'ho_ten': e.ho_ten, 'vi_tri_mac_dinh': e.chuc_vu or 'Nhân viên'} for e in db_employees]
+    return render(request, 'schedules/schedule_create.html', {
         'employee_options': employees,
-        # Chinh lai khung gio chi con mốc thoi gian
         'shift_options': ['06:00 - 12:00', '12:00 - 17:00', '17:00 - 22:00'],
-        'is_admin': _is_admin(request.user),
-    }
-
-    return render(request, 'schedules/schedule_create.html', context)
-
+    })
 
 def schedule_edit_view(request, schedule_id):
     schedule = get_object_or_404(LichLamViec, ma_llv=schedule_id)
-    return render(request, 'schedules/schedule_edit.html', {'schedule': schedule})
-
+    if request.method == 'POST':
+        khung_gio = request.POST.get('khung_gio')
+        if khung_gio:
+            try:
+                schedule.ca_lam = khung_gio
+                schedule.save()
+                messages.success(request, 'Chỉnh sửa lịch làm thành công.')
+                return redirect('schedule_list')
+            except Exception as e:
+                messages.error(request, f'Không thể lưu: {str(e)}')
+    
+    return render(request, 'schedules/schedule_edit.html', {
+        'schedule': schedule,
+        'shift_options': ['06:00 - 12:00', '12:00 - 17:00', '17:00 - 22:00'],
+    })
 
 def schedule_delete_view(request, schedule_id):
     try:
-        schedule = LichLamViec.objects.get(ma_llv=schedule_id)
-        schedule.delete()
-        return JsonResponse({'success': True})
-    except LichLamViec.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Không tìm thấy lịch'})
-
+        connection.close() 
+        with transaction.atomic():
+            LichLamViec.objects.filter(ma_llv=schedule_id).delete()
+        return JsonResponse({'success': True, 'message': 'Xóa lịch làm việc thành công'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': 'Database đang bận, vui lòng thử lại sau giây lát'})
 
 @require_http_methods(["POST"])
 def schedule_send_notification_view(request):
-    return JsonResponse({'success': True})
-
+    try:
+        data = json.loads(request.body)
+        ids = data.get('ids', [])
+        LichLamViec.objects.filter(ma_llv__in=ids).update(trang_thai='Chờ xác nhận')
+        return JsonResponse({'success': True, 'message': 'Gửi thông báo thành công'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f'Lỗi: {str(e)}'})
 
 def schedule_detail_view(request, schedule_id):
     schedule = get_object_or_404(LichLamViec, ma_llv=schedule_id)
-    return JsonResponse({
-        'ma_llv': schedule.ma_llv,
-        'ma_nv': schedule.ma_nv.ma_nv if schedule.ma_nv else '',
-        'ten_nv': schedule.ma_nv.ho_ten if schedule.ma_nv else '',
-        'ngay_lam': schedule.ngay_lam.strftime('%d/%m/%Y'),
-        'ca_lam': schedule.ca_lam,
-        'trang_thai': schedule.trang_thai
-    })
+    return JsonResponse({'ma_llv': schedule.ma_llv, 'trang_thai': schedule.trang_thai})

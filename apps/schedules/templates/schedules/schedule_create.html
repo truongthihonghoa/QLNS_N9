@@ -1,99 +1,114 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Thêm Lịch Làm Việc - {{ block.super }}{% endblock %}
+{% block title %}Tạo lịch làm việc - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'schedules/css/schedule_list.css' %}">
+    <!-- Them tham so phien ban ?v=1.1 de xoa cache trinh duyet -->
+    <link rel="stylesheet" href="{% static 'schedules/css/schedule_list.css' %}?v=1.1">
     <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
+
     <style>
-        /* CSS noi bo de dam bao hien thi 2 cot nam ngang */
-        .schedule-form-grid {
-            display: grid !important;
-            grid-template-columns: 1fr 1fr !important;
-            gap: 30px !important;
-            margin-bottom: 20px !important;
+        /* CSS noi bo de dam bao CARD TRANG va CAN GIUA luon hoat dong */
+        .schedule-form-page {
+            background-color: #eaeff2 !important; /* Nen xam nhe */
+            background-image: none !important;
+            padding: 60px 20px !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
         }
-        @media (max-width: 768px) {
-            .schedule-form-grid {
-                grid-template-columns: 1fr !important;
-            }
+        .schedule-card {
+            background: #ffffff !important; /* CARD TRANG TINH */
+            border-radius: 24px !important;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1) !important;
+            border: 1px solid #e1e8ed !important;
+            padding: 40px !important;
+            width: 100% !important;
+            max-width: 850px !important;
         }
     </style>
 {% endblock %}
 
 {% block content %}
 <div class="schedule-form-page">
-    <div class="schedule-form-card">
-        <div class="schedule-form-header">
-            <a href="{% url 'schedule_list' %}" class="schedule-back-link">
-                <img src="{% static 'images/back_icon.png' %}" alt="Quay lại">
-            </a>
-            <h2>THÊM LỊCH LÀM VIỆC</h2>
-        </div>
+    <div class="schedule-card">
+        <!-- Nut quay lai kieu Pill -->
+        <a href="javascript:void(0);" class="back-btn-pill" onclick="showCancelPopup()">
+            <i class="fas fa-arrow-left"></i> Danh sách lịch làm việc
+        </a>
+
+        <h2 class="main-title">TẠO LỊCH LÀM VIỆC</h2>
 
         <form class="schedule-form" method="POST" id="scheduleCreateForm">
             {% csrf_token %}
 
-            <section class="schedule-section">
-                <h3>Thông tin ca làm</h3>
-                <div class="schedule-form-grid">
-                    <div class="schedule-field">
-                        <label for="ngay_lam">Ngày Làm <span class="required">*</span></label>
-                        <input type="date" id="ngay_lam" name="ngay_lam" required>
-                    </div>
-                    <div class="schedule-field">
-                        <label for="khung_gio">Khung Giờ Ca Làm <span class="required">*</span></label>
-                        <select id="khung_gio" name="khung_gio" required>
-                            <option value="" selected disabled>Chọn khung giờ</option>
-                            {% for option in shift_options %}
-                            <option value="{{ option }}">{{ option }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+            <!-- PHẦN TRÊN CHỌN NGÀY VÀ CA LÀM (HEADER) -->
+            <div class="info-header-section">
+                <div class="field-group">
+                    <label for="ngay_lam">Ngày Làm <span class="required" style="color:red;">*</span></label>
+                    <input type="date" id="ngay_lam" name="ngay_lam" required>
                 </div>
-            </section>
-
-            <section class="schedule-section">
-                <h3>Thông tin nhân viên</h3>
-                <div class="schedule-employee-table">
-                    <div class="schedule-employee-head" style="display: flex; background: #f4f4f4; padding: 12px; font-weight: bold; border-bottom: 2px solid #ddd;">
-                        <span style="flex: 0.5; text-align: center;">Chọn</span>
-                        <span style="flex: 1;">Mã Nhân Viên</span>
-                        <span style="flex: 2;">Tên Nhân Viên</span>
-                        <span style="flex: 1.5;">Vị Trí Việc Làm</span>
-                    </div>
-                    <div class="schedule-employee-body" style="max-height: 400px; overflow-y: auto;">
-                        {% for employee in employee_options %}
-                        <div class="schedule-employee-item" style="display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee;">
-                            <div style="flex: 0.5; text-align: center;">
-                                <input type="checkbox" name="selected_employees" value="{{ employee.ma_nv }}" class="employee-checkbox">
-                            </div>
-                            <span style="flex: 1;">{{ employee.ma_nv }}</span>
-                            <span style="flex: 2;">{{ employee.ho_ten }}</span>
-                            <div style="flex: 1.5;">
-                                <span style="font-weight: 500; color: #333;">{{ employee.vi_tri_mac_dinh }}</span>
-                                <input type="hidden" name="position_{{ employee.ma_nv }}" value="{{ employee.vi_tri_mac_dinh }}">
-                            </div>
-                        </div>
+                <div class="field-group">
+                    <label for="khung_gio">Khung Giờ Ca Làm <span class="required" style="color:red;">*</span></label>
+                    <select id="khung_gio" name="khung_gio" required>
+                        <option value="" selected disabled>Chọn khung giờ</option>
+                        {% for option in shift_options %}
+                        <option value="{{ option }}">{{ option }}</option>
                         {% endfor %}
-                    </div>
+                    </select>
                 </div>
-                <small style="color: #666; margin-top: 10px; display: block;">Chọn nhân viên để gán vào ca làm việc (Vị trí đã được quy định sẵn theo hợp đồng)</small>
-            </section>
+            </div>
 
-            <div class="schedule-form-actions">
-                <a href="{% url 'schedule_list' %}" class="schedule-cancel-btn">HỦY</a>
-                <button type="submit" class="schedule-save-btn">LƯU</button>
+            <!-- PHẦN DƯỚI: DANH SÁCH NHÂN VIÊN (BODY) -->
+            <div class="employee-selection-section">
+                <h3 class="employee-section-title">Chọn nhân viên áp dụng</h3>
+
+                <div class="employee-table-wrapper">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th class="col-check">Chọn</th>
+                                <th class="col-id">Mã NV</th>
+                                <th class="col-name">Tên Nhân Viên</th>
+                                <th class="col-pos">Vị Trí Việc Làm</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for employee in employee_options %}
+                            <tr>
+                                <td class="col-check">
+                                    <input type="checkbox" name="selected_employees" value="{{ employee.ma_nv }}" class="custom-checkbox">
+                                </td>
+                                <td class="col-id">{{ employee.ma_nv }}</td>
+                                <td class="col-name">{{ employee.ho_ten }}</td>
+                                <td class="col-pos">
+                                    {{ employee.vi_tri_mac_dinh }}
+                                    <input type="hidden" name="position_{{ employee.ma_nv }}" value="{{ employee.vi_tri_mac_dinh }}">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <p style="color: #6b7280; font-size: 13px; margin-top: 15px; font-style: italic;">
+                    * Lưu ý: Vị trí việc làm được hệ thống tự động gán theo hợp đồng hiện tại của nhân viên.
+                </p>
+            </div>
+
+            <!-- NÚT BẤM (FOOTER) -->
+            <div class="form-footer-actions">
+                <a href="javascript:void(0);" class="btn-cancel-ghost" onclick="showCancelPopup()">HỦY</a>
+                <button type="submit" class="btn-save-solid">LƯU LỊCH LÀM</button>
             </div>
         </form>
     </div>
 </div>
 
-{% include 'partials/popup_error.html' %}
 {% include 'partials/popup_confirm_cancel.html' %}
+{% include 'partials/popup_error.html' %}
 {% include 'partials/popup_success.html' %}
 {% endblock %}
 
@@ -106,5 +121,18 @@
                 ngayLamInput.setAttribute('min', today);
             }
         });
+
+        function showCancelPopup() {
+            const popup = document.getElementById('confirm-cancel-popup');
+            if (popup) {
+                popup.style.display = 'flex';
+                document.getElementById('confirm-cancel-no-btn').onclick = function() {
+                    popup.style.display = 'none';
+                };
+                document.getElementById('confirm-cancel-yes-btn').onclick = function() {
+                    window.location.href = "{% url 'schedule_list' %}";
+                };
+            }
+        }
     </script>
 {% endblock %}

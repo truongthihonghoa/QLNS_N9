@@ -1,560 +1,211 @@
-.schedule-page {
+:root {
+    --cafe-brown: #4a3728;
+    --cafe-light-brown: #604534;
+    --ge-green: #0f6b20;
+    --ge-green-hover: #0c571a;
+    --border-gray: #d1d5db;
+    --bg-overlay: rgba(255, 255, 255, 0.95);
+}
+
+/* Container chính bao phủ toàn màn hình */
+.schedule-form-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Card trắng bao quanh nội dung */
+.schedule-card {
+    background: var(--bg-overlay);
+    width: 100%;
+    max-width: 900px;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    padding: 40px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Nút quay lại */
+.back-btn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 50px;
+    background: #f3f4f6;
+    color: var(--cafe-light-brown);
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+}
+
+.back-btn-pill:hover {
+    background: #e5e7eb;
+    transform: translateX(-5px);
+}
+
+/* Tiêu đề Nâu cà phê */
+h2.main-title {
+    color: var(--cafe-brown);
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 35px;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    border-left: 6px solid var(--cafe-brown);
+    padding-left: 15px;
+}
+
+/* --- PHẦN 1: THÔNG TIN CA LÀM (HEADER) --- */
+.info-header-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    background: #f9fafb;
+    padding: 25px;
+    border-radius: 16px;
+    border: 1.5px solid var(--border-gray);
+    margin-bottom: 35px;
+}
+
+.field-group {
     display: flex;
     flex-direction: column;
-    gap: 26px;
+    gap: 10px;
 }
 
-.schedule-toolbar {
-    display: grid;
-    grid-template-columns: minmax(280px, 1fr) 170px 170px;
-    gap: 14px;
-    align-items: center;
+.field-group label {
+    font-weight: 700;
+    color: var(--cafe-light-brown);
+    font-size: 15px;
 }
 
-.schedule-filters {
-    display: flex;
-    gap: 14px;
-}
-
-.schedule-filter {
-    height: 48px;
-    border: none;
-    border-radius: 8px;
-    background: rgba(23, 77, 23, 0.87);
-    color: #fff;
-    font: 700 20px "Montserrat", sans-serif;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    padding: 0 24px;
-}
-
-.schedule-filter.is-active {
-    background: rgba(23, 77, 23, 0.87);
-    color: #fff;
-}
-
-.schedule-filter:hover:not(.is-active) {
-    background: #0000ff;
-}
-
-.schedule-toolbar-actions {
-    display: flex;
-    gap: 14px;
-}
-
-.schedule-secondary-btn,
-.schedule-add-btn {
-    height: 48px;
-    border: none;
-    border-radius: 8px;
-    background: rgba(23, 77, 23, 0.87);
-    color: #fff;
-    font: 700 16px "Montserrat", sans-serif;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    text-decoration: none;
+.field-group input,
+.field-group select {
+    height: 52px;
     padding: 0 16px;
-    white-space: nowrap;
-    min-width: fit-content;
+    border: 2px solid var(--border-gray);
+    border-radius: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s ease;
 }
 
-.schedule-secondary-btn:hover,
-.schedule-add-btn:hover {
-    background: #0000ff;
+.field-group input:focus,
+.field-group select:focus {
+    border-color: var(--ge-green);
+    box-shadow: 0 0 0 4px rgba(15, 107, 32, 0.1);
 }
 
-.schedule-table-card {
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+/* --- PHẦN 2: BẢNG NHÂN VIÊN (BODY) --- */
+.employee-section-title {
+    font-weight: 700;
+    color: var(--cafe-brown);
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.employee-table-wrapper {
+    border: 1px solid var(--border-gray);
+    border-radius: 16px;
     overflow: hidden;
+    max-height: 350px;
+    overflow-y: auto;
 }
 
-.schedule-table {
+.modern-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.schedule-table th {
-    background: rgba(23, 77, 23, 0.84);
-    color: #fff;
-    font: 700 22px "Montserrat", sans-serif;
-    padding: 16px 14px;
-    text-align: center;
+.modern-table thead th {
+    background: #374151;
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-size: 13px;
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
 }
 
-.schedule-table tbody tr:nth-child(odd) {
-    background: #ebe7e4;
+.modern-table tbody tr:nth-child(even) {
+    background-color: #f8fafc; /* Zebra stripe */
 }
 
-.schedule-table tbody tr:nth-child(even) {
-    background: rgba(243, 240, 238, 0.93);
-}
-
-.schedule-table td {
-    padding: 22px 14px;
-    text-align: center;
-    font: 500 20px "Montserrat", sans-serif;
-    color: #1a1a1a;
+.modern-table tbody td {
+    padding: 14px 15px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 15px;
+    color: #1f2937;
     vertical-align: middle;
 }
 
-.checkbox-col {
-    width: 52px;
-    text-align: center;
+.modern-table tbody tr:hover {
+    background-color: #f0fdf4;
 }
 
-.status-pill {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 100px;
-    padding: 6px 14px;
-    border-radius: 999px;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 700;
-}
+/* Căn lề các cột */
+.col-check { width: 60px; text-align: center !important; }
+.col-id { width: 100px; font-weight: 700; color: var(--ge-green); }
+.col-name { font-weight: 600; }
+.col-pos { color: #6b7280; font-style: italic; }
 
-.status-pill.is-sent {
-    background: rgba(23, 77, 23, 0.92);
-}
-
-.status-pill.is-draft {
-    background: #e74c3c;
-}
-
-.schedule-detail-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 1px solid #c7b4aa;
-    background: #fff !important;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-    padding: 0;
-}
-
-.schedule-detail-btn img {
+.custom-checkbox {
     width: 20px;
     height: 20px;
-    object-fit: contain;
-}
-
-.schedule-detail-btn:hover {
-    transform: translateY(-1px);
-    background: #ede4dc;
-}
-
-.schedule-icon-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 1px solid #c7b4aa;
-    background: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-    text-decoration: none;
-    padding: 0;
-}
-
-.schedule-icon-btn img {
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
-}
-
-.schedule-icon-btn:hover {
-    transform: translateY(-1px);
-}
-
-.schedule-icon-btn.edit-btn:hover {
-    background: #e6f1e6;
-    border-color: #174d17;
-}
-
-.schedule-icon-btn.delete-btn:hover {
-    background: #f3e7e4;
-    border-color: #8d6e63;
-}
-
-.schedule-icon-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-.schedule-icon-btn:disabled:hover {
-    transform: none;
-    background: #fff;
-    border-color: #c7b4aa;
-}
-
-.table-checkbox {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    accent-color: var(--ge-green);
     cursor: pointer;
 }
 
-.table-checkbox input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.table-checkbox span {
-    width: 18px;
-    height: 18px;
-    border: 2px solid #174d17;
-    border-radius: 5px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #fff;
-}
-
-.table-checkbox input:checked + span {
-    background: #174d17;
-}
-
-.table-checkbox input:checked + span::after {
-    content: "";
-    width: 8px;
-    height: 4px;
-    border-left: 2px solid #fff;
-    border-bottom: 2px solid #fff;
-    transform: rotate(-45deg) translateY(-1px);
-}
-
-.schedule-modal-overlay {
-    position: fixed;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    background: rgba(15, 23, 42, 0.42);
-    z-index: 1200;
-}
-
-.schedule-modal-overlay.is-visible {
-    display: flex;
-}
-
-.schedule-modal {
-    width: min(760px, 100%);
-    max-height: calc(100vh - 48px);
-    overflow: auto;
-    background: #fff;
-    border-radius: 24px;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.16);
-}
-
-.schedule-form-modal,
-.schedule-view-modal {
-    padding: 28px 32px;
-}
-
-.schedule-confirm-modal {
-    width: min(480px, 100%);
-    padding: 32px;
-    text-align: center;
-}
-
-.schedule-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 20px;
-}
-
-.schedule-modal-header h2,
-.schedule-confirm-modal h3,
-.schedule-section h3 {
-    margin: 0;
-}
-
-.schedule-modal-close {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #f2f2f2;
-    font-size: 26px;
-    line-height: 1;
-}
-
-.schedule-modal-body,
-.schedule-section,
-.schedule-employee-body {
-    display: flex;
-    flex-direction: column;
-}
-
-.schedule-modal-body,
-.schedule-section {
-    gap: 20px;
-}
-
-/* Thong tin ca lam grid - 2 cot nam ngang */
-.schedule-form-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 24px !important;
-    align-items: start !important;
-}
-
-.schedule-field {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.schedule-field label {
-    font-weight: 600 !important;
-    color: #174d17 !important;
-    margin-bottom: 4px;
-    font-size: 15px;
-}
-
-/* O nhap lieu bo tron, vien xam nhat, nen trang */
-.schedule-field input[type="date"],
-.schedule-field select {
-    padding: 12px 16px !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 10px !important;
-    font-size: 14px;
-    background-color: #ffffff !important;
-    transition: all 0.2s ease;
-    color: #374151;
-    width: 100%;
-}
-
-.schedule-field input:focus,
-.schedule-field select:focus {
-    outline: none;
-    border-color: #174d17 !important;
-    box-shadow: 0 0 0 3px rgba(23, 77, 23, 0.1) !important;
-}
-
-.schedule-readonly-field strong {
-    color: #1f1f1f;
-}
-
-.schedule-employee-item select {
-    border: 1px solid #d7d7d7;
-    border-radius: 10px;
-    padding: 9px 10px;
-}
-
-.schedule-id-chip {
-    background: #f2f2f2;
-    color: #174d17;
-    border-radius: 999px;
-    padding: 6px 12px;
-    font-weight: 700;
-}
-
-.schedule-employee-table {
-    border: 1px solid #e5e5e5;
-    border-radius: 16px;
-    overflow: hidden;
-}
-
-.schedule-employee-head {
-    background: #f4f4f4 !important;
-    padding: 12px 16px !important;
-    font-weight: bold;
-    color: #374151 !important;
-    border-bottom: 2px solid #ddd;
-}
-
-.schedule-employee-item {
-    padding: 12px 16px !important;
-    border-bottom: 1px solid #eee;
-    font-size: 14px;
-}
-
-.schedule-employee-item:last-child {
-    border-bottom: none;
-}
-
-.schedule-modal-footer {
-    justify-content: flex-end;
-    margin-top: 24px;
-}
-
-.schedule-confirm-icon {
-    width: 88px;
-    height: 88px;
-    margin: 0 auto 18px;
-    border-radius: 50%;
-    background: #eef7ee;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.schedule-confirm-icon img {
-    width: 44px;
-    height: 44px;
-}
-
-.schedule-confirm-modal p {
-    margin: 0 0 24px;
-    color: #555;
-    line-height: 1.6;
-}
-
-.schedule-full-btn {
-    width: 100%;
-    justify-content: center;
-}
-
-@media (max-width: 900px) {
-    .schedule-table-card {
-        overflow-x: auto;
-    }
-
-    .schedule-table {
-        min-width: 780px;
-    }
-}
-
-/* Form Layout Styles */
-.schedule-form-page {
-    display: flex;
-    justify-content: center;
-    padding: 24px;
-    min-height: calc(100vh - 200px);
-}
-
-.schedule-form-card {
-    width: 100%;
-    max-width: 1000px; /* Mo rong khung form len 1000px */
-    background: #e8f5e9;
-    border-radius: 24px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-    border: 1px solid rgba(0,0,0,0.05);
-    overflow: hidden;
-}
-
-.schedule-form-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 24px 32px 20px;
-    border-bottom: 1px solid #e8ecef;
-    background: #fafcf9;
-}
-
-.schedule-form-header h2 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 700;
-    color: #174d17;
-}
-
-.schedule-back-link {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #f2f2f2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.schedule-back-link:hover {
-    transform: translateY(-1px);
-    background: #e8ecef;
-}
-
-.schedule-back-link img {
-    width: 18px;
-    height: 18px;
-}
-
-.schedule-form {
-    padding: 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.schedule-form-actions {
+/* --- PHẦN 3 NÚT BẤM (FOOTER) --- */
+.form-footer-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    margin-top: 16px;
-    padding-top: 24px;
-    border-top: 1px solid #e8ecef;
+    gap: 15px;
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 1px solid #e5e7eb;
 }
 
-.schedule-employee-body {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .schedule-form-grid {
-        grid-template-columns: 1fr !important;
-        gap: 16px !important;
-    }
-}
-
-.schedule-cancel-btn {
-    padding: 12px 24px;
-    border-radius: 999px;
-    font-size: 15px;
+.btn-cancel-ghost {
+    min-width: 140px;
+    height: 50px;
+    border-radius: 12px;
+    background: #f3f4f6;
+    color: #4b5563;
     font-weight: 700;
-    background: #f2f2f2;
-    color: #1f1f1f;
     text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-save-solid {
+    min-width: 180px;
+    height: 50px;
+    border-radius: 12px;
+    background: var(--ge-green);
+    color: white;
+    font-weight: 700;
     border: none;
     cursor: pointer;
-    transition: transform 0.2s ease, background 0.2s ease;
+    box-shadow: 0 10px 20px rgba(15, 107, 32, 0.2);
+    transition: all 0.3s;
 }
 
-.schedule-cancel-btn:hover {
-    transform: translateY(-1px);
-    background: #e8ecef;
+.btn-save-solid:hover {
+    background: var(--ge-green-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(15, 107, 32, 0.3);
 }
 
-.schedule-save-btn {
-    padding: 12px 24px;
-    border-radius: 999px;
-    font-size: 15px;
-    font-weight: 700;
-    background: rgba(23, 77, 23, 0.92);
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.schedule-save-btn:hover {
-    transform: translateY(-1px);
-    background: #174d17;
-}
-
-.required {
-    color: #dc3545;
-    font-weight: 700;
-}
