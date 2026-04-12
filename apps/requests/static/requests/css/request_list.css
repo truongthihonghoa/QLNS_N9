@@ -1,48 +1,32 @@
-/* --- Request List GÉ CAFE Style --- */
+/* --- Request List SYNC WITH Schedule List --- */
 .request-management-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 10px 0;
+    padding: 20px 0;
+    min-height: 100vh;
 }
 
-/* 1. Toolbar */
+/* 1. Toolbar Styling - SYNC WITH SCHEDULE TOOLBAR */
 .top-control-bar {
     display: flex;
+    gap: 15px;
     align-items: center;
-    gap: 2px;
-    /* Thu hẹp khoảng cách giữa cụm Trái và Phải */
+    margin-bottom: 20px;
 }
 
-/* LEFT */
 .control-left {
     display: flex;
+    gap: 15px;
+    flex: 1;
     align-items: center;
-    gap: 2px;
-    /* Thu hẹp khoảng cách giữa ô input và nút Tìm kiếm */
-}
-
-/* RIGHT */
-.control-right {
-    display: flex;
-    gap: 2px;
-    /* Thu hẹp khoảng cách giữa nút Tính lương và In/Xuất */
-}
-
-/* 2. Select + Search */
-.ge-select,
-.search-wrapper {
-    height: 48px;
-    border: 1px solid #dadce0;
-    border-radius: 10px;
-    background: #ffffff;
-    font: 500 16px "Montserrat", sans-serif;
-    color: #4b2e1f;
 }
 
 .ge-select {
-    min-width: 240px;
+    height: 52px;
+    border: 1px solid #dadce0;
+    border-radius: 10px;
     padding: 0 15px;
+    background: #ffffff;
+    font: 500 18px "Montserrat", sans-serif;
+    min-width: 200px;
     outline: none;
     cursor: pointer;
 }
@@ -50,60 +34,67 @@
 .search-wrapper {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 0 15px;
+    gap: 8px;
     flex: 1;
-    max-width: 500px;
+    height: 52px;
+    border: 1px solid #dadce0;
+    border-radius: 10px;
+    padding: 0 18px;
+    background: #ffffff;
+    box-sizing: border-box;
 }
 
 .search-wrapper input {
     border: none;
     outline: none;
     width: 100%;
-    background: #ffffff;
-    font: 500 16px "Montserrat", sans-serif;
+    background: transparent;
+    font: 500 18px "Montserrat", sans-serif;
+    color: #1a1a1a;
 }
 
-/* 3. Buttons */
-.btn-search-ge,
-.btn-create-request {
-    height: 48px;
-    padding: 0 20px;
-    /* giảm padding để nút gọn hơn */
+.search-icon {
+    color: #888;
+    font-size: 18px;
+}
+
+/* 2. Buttons */
+.btn-search-ge {
+    height: 52px;
+    padding: 0 25px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     background: #174d17;
     color: white;
-    font: 700 16px "Montserrat", sans-serif;
-    /* giảm font nhẹ */
+    font: 700 18px "Montserrat", sans-serif;
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-/* hover */
-.btn-search-ge:hover,
-.btn-create-request:hover {
+.btn-search-ge:hover {
     background: #27682b;
-    color: #fff;
     transform: translateY(-1px);
 }
 
-/* 4. Tabs */
+/* 3. Status Tabs (If kept, keep them similar in font) */
 .status-filter-row {
     display: flex;
-    gap: 6px;
-    margin: 5px 0;
+    gap: 10px;
+    margin-bottom: 25px;
 }
 
 .status-btn {
-    height: 45px;
-    padding: 0 20px;
+    height: 52px;
+    padding: 0 25px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     background: rgba(23, 77, 23, 0.85);
     color: #fff;
-    font: 700 16px "Montserrat", sans-serif;
+    font: 700 18px "Montserrat", sans-serif;
     cursor: pointer;
     transition: 0.2s;
 }
@@ -113,16 +104,11 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.status-btn:hover:not(.active) {
-    background: #0000ff;
-}
-
-/* 5. Table */
+/* 4. Table Styling - EXACT SYNC WITH SCHEDULE LIST */
 .ge-table-card {
+    background: transparent;
     border-radius: 14px;
     overflow: hidden;
-    box-shadow: none;
-    background: transparent;
 }
 
 .ge-main-table {
@@ -131,71 +117,65 @@
 }
 
 .ge-main-table th {
-    background: rgba(23, 77, 23, 0.85);
+    background: rgba(23, 77, 23, 0.88);
     color: #fff;
-    padding: 18px;
-    text-align: center;
     font: 700 20px "Montserrat", sans-serif;
+    padding: 22px 14px;
+    text-align: center;
 }
+
+.ge-main-table tbody tr:nth-child(odd) { background: #ebe7e4; }
+.ge-main-table tbody tr:nth-child(even) { background: rgba(243, 240, 238, 0.93); }
 
 .ge-main-table td {
-    padding: 20px 15px;
+    padding: 22px 14px;
     text-align: center;
-    font: 500 18px "Montserrat", sans-serif;
+    font: 500 19px "Montserrat", sans-serif;
     color: #1a1a1a;
-    border: none;
+    vertical-align: middle;
 }
 
-/* remove zebra */
-.ge-main-table tbody tr:nth-child(odd),
-.ge-main-table tbody tr:nth-child(even) {
-    background: transparent;
+/* Cột Nhân viên (cột thứ 3) căn lề trái 40px */
+.ge-main-table th:nth-child(3),
+.ge-main-table td:nth-child(3) {
+    text-align: left !important;
+    padding-left: 40px !important;
 }
 
-/* 6. Status */
-.stt-waiting {
-    color: #C58B00;
-    font-weight: 700;
+/* 5. Status Text Styling - NO BACKGROUND */
+.stt-waiting, .stt-approved, .stt-rejected {
+    font-size: 19px;
+    font-weight: 500;
+    display: inline-block;
+    background: transparent !important;
+    padding: 0;
 }
 
-.stt-approved {
-    color: #008000;
-    font-weight: 700;
-}
+.stt-waiting { color: #C58B00; }
+.stt-approved { color: #008000; }
+.stt-rejected { color: #E53935; }
 
-.stt-rejected {
-    color: #E53935;
-    font-weight: 700;
-}
-
-/* 7. Detail button */
+/* 6. Action Button */
 .btn-detail-ge {
-    background: #fff;
-    color: #4b2e1f;
-    border: 1px solid #c7b4aa;
-    padding: 6px 14px;
-    /* nhỏ lại */
-    border-radius: 20px;
-    font: 600 14px "Montserrat", sans-serif;
+    background: white !important;
+    border: 1.5px solid #000 !important;
+    padding: 8px 18px !important;
+    border-radius: 20px !important;
+    font: 600 16px "Montserrat", sans-serif !important;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.2s ease;
+    color: #000 !important;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .btn-detail-ge:hover {
-    background: #174d17;
-    color: #fff;
-    border-color: #174d17;
+    background: #000 !important;
+    color: white !important;
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-    .top-control-bar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .status-filter-row {
-        overflow-x: auto;
-        padding-bottom: 10px;
-    }
+@media (max-width: 1200px) {
+    .ge-main-table { min-width: 1000px; }
+    .ge-table-card { overflow-x: auto; }
 }

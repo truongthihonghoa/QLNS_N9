@@ -4,38 +4,252 @@
 {% block title %}Sửa Lịch Làm Việc - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'schedules/css/schedule_list.css' %}">
+    <link rel="stylesheet" href="{% static 'schedules/css/schedule_list.css' %}?v=1.1">
+    <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
+
+    <style>
+        /* Đồng bộ giao diện với màn hình Create */
+        .schedule-form-page {
+            background-color: transparent !important;
+            min-height: auto;
+            padding: 40px 20px !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+        }
+
+        .schedule-card {
+            background: #ffffff !important;
+            border-radius: 16px !important;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+            padding: 40px !important;
+            width: 100% !important;
+            max-width: 850px !important;
+            border: 1px solid rgba(0,0,0,0.05) !important;
+        }
+
+        .edit-header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 15px;
+        }
+
+        .edit-header h2 {
+            color: #174d17;
+            font-weight: 800;
+            font-size: 24px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .info-summary-section {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 5px solid #174d17;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #e2f2e2;
+            color: #174d17;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .edit-body-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #174d17; /* Màu xanh hệ thống */
+            margin-bottom: 20px;
+            padding-left: 10px;
+            border-left: 4px solid #174d17;
+        }
+
+        .field-group {
+            margin-bottom: 25px;
+        }
+
+        .field-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #604534; /* Màu nâu hệ thống */
+            font-size: 15px;
+        }
+
+        .field-group input, .field-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1.5px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+            outline: none;
+            background: #ffffff;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .field-group input:disabled {
+            background-color: #f1f5f9;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        .field-group select:focus {
+            border-color: #174d17;
+            box-shadow: 0 0 0 3px rgba(23, 77, 23, 0.08);
+        }
+
+        .helper-text {
+            display: block;
+            margin-top: 8px;
+            color: #718096;
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .form-footer-actions {
+            margin-top: 40px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .btn-save-solid, .btn-cancel-ghost {
+            min-width: 150px;
+            height: 48px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Montserrat", sans-serif;
+            text-decoration: none;
+        }
+
+        .btn-save-solid {
+            background-color: #0f6b20;
+            color: white;
+            box-shadow: 0 6px 15px rgba(15, 107, 32, 0.15);
+        }
+
+        .btn-save-solid:hover {
+            background-color: #0d5a1b;
+            transform: translateY(-1px);
+        }
+
+        .btn-cancel-ghost {
+            background-color: #e4e4e4;
+            color: #4f4f4f;
+            text-decoration: none;
+        }
+
+        .btn-cancel-ghost:hover {
+            background-color: #d4d4d4;
+            color: #4f4f4f;
+        }
+
+        .back-btn-pill {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: #174d17;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+        }
+
+        .back-btn-pill:hover {
+            color: #0f360f;
+            transform: translateX(-3px);
+        }
+
+        .back-btn-pill i {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+    </style>
 {% endblock %}
-<!-- -->
+
 {% block content %}
 <div class="schedule-form-page">
-    <div class="schedule-form-card">
-        <div class="schedule-form-header">
-            <a href="{% url 'schedule_list' %}" class="schedule-back-link">
-                <i class="fas fa-arrow-left"></i>
-            </a>
+    <div class="schedule-card">
+        <!-- Nút quay lại -->
+        <a href="{% url 'schedule_list' %}" class="back-btn-pill">
+            <i class="fas fa-arrow-left"></i> Danh sách lịch làm việc
+        </a>
+
+        <div class="edit-header">
             <h2>SỬA LỊCH LÀM VIỆC</h2>
         </div>
 
-        <form class="schedule-form" method="POST">
+        <form class="schedule-form" method="POST" id="scheduleEditForm">
             {% csrf_token %}
 
-            <div class="schedule-info" style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
-                <p><strong>Mã lịch làm:</strong> {{ schedule.ma_llv }}</p>
-                <p><strong>Nhân viên:</strong> {{ schedule.ma_nv.ho_ten }} ({{ schedule.ma_nv.ma_nv }})</p>
-                <p><strong>Trạng thái:</strong> <span style="color: #174d17; font-weight: 700;">{{ schedule.trang_thai }}</span></p>
+            <!-- Tóm tắt thông tin không thay đổi -->
+            <div class="info-summary-section">
+                <div class="info-item">
+                    <span class="info-label">Mã lịch làm</span>
+                    <span class="info-value">{{ schedule.ma_llv }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Trạng thái</span>
+                    <div><span class="status-badge">{{ schedule.trang_thai }}</span></div>
+                </div>
+                <div class="info-item" style="grid-column: span 2; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 10px;">
+                    <span class="info-label">Nhân viên</span>
+                    <span class="info-value" style="color: #174d17; font-weight: 700;">{{ schedule.ma_nv.ho_ten }} ({{ schedule.ma_nv.ma_nv }})</span>
+                </div>
             </div>
 
-            <section class="schedule-section">
-                <h3>Thông tin điều chỉnh</h3>
-                <div class="schedule-form-grid">
-                    <div class="schedule-field">
-                        <label for="ngay_lam">Ngày Làm</label>
-                        <input type="text" value="{{ schedule.ngay_lam|date:'d/m/Y' }}" disabled style="background: #f1f5f9;">
-                        <small style="color: #64748b; margin-top: 5px;">Ngày làm cố định, không thể thay đổi mã lịch.</small>
+            <div class="edit-body">
+                <h3 class="edit-body-title">Thông tin điều chỉnh</h3>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- Ngày làm (Disabled) -->
+                    <div class="field-group">
+                        <label>Ngày Làm</label>
+                        <input type="text" value="{{ schedule.ngay_lam|date:'d/m/Y' }}" disabled>
+                        <span class="helper-text">Ngày làm cố định theo mã lịch.</span>
                     </div>
-                    <div class="schedule-field">
-                        <label for="khung_gio">Khung Giờ Ca Làm <span class="required" style="color:red;">*</span></label>
+
+                    <!-- Khung giờ (Cho phép sửa) -->
+                    <div class="field-group">
+                        <label for="khung_gio">Khung Giờ Ca Làm <span style="color:red;">*</span></label>
                         <select id="khung_gio" name="khung_gio" required>
                             {% for option in shift_options %}
                             <option value="{{ option }}" {% if schedule.ca_lam == option %}selected{% endif %}>{{ option }}</option>
@@ -43,14 +257,24 @@
                         </select>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <div class="schedule-form-actions">
-                <a href="{% url 'schedule_list' %}" class="schedule-cancel-btn">HỦY</a>
-                <button type="submit" class="schedule-save-btn">LƯU THAY ĐỔI</button>
+            <!-- Nút bấm -->
+            <div class="form-footer-actions">
+                <a href="{% url 'schedule_list' %}" class="btn-cancel-ghost">HỦY</a>
+                <button type="submit" class="btn-save-solid">LƯU THAY ĐỔI</button>
             </div>
         </form>
     </div>
 </div>
+
+{% include 'partials/popup_confirm_cancel.html' %}
+{% include 'partials/popup_error.html' %}
+{% include 'partials/popup_success.html' %}
 {% endblock %}
 
+{% block extra_js %}
+<script>
+    // Có thể thêm script xử lý popup ở đây nếu cần giống như màn hình create
+</script>
+{% endblock %}
