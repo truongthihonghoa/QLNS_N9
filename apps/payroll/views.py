@@ -199,6 +199,7 @@ def payroll_list_view(request):
             'tong_luong': f"{row.tong_luong:,.0f}",
             'trang_thai': row.get_trang_thai_display(),
             'trang_thai_key': _status_key(row.trang_thai),
+            'da_gui': bool(getattr(row, 'da_gui', False)),
         }
         for row in qs
     ]
@@ -662,6 +663,29 @@ def payroll_update_status_view(request, ma_luong: str):
             'action_type': raw_status,  # Gửi về để JS biết là vừa 'da-duyet' hay 'da-tu-choi'
             'trang_thai': obj.get_trang_thai_display()
         })
+
+
+@require_POST
+def payroll_send_view(request):
+    """
+    Mark approved payroll rows as "sent" (da_gui=True).
+
+    This is intentionally minimal: the app currently has no employee email/notification
+    channel, so "send" here is a state transition for UI (Chưa gửi/Đã gửi).
+    """
+    demo_mode = bool(getattr(settings, 'DEBUG', False))
+    if not request.user.is_authenticated and not demo_mode:
+        return JsonResponse({'status': 'error', 'message': 'unauthenticated'}, status=401)
+    if not demo_mode and not (request.user.is_staff or request.user.is_superuser):
+        return JsonResponse({'status': 'error', 'message': 'forbidden'}, status=403)
+
+    ma_luongs = request.POST.getlist('ma_luongs[]') or request.POST.getlist('ma_luongs') or []
+    ma_luongs = [s.strip() for s in ma_luongs if (s or '').strip()]
+    if not ma_luongs:
+        return JsonResponse({'status': 'error', 'message': 'Vui lòng chọn ít nhất 1 bảng lương để gửi.'}, status=400)
+
+    updated = Luong.objects.filter(ma_luong__in=ma_luongs, trang_thai='da_duyet', da_gui=False).update(da_gui=True)
+    return JsonResponse({'status': 'success', 'updated': updated})
 
     return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
 

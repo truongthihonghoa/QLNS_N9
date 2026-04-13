@@ -59,6 +59,25 @@
 
     .btn-reject-ge { border: 1px solid #dc3545; color: #dc3545; }
     .btn-reject-ge:hover { background-color: #dc3545; color: white; }
+
+    .payroll-send-checkbox {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        accent-color: #174d17;
+    }
+
+    .send-state {
+        font-weight: 700;
+        font-size: 18px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(0,0,0,0.12);
+        white-space: nowrap;
+    }
+
+    .send-state.is-unsent { background: #fff7ed; color: #9a3412; border-color: #fed7aa; }
+    .send-state.is-sent { background: #ecfdf5; color: #166534; border-color: #bbf7d0; }
 </style>
 <link rel="stylesheet" href="{% static 'payroll/css/payroll_list.css' %}">
 <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
@@ -130,6 +149,7 @@
         <table class="ge-main-table">
             <thead>
                 <tr>
+                    <th style="width: 44px;"></th>
                     <th>STT</th>
                     <th>Mã lương</th>
                     <th>Tên nhân viên</th>
@@ -147,6 +167,11 @@
             <tbody>
                 {% for payroll in payroll_rows %}
                 <tr data-status="{{ payroll.trang_thai_key|default:'cho-duyet' }}" data-ma-luong="{{ payroll.ma_luong }}">
+                    <td style="text-align:center;">
+                        {% if payroll.trang_thai_key == 'da-duyet' %}
+                            <input type="checkbox" class="payroll-send-checkbox" value="{{ payroll.ma_luong }}" {% if payroll.da_gui %}disabled{% endif %}>
+                        {% endif %}
+                    </td>
                     <td>{{ forloop.counter }}</td>
                     <td>{{ payroll.ma_luong }}</td>
                     <td>{{ payroll.ten_nv }}</td>
@@ -160,7 +185,7 @@
                     <td>
                         <div class="status-badge {{ payroll.trang_thai_key|default:'cho-duyet' }}">
                             {% if payroll.trang_thai_key == 'da-duyet' %}
-                                <i class="fas fa-check-circle" style="color: #28a745; font-size: 18px;"></i>
+                                <span class="send-state {% if payroll.da_gui %}is-sent{% else %}is-unsent{% endif %}">{% if payroll.da_gui %}Đã gửi{% else %}Chưa gửi{% endif %}</span>
                             {% elif payroll.trang_thai_key == 'da-tu-choi' %}
                                 <i class="fas fa-times-circle" style="color: #dc3545; font-size: 18px;" title="Đã từ chối"></i>
                             {% else %}
@@ -190,7 +215,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="12" style="text-align: center;">Không có dữ liệu bảng lương.</td>
+                    <td colspan="13" style="text-align: center;">Không có dữ liệu bảng lương.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -199,6 +224,12 @@
 
     <div id="export-approved-container" class="export-data-wrapper" style="display: none;">
         <div class="export-controls">
+            <label style="display: inline-flex; align-items: center; gap: 12px; margin-right: 15px; font-weight: 700; font-size: 18px; cursor: pointer; user-select: none; font-family: 'Montserrat', sans-serif;">
+    <input type="checkbox" id="payroll-send-select-all"
+           style="width: 24px; height: 24px; cursor: pointer; accent-color: #174d17; margin: 0; vertical-align: middle;">
+    <span style="line-height: 1;">Chọn tất cả</span>
+</label>
+            <button type="button" class="btn-export-final" id="payroll-send-btn" data-send-url="{% url 'payroll_send' %}">Gửi bảng lương</button>
             <select id="export-format-select" class="export-dropdown">
                 <option value="pdf">Xuất file PDF</option>
                 <option value="excel">Xuất file Excel</option>

@@ -44,6 +44,9 @@ class Luong(models.Model):
     # ✅ Tổng lương (auto)
     tong_luong = models.FloatField(default=0)
 
+    # Đánh dấu đã gửi bảng lương cho nhân viên (UI: Chưa gửi/Đã gửi)
+    da_gui = models.BooleanField(default=False)
+
     # --- Thời gian ---
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

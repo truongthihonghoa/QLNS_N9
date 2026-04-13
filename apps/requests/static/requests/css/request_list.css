@@ -117,9 +117,13 @@
 }
 
 .ge-main-table th {
-    background: rgba(23, 77, 23, 0.88);
+     background: rgba(23, 77, 23, 0.88);
     color: #fff;
-    font: 700 20px "Montserrat", sans-serif;
+
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+
     padding: 22px 14px;
     text-align: center;
 }
