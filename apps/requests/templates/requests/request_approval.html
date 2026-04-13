@@ -4,9 +4,9 @@
 {% block title %}Duyệt Yêu Cầu - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
 <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
 <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
+<link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}">
 <style>
     /* General Page Layout */
     .request-approval-page {
@@ -113,7 +113,7 @@
     .request-table th {
         background: rgba(23, 77, 23, 0.84);
         color: #fff;
-        font: 500 22px "Montserrat", sans-serif; /* Giam do dam xuong 500 */
+        font: 500 22px "Montserrat", sans-serif;
         padding: 16px 14px;
         text-align: center;
     }
@@ -124,19 +124,19 @@
     .request-table td {
         padding: 22px 14px;
         text-align: center;
-        font: 400 20px "Montserrat", sans-serif; /* Chữ thường, không in đậm */
+        font: 400 20px "Montserrat", sans-serif;
         color: #1a1a1a;
         vertical-align: middle;
     }
 
-    /* Badges - NO BOLD, NO UPPERCASE */
+    /* Badges */
     .badge {
         padding: 0;
         background-color: transparent !important;
         font-size: 18px;
-        font-weight: 500; /* Không in đậm */
+        font-weight: 500;
         display: inline-block;
-        text-transform: none !important; /* Không in hoa */
+        text-transform: none !important;
     }
 
     .badge-pending { color: #d97706 !important; }
@@ -159,7 +159,7 @@
         transform: translateY(-2px);
     }
 
-    /* --- FIXED POPUP STYLING --- */
+    /* Modal Styling */
     .modal-overlay {
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
@@ -196,7 +196,6 @@
         font-family: "Montserrat", sans-serif;
     }
 
-    /* Profile Section */
     .profile-header {
         text-align: center;
         margin-bottom: 25px;
@@ -222,7 +221,6 @@
         font-weight: 500;
     }
 
-    /* Details List */
     .detail-list {
         display: flex;
         flex-direction: column;
@@ -250,7 +248,6 @@
         font-size: 15px;
     }
 
-    /* Action Buttons */
     .modal-footer-actions {
         display: flex;
         padding: 15px 24px 24px;
@@ -279,7 +276,6 @@
 
 {% block content %}
 <div class="request-approval-page">
-    <!-- Toolbar -->
     <div class="toolbar">
         <div class="search-filter-group">
             <div class="search-box">
@@ -296,7 +292,6 @@
         </div>
     </div>
 
-    <!-- Tabs Trạng thái -->
     <div class="status-tabs">
         <div class="status-tab active" data-status="all">Tất cả</div>
         <div class="status-tab" data-status="pending">Đang chờ duyệt</div>
@@ -304,7 +299,6 @@
         <div class="status-tab" data-status="rejected">Từ chối</div>
     </div>
 
-    <!-- Bảng thông tin -->
     <div class="request-table-card">
         <table class="request-table" id="requestTable">
             <thead>
@@ -323,7 +317,7 @@
                     data-type="{{ req.loai_yc }}"
                     data-name="{{ req.ten_nv|lower }}"
                     data-status="{{ req.trang_thai_key }}">
-                    <td>{{ req.ma_dk }}</td> <!-- Bo in dam -->
+                    <td>{{ req.ma_dk }}</td>
                     <td>{{ req.ten_nv }}</td>
                     <td>{{ req.loai_yc }}</td>
                     <td>{{ req.ngay_dk }}</td>
@@ -351,7 +345,6 @@
     </div>
 </div>
 
-<!-- Modal Chi tiết yêu cầu -->
 <div id="requestDetailModal" class="modal-overlay">
     <div class="modal-box">
         <div class="modal-body">
@@ -360,7 +353,6 @@
                 <h2 class="profile-name" id="modal-nv-name"></h2>
                 <p class="profile-id-sub" id="modal-nv-id-display"></p>
             </div>
-
             <div class="detail-list" id="modal-fields-list"></div>
         </div>
         <div class="modal-footer-actions" id="modal-actions">
@@ -374,7 +366,6 @@
     </div>
 </div>
 
-<!-- Modal Lý do từ chối -->
 <div id="rejectReasonModal" class="modal-overlay" style="padding-top: 220px;">
     <div class="modal-box" style="max-width: 380px;">
         <div class="modal-header" style="background: #efcaca; padding: 15px 24px; border-bottom: none; display: flex; justify-content: space-between; align-items: center;">
@@ -392,18 +383,39 @@
 </div>
 
 {% include 'partials/popup_confirm_approve.html' %}
-{% include 'partials/popup_success.html' %}
 {% include 'partials/popup_error.html' %}
+{% include 'partials/toast_notification.html' %}
 
 <script>
     let currentRequestId = '';
     let currentStatusFilter = 'all';
 
-    function showSuccess(title, message) {
-        document.getElementById('success-popup-title').textContent = title;
-        document.getElementById('success-popup-message').textContent = message;
-        document.getElementById('success-popup').style.display = 'flex';
-        document.getElementById('success-popup-confirm-btn').onclick = () => location.reload();
+    function showToast(message) {
+        const toast = document.getElementById('toast-notification');
+        const toastMsg = document.getElementById('toast-message');
+        const toastIconContainer = toast.querySelector('.toast-icon');
+        const toastIcon = toastIconContainer.querySelector('i');
+
+        if (toast && toastMsg) {
+            toastMsg.textContent = message;
+
+            // Kiểm tra nếu là "từ chối" thì đổi icon sang dấu X và màu đỏ
+            if (message.includes('từ chối')) {
+                toastIcon.className = 'fas fa-times';
+                toastIconContainer.style.backgroundColor = '#dc3545';
+            } else {
+                toastIcon.className = 'fas fa-check';
+                toastIconContainer.style.backgroundColor = '#14b63a';
+            }
+
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+                location.reload();
+            }, 1500);
+        } else {
+            location.reload();
+        }
     }
 
     function showError(title, message) {
@@ -452,7 +464,7 @@
         }
     }
 
-    // Logic Duyet - Su dung popup xac nhan moi
+    // Logic Duyệt
     document.getElementById('modal-btn-approve').onclick = () => {
         document.getElementById('confirm-approve-popup').style.display = 'flex';
     };
@@ -467,14 +479,15 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    showSuccess('Thành công', 'Đã duyệt đề nghị thành công!');
+                    closeModal('requestDetailModal');
+                    showToast('Duyệt đề nghị thành công');
                 } else {
                     showError('Lỗi', 'Có lỗi xảy ra: ' + data.error);
                 }
             });
     };
 
-    // Logic Tu choi
+    // Logic Từ chối
     document.getElementById('modal-btn-reject').onclick = () => {
         document.getElementById('rejectReasonText').value = '';
         document.getElementById('rejectReasonModal').style.display = 'flex';
@@ -489,7 +502,8 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    showSuccess('Đã từ chối', 'Đã từ chối đề nghị thành công!');
+                    closeModal('requestDetailModal');
+                    showToast('Đã từ chối đề nghị thành công');
                 } else {
                     showError('Lỗi', 'Có lỗi xảy ra: ' + data.error);
                 }
@@ -505,14 +519,11 @@
         const searchText = employeeSearch.value.toLowerCase().trim();
         const rows = document.querySelectorAll('.request-row');
         let visibleCount = 0;
-        let pendingTotal = 0;
 
         rows.forEach(row => {
             const matchesType = (selectedType === '' || row.dataset.type === selectedType);
             const matchesSearch = row.dataset.name.includes(searchText);
             const matchesStatus = (currentStatusFilter === 'all' || row.dataset.status === currentStatusFilter);
-
-            if (row.dataset.status === 'pending') pendingTotal++;
 
             if (matchesType && matchesSearch && matchesStatus) {
                 row.style.display = '';
