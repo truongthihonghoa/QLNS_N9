@@ -54,9 +54,9 @@
                 {% for emp in employees %}
                 <div class="payroll-employee-card"
                      data-ma-nv="{{ emp.ma_nv|stringformat:'s' }}"
-                     data-hours="{{ emp.sogio|stringformat:'d' }}"
-                     data-hourly="{{ emp.luong_gio|stringformat:'d' }}"
-                     data-base="{{ emp.luong_co_ban|stringformat:'d' }}">
+                     data-hours="{{ emp.sogio }}"
+                     data-hourly="{{ emp.luong_gio }}"
+                     data-base="{{ emp.luong_co_ban }}">
                     <input type="hidden" name="base_salary_{{ emp.ma_nv }}" value="{{ emp.luong_co_ban }}">
                     <input type="hidden" name="hourly_rate_{{ emp.ma_nv }}" value="{{ emp.luong_gio }}">
                     <input type="hidden" name="hours_{{ emp.ma_nv }}" value="{{ emp.sogio }}">
@@ -202,8 +202,6 @@
         }
     });
 </script>
-<script src="{% static 'payroll/js/payroll_edit.js' %}?v=3.4">
-
-
+<script src="{% static 'payroll/js/payroll_edit.js' %}?v=3.4"></script>
 
 {% endblock %}
