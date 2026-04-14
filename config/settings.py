@@ -88,10 +88,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
-        'USER': 'postgres.eimguxgikwpzbnrssfcr',
-        'PASSWORD': 'QLNS_n9123}', # Thay [YOUR-PASSWORD] bằng pass thật
-        'HOST': 'aws-1-ap-northeast-1.pooler.supabase.com',
+        'USER': 'postgres.zuppllveaerdrgtxqtgm',
+        'PASSWORD': 'QLNS_n9123}',
+        'HOST': 'aws-1-ap-northeast-2.pooler.supabase.com',
         'PORT': '6543',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
 
@@ -133,6 +136,15 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
+    BASE_DIR / 'apps' / 'accounts' / 'static',
+    BASE_DIR / 'apps' / 'branches' / 'static',
+    BASE_DIR / 'apps' / 'contracts' / 'static',
+    BASE_DIR / 'apps' / 'employees' / 'static',
+    BASE_DIR / 'apps' / 'payroll' / 'static',
+    BASE_DIR / 'apps' / 'reports' / 'static',
+    BASE_DIR / 'apps' / 'requests' / 'static',
+    BASE_DIR / 'apps' / 'schedules' / 'static',
+    BASE_DIR / 'apps' / 'attendances' / 'static',
 ]
 
 # Media files (User uploaded files)
