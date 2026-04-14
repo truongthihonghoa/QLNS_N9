@@ -43,7 +43,7 @@
 
                 <div class="contract-field">
                     <label for="loai_hd">Loại hợp đồng <span class="required">*</span></label>
-                    <select id="loai_hd" name="loai_hd" required>
+                    <select id="loai_hd" name="loai_hd" onchange="applyContractTypeRules()" required>
                         <option value="FULLTIME" {% if contract.loai_hd == 'FULLTIME' %}selected{% endif %}>Full Time</option>
                         <option value="PARTTIME" {% if contract.loai_hd == 'PARTTIME' %}selected{% endif %}>Part Time</option>
                     </select>
@@ -65,7 +65,7 @@
                 <div class="contract-field">
                     <label for="luong_co_ban">Lương cơ bản <span class="required" id="luong-co-ban-required">*</span></label>
                     <div class="contract-money-input">
-                        <input type="text" id="luong_co_ban" name="luong_co_ban" value="{{ luong_co_ban }}" placeholder="Nhập lương cơ bản" inputmode="numeric">
+                        <input type="text" id="luong_co_ban" name="luong_co_ban" oninput="updateMucLuong()" value="{{ luong_co_ban|default:'0' }}" placeholder="Nhập lương cơ bản" inputmode="numeric">
                         <span class="contract-money-suffix">VND</span>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                 <div class="contract-field">
                     <label for="luong_theo_gio">Lương theo giờ <span class="required" id="luong-theo-gio-required">*</span></label>
                     <div class="contract-money-input">
-                        <input type="text" id="luong_theo_gio" name="luong_theo_gio" value="{{ luong_theo_gio }}" list="hourly-options" placeholder="Chọn hoặc nhập mức lương" inputmode="numeric">
+                        <input type="text" id="luong_theo_gio" name="luong_theo_gio" oninput="updateMucLuong()" value="{{ luong_theo_gio|default:'0' }}" list="hourly-options" placeholder="Chọn hoặc nhập mức lương" inputmode="numeric">
                         <span class="contract-money-suffix">VND</span>
                     </div>
                     <datalist id="hourly-options">
@@ -90,13 +90,13 @@
 
                 <div class="contract-field">
                     <label for="so_gio_lam_toi_thieu">Số giờ làm tối thiểu <span class="required">*</span></label>
-                    <input type="number" id="so_gio_lam_toi_thieu" name="so_gio_lam_toi_thieu" value="{{ so_gio_lam }}" placeholder="Nhập số giờ làm tối thiểu/tháng" min="0" step="0.5">
+                    <input type="number" id="so_gio_lam_toi_thieu" name="so_gio_lam_toi_thieu" oninput="updateMucLuong()" value="{{ so_gio_lam|default:'0' }}" placeholder="Nhập số giờ làm tối thiểu/tháng" min="0" step="0.5">
                 </div>
 
                 <div class="contract-field">
                     <label for="thuong">Chế độ thưởng</label>
                     <div class="contract-money-input">
-                        <input type="text" id="thuong" name="thuong" value="{{ thuong }}" placeholder="Nhập tiền thưởng" inputmode="numeric">
+                        <input type="text" id="thuong" name="thuong" oninput="updateMucLuong()" value="{{ thuong|default:'0' }}" placeholder="Nhập tiền thưởng" inputmode="numeric">
                         <span class="contract-money-suffix">VND</span>
                     </div>
                 </div>
@@ -139,5 +139,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'contracts/js/contract_edit.js' %}?v=20260414r"></script>
+    <script src="{% static 'contracts/js/contract_edit.js' %}?v=20260414v"></script>
 {% endblock %}

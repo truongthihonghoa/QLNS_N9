@@ -65,6 +65,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!value && value !== 0) return "";
         let val = value.toString().replace(/\D/g, "");
         if (val === "") return "0";
+        
+        // Loại bỏ số 0 ở đầu (ví dụ "02" thành "2")
+        val = parseInt(val, 10).toString();
+        
         return val.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
@@ -86,15 +90,17 @@ document.addEventListener('DOMContentLoaded', function () {
         input.setSelectionEnd(cursorPosition);
     }
 
-    function updateMucLuong() {
+    // Đưa các hàm quan trọng ra toàn cục để có thể gọi trực tiếp từ HTML nếu cần
+    window.updateMucLuong = function() {
         if (!contractTypeSelect) return;
         
-        const contractType = contractTypeSelect.value.trim().toUpperCase();
+        const contractType = (contractTypeSelect.value || "").trim().toUpperCase();
         let mucLuong = 0;
 
-        if (contractType === 'FULLTIME') {
-            mucLuong = unformatCurrency(luongCoBanInput.value);
-        } else if (contractType === 'PARTTIME') {
+        if (contractType.includes('FULLTIME')) {
+            const baseSalary = unformatCurrency(luongCoBanInput.value);
+            mucLuong = baseSalary;
+        } else if (contractType.includes('PARTTIME')) {
             const hourlyRate = unformatCurrency(luongTheoGioInput.value);
             const minimumHours = parseFloat(soGioLamToiThieuInput.value) || 0;
             mucLuong = hourlyRate * minimumHours;
@@ -107,11 +113,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (mucLuongInput) {
             mucLuongInput.value = formatCurrency(finalValue);
         }
-    }
+    };
 
-    function applyContractTypeRules() {
-        const type = contractTypeSelect.value;
-        if (type === 'PARTTIME') {
+    window.applyContractTypeRules = function() {
+        const type = (contractTypeSelect.value || "").trim().toUpperCase();
+        if (type.includes('PARTTIME')) {
             luongTheoGioInput.disabled = false;
             luongTheoGioInput.required = true;
             if (luongTheoGioRequired) luongTheoGioRequired.classList.remove('is-hidden');
@@ -119,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
             luongCoBanInput.disabled = true;
             luongCoBanInput.required = false;
             if (luongCoBanRequired) luongCoBanRequired.classList.add('is-hidden');
-        } else if (type === 'FULLTIME') {
+        } else if (type.includes('FULLTIME')) {
             luongCoBanInput.disabled = false;
             luongCoBanInput.required = true;
             if (luongCoBanRequired) luongCoBanRequired.classList.remove('is-hidden');
@@ -128,8 +134,9 @@ document.addEventListener('DOMContentLoaded', function () {
             luongTheoGioInput.required = false;
             if (luongTheoGioRequired) luongTheoGioRequired.classList.add('is-hidden');
         }
-        updateMucLuong();
-    }
+        window.updateMucLuong();
+    };
+
 
     async function submitForm(event) {
         event.preventDefault();
@@ -168,19 +175,50 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Listeners
-    if (contractTypeSelect) contractTypeSelect.addEventListener('change', applyContractTypeRules);
-    
-    [luongCoBanInput, luongTheoGioInput, thuongInput].forEach(input => {
-        if (input) {
-            input.addEventListener('input', function() {
-                formatInputField(this);
-                updateMucLuong();
-            });
-        }
-    });
+    if (contractForm) {
+        // GIÁM SÁT TOÀN DIỆN: Bắt mọi sự kiện nhập liệu trên toàn bộ form
+        const impactIds = ['loai_hd', 'luong_co_ban', 'luong_theo_gio', 'so_gio_lam_toi_thieu', 'thuong'];
+        
+        ['input', 'keyup', 'change', 'paste'].forEach(evtType => {
+            contractForm.addEventListener(evtType, function(e) {
+                const target = e.target;
+                if (!target) return;
 
-    if (soGioLamToiThieuInput) soGioLamToiThieuInput.addEventListener('input', updateMucLuong);
-    if (contractForm) contractForm.addEventListener('submit', submitForm);
+                // 1. Kiểm tra xem ô vừa tác động có ảnh hưởng đến lương không
+                if (impactIds.includes(target.id) || impactIds.includes(target.name)) {
+                    
+                    // 2. Nếu đổi loại hợp đồng, áp dụng quy tắc khóa/mở trường trước
+                    if (target.id === 'loai_hd') {
+                        applyContractTypeRules();
+                    }
+                    
+                    // 3. Định dạng dấu chấm tiền tệ (chỉ cho các trường tiền)
+                    const moneyIds = ['luong_co_ban', 'luong_theo_gio', 'thuong'];
+                    if (moneyIds.includes(target.id)) {
+                        formatInputField(target);
+                    }
+                    
+                    // 4. Cập nhật Mức lương NGAY LẬP TỨC
+                    updateMucLuong();
+                }
+            });
+        });
+    }
+    if (contractForm) {
+        contractForm.addEventListener('submit', submitForm);
+
+        // Chặn phím Enter tự động gửi form khi đang nhập liệu
+        contractForm.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.keyCode === 13) {
+                const target = e.target;
+                // Nếu không phải đang đứng ở nút bấm hoặc textarea thì chặn Enter
+                if (target.tagName !== 'BUTTON' && target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+        });
+    }
     
     if (cancelBtn) {
         cancelBtn.addEventListener('click', function() {
