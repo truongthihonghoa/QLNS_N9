@@ -1,4 +1,4 @@
-.background-shadow {
+ .background-shadow {
   width: 1440px;
   display: flex;
   gap: 1px;
@@ -156,30 +156,34 @@
   border-color: #cccccc;
 }
 
-.background-shadow .symbol-wrapper {
-  display: inline-flex;
-  flex-direction: column;
-  height: 42.11%;
-  align-items: flex-start;
-  position: absolute;
-  top: 28.95%;
-  right: 15px;
-}
-
-.background-shadow .symbol-2 {
-  margin-top: -1.00px;
-  font-family: "Font Awesome 5 Free-Regular", Helvetica;
-  font-size: 16px;
-  line-height: 16px;
+/* Password input group for eye icon */
+.background-shadow .password-input-group {
   position: relative;
   display: flex;
   align-items: center;
-  width: fit-content;
-  font-weight: 400;
-  color: #777777;
-  letter-spacing: 0;
-  white-space: nowrap;
 }
+
+.background-shadow .password-input-group input {
+  padding-right: 35px;
+}
+
+.background-shadow .toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  z-index: 10;
+  opacity: 0.7;
+}
+
+.background-shadow .toggle-password:hover {
+  opacity: 1;
+}
+
+/* Old symbol-wrapper styles removed - replaced by .toggle-password above */
 
 .background-shadow .p {
   display: flex;
