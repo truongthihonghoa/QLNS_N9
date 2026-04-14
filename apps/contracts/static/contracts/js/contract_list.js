@@ -12,6 +12,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('contract-search-input');
     const searchBtn = document.getElementById('contract-search-btn');
     const searchEmpty = document.getElementById('contract-search-empty');
+    const branchFilter = document.getElementById('branch-filter-select');
+
+    if (branchFilter) {
+        branchFilter.addEventListener('change', function() {
+            const url = new URL(window.location.href);
+            if (this.value) {
+                url.searchParams.set('branch', this.value);
+            } else {
+                url.searchParams.delete('branch');
+            }
+            // Giữ lại tham số tìm kiếm nếu có
+            window.location.href = url.toString();
+        });
+    }
 
     function getCookie(name) {
         const cookieValue = document.cookie
@@ -185,36 +199,73 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function () {
             if (deletePopup) {
                 deletePopup.dataset.deleteId = this.dataset.deleteId || '';
-                deletePopup.dataset.endDate = this.dataset.endDate || '';
                 deletePopup.style.display = 'flex';
             }
         });
     });
 
-    if (deleteNoBtn) deleteNoBtn.addEventListener('click', () => deletePopup.style.display = 'none');
+    if (deleteNoBtn) {
+        deleteNoBtn.addEventListener('click', () => {
+            if (deletePopup) deletePopup.style.display = 'none';
+        });
+    }
 
     if (deleteYesBtn) {
         deleteYesBtn.addEventListener('click', async function () {
             const deleteId = deletePopup.dataset.deleteId;
-            const endDate = deletePopup.dataset.endDate;
-            deletePopup.style.display = 'none';
-
-            if (isContractStillActive(endDate)) {
-                if (deleteAlert) deleteAlert.classList.add('is-visible');
-                return;
-            }
+            if (deletePopup) deletePopup.style.display = 'none';
 
             try {
                 const response = await fetch(`/contracts/${deleteId}/delete/`, {
                     method: 'DELETE',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCookie('csrftoken') },
+                    headers: { 
+                        'X-Requested-With': 'XMLHttpRequest', 
+                        'X-CSRFToken': getCookie('csrftoken') 
+                    },
                 });
-                if (response.ok) {
-                    location.reload();
+                
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Show Success Toast at bottom-right
+                    if (deleteSuccessToast) {
+                        deleteSuccessToast.classList.add('is-visible');
+                        
+                        // Wait 3 seconds then remove row and hide
+                        setTimeout(() => {
+                            deleteSuccessToast.classList.remove('is-visible');
+                            // Remove row from UI
+                            const row = document.querySelector(`.delete-btn[data-delete-id="${deleteId}"]`).closest('tr');
+                            if (row) {
+                                row.remove();
+                                updateVisibleIndexes();
+                            }
+                        }, 3000);
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    // Show Centered Alert (Active Contract or Other Error)
+                    if (deleteAlert) {
+                        deleteAlert.classList.add('is-visible');
+                        
+                        // Auto-hide alert after 3 seconds
+                        setTimeout(() => {
+                            deleteAlert.classList.remove('is-visible');
+                        }, 3000);
+                    } else {
+                        alert(data.message || 'Không thể xóa hợp đồng này');
+                    }
                 }
-            } catch (err) { console.error(err); }
+            } catch (err) { 
+                console.error('Lỗi khi xóa hợp đồng:', err);
+            }
         });
     }
 
-    if (deleteAlertClose) deleteAlertClose.addEventListener('click', () => deleteAlert.classList.remove('is-visible'));
+    if (deleteAlertClose) {
+        deleteAlertClose.addEventListener('click', () => {
+            if (deleteAlert) deleteAlert.classList.remove('is-visible');
+        });
+    }
 });

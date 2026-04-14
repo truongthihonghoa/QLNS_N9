@@ -8,6 +8,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const successToast = document.getElementById('employee-success-toast');
     const successToastMessage = document.getElementById('employee-success-toast-message');
     let successToastTimer = null;
+    const branchFilter = document.getElementById('branch-filter-select');
+
+    if (branchFilter) {
+        branchFilter.addEventListener('change', function() {
+            const url = new URL(window.location.href);
+            if (this.value) {
+                url.searchParams.set('branch', this.value);
+            } else {
+                url.searchParams.delete('branch');
+            }
+            window.location.href = url.toString();
+        });
+    }
 
     function hideConfirmDeletePopup() {
         if (confirmDeletePopup) {

@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
+from apps.branches.models import ChiNhanh
 from .forms import EmployeeCreateForm, EmployeeUpdateForm
 from .models import NhanVien
 
@@ -77,7 +78,12 @@ def _build_employee_cards(queryset):
 
 def employee_list_view(request):
     search_query = request.GET.get("q", "").strip()
+    branch_filter = request.GET.get("branch", "").strip()
+    
     employees = NhanVien.objects.select_related("ma_chi_nhanh").order_by("ma_nv")
+    
+    if branch_filter:
+        employees = employees.filter(ma_chi_nhanh_id=branch_filter)
 
     if search_query:
         employees = employees.filter(
@@ -92,6 +98,8 @@ def employee_list_view(request):
         "employee_cards": _build_employee_cards(employees),
         "search_query": search_query,
         "employee_count": employees.count(),
+        "branches": ChiNhanh.objects.all(),
+        "current_branch": branch_filter,
     }
     return render(request, "employees/employee_list.html", context)
 

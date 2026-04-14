@@ -4,19 +4,27 @@
 {% block title %}Quản lý nhân viên - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'employees/css/employee_list.css' %}?v=5.6">
+    <link rel="stylesheet" href="{% static 'employees/css/employee_list.css' %}?v=5.7">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 {% endblock %}
 
 {% block content %}
 <section class="employee-page">
     <form method="get" class="employee-toolbar">
         <label class="employee-search" for="employee-search-input">
-            <img src="{% static 'images/search_icon.png' %}" alt="" aria-hidden="true">
+            <i class="fas fa-search" style="color: #666; opacity: 0.6;"></i>
             <input id="employee-search-input" type="text" name="q" value="{{ search_query }}" placeholder="Nhập tên nhân viên">
         </label>
         <button type="submit" class="toolbar-btn toolbar-btn-primary">Tìm kiếm</button>
+        <div class="employee-filter-branch">
+            <select name="branch" id="branch-filter-select" class="employee-filter-select">
+                <option value="">Tất cả chi nhánh</option>
+                {% for branch in branches %}
+                    <option value="{{ branch.ma_chi_nhanh }}" {% if current_branch == branch.ma_chi_nhanh %}selected{% endif %}>{{ branch.ten_chi_nhanh }}</option>
+                {% endfor %}
+            </select>
+        </div>
         <a href="{% url 'employee_add' %}" class="toolbar-btn toolbar-btn-add">+ Thêm</a>
     </form>
 
@@ -44,8 +52,9 @@
             </div>
         {% else %}
             <div class="employee-empty-state">
+                <i class="fas fa-search"></i>
                 <h2>Không tìm thấy nhân viên phù hợp</h2>
-                <p>Thử lại với tên nhân viên khác</p>
+                <p>Vui lòng kiểm tra lại từ khóa tìm kiếm hoặc tên nhân viên.</p>
             </div>
         {% endif %}
     </div>

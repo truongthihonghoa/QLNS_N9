@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+import datetime
 class HopDongLaoDong(models.Model):
 
     # ===== CHOICES =====
@@ -62,6 +63,26 @@ class HopDongLaoDong(models.Model):
 
     def __str__(self):
         return f"{self.ma_hd} - {self.ma_nv}"
+
+    @property
+    def trang_thai_thuc_te(self):
+        """Tính toán trạng thái thực tế dựa trên ngày tháng hiện tại"""
+        today = timezone.now().date()
+        
+        # 1. Hết hạn: Nếu có ngày kết thúc và đã qua ngày đó
+        if self.ngay_ket_thuc and self.ngay_ket_thuc < today:
+            return {'code': 'HET_HAN', 'display': 'Hết hạn'}
+        
+        # 2. Sắp hiệu lực: Nếu ngày bắt đầu ở tương lai
+        if self.ngay_bat_dau > today:
+            return {'code': 'SAP_HIEU_LUC', 'display': 'Sắp hiệu lực'}
+        
+        # 3. Còn hạn: Nếu đang trong thời gian hiệu lực (mặc định)
+        # Nếu ghi chú là hủy thì mới hủy, còn không thì dựa trên ngày tháng
+        if self.trang_thai == 'DA_HUY':
+            return {'code': 'DA_HUY', 'display': 'Đã hủy'}
+            
+        return {'code': 'CON_HAN', 'display': 'Còn hạn'}
 
 class HopDongLD_CT(models.Model):
 
