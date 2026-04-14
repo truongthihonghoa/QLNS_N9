@@ -1,4 +1,4 @@
-/**
+   /**
  * Change Password Popup Handler
  * Handles: Popup open/close, Cancel confirmation, Password change AJAX, Password toggle
  */

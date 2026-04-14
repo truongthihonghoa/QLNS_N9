@@ -469,10 +469,10 @@
 .branch-dropdown {
     background: white;
     font-size: 18px;
-    padding: 10px 15px;
+    padding: 15px 15px;
     border-radius: 6px;
     border: 1px solid #DADCE0;
-    min-width: 200px;
+    min-width: 250px;
     cursor: pointer;
 }
 

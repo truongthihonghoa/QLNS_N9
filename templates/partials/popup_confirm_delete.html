@@ -2,8 +2,8 @@
 <div class="confirm-delete-popup-overlay" id="confirm-delete-popup" style="display: none;">
     <div class="confirm-delete-popup-box">
         <img class="error-icon" src="{% static 'images/confirm_icon.png' %}" alt="Confirm">
-        <div class="heading">XÁC NHẬN XÓA</div>
-        <p class="message-line1">Bạn có chắc chắn muốn xóa bảng lương này?</p>
+        <div class="heading">{{ delete_popup_title|default:"XÁC NHẬN XÓA" }}</div>
+        <p class="message-line1">{{ delete_popup_message_1|default:"Bạn có chắc chắn muốn xóa mục này?" }}</p>
         <button class="no-btn" id="delete-popup-no-btn">Không</button>
         <button class="yes-btn" id="delete-popup-yes-btn">Đồng ý</button>
     </div>
