@@ -6,10 +6,9 @@
     <meta charset="utf-8" />
     <title>Đăng nhập - GE CAFE HRM</title>
 
-    <link rel="stylesheet" href="{% static 'accounts/css/globals.css' %}" />
     <link rel="stylesheet" href="{% static 'accounts/css/login.css' %}" />
-    <link rel="stylesheet" href="{% static 'accounts/css/Popup_ForgotPassword.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}" />
+    <link rel="stylesheet" href="{% static 'accounts/css/popup_forgot_password.css' %}" />
+    <link rel="stylesheet" href="{% static 'accounts/css/popup_confirm_cancel.css' %}" />
     <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}" />
 
     <style>
@@ -24,47 +23,92 @@
         .ng-nhp .text-wrapper-2 { margin: 0; width: auto; }
         .symbol-wrapper img { cursor: pointer; user-select: none; width: 16px; height: 16px; }
         .paragraph img { width: 14px; height: 14px; margin-right: 5px; }
+
+        /* Messages styling */
+        .messages-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000;
+        }
+        .message {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-family: "Montserrat-Regular", Helvetica, sans-serif;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
     </style>
   </head>
   <body>
-    <div class="background-shadow">
-      <img class="image" src="{% static 'accounts/img/giao_dien.png' %}" alt="Background Image" />
-      <div class="frame">
-        <div class="container">
-          <div class="heading"><p class="text-wrapper">Hệ thống Quản lý Nhân sự</p></div>
-          <div class="paragraph">
-            <img src="{% static 'accounts/img/coffee_icon.png' %}" alt="Coffee Icon">
-            <div class="div">GÉ CAFE</div>
+    <!-- Messages Display -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="message {{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="background-shadow">
+          <img class="image" src="{% static 'accounts/img/giao_dien.png' %}" alt="Background Image" />
+          <div class="frame">
+            <div class="container">
+              <div class="heading"><p class="text-wrapper">Hệ thống Quản lý Nhân sự</p></div>
+              <div class="paragraph">
+                <img src="{% static 'accounts/img/coffee_icon.png' %}" alt="Coffee Icon">
+                <div class="div">GÉ CAFE</div>
+              </div>
+            </div>
+
+            <label for="username" class="label-t-n-ng-nh-p">Tên đăng nhập</label>
+            <div class="input">
+                {{ form.username }}
+            </div>
+
+            <label for="password" class="label-m-t-kh-u">Mật khẩu</label>
+            <div class="container-wrapper">
+                {{ form.password }}
+                <div class="symbol-wrapper" onclick="togglePasswordVisibility()">
+                    <img id="eye-icon" src="{% static 'accounts/img/eye_opened.png' %}" alt="Toggle Password Visibility">
+                </div>
+            </div>
+
+            <p class="p">Mật khẩu phải có ít nhất 8 ký tự bao gồm chữ và số.</p>
+
+            <button type="submit" id="login-btn" class="ng-nhp">
+                <span class="text-wrapper-2">Đăng Nhập</span>
+            </button>
+
+            <div class="link-qu-n-m-t-kh-u-wrapper">
+                <a href="#" class="link-qu-n-m-t-kh-u" id="forgot-password-link">Quên mật khẩu?</a>
+            </div>
           </div>
         </div>
+    </form>
 
-        <label for="username" class="label-t-n-ng-nh-p">Tên đăng nhập</label>
-        <div class="input">
-            <input type="text" id="username" name="username" required>
-        </div>
-
-        <label for="password" class="label-m-t-kh-u">Mật khẩu</label>
-        <div class="container-wrapper">
-            <input type="password" id="password" name="password" required>
-            <div class="symbol-wrapper" onclick="togglePasswordVisibility()">
-                <img id="eye-icon" src="{% static 'accounts/img/eye_opened.png' %}" alt="Toggle Password Visibility">
-            </div>
-        </div>
-
-        <p class="p">Mật khẩu phải có ít nhất 8 ký tự bao gồm chữ và số.</p>
-
-        <button type="button" id="login-btn" class="ng-nhp" data-dashboard-url="{% url 'dashboard' %}">
-            <span class="text-wrapper-2">Đăng Nhập</span>
-        </button>
-
-        <div class="link-qu-n-m-t-kh-u-wrapper">
-            <a href="#" class="link-qu-n-m-t-kh-u" id="forgot-password-link">Quên mật khẩu?</a>
-        </div>
-      </div>
-    </div>
-
-    {% include 'accounts/partials/Popup_ForgotPassword.html' %}
-    {% include 'partials/popup_confirm_cancel.html' %}
+    {% include 'accounts/partials/popup_forgot_password.html' %}
+    {% include 'accounts/partials/popup_confirm_cancel.html' %}
     {% include 'partials/popup_success.html' %}
 
     <script src="{% static 'accounts/js/login.js' %}" defer></script>

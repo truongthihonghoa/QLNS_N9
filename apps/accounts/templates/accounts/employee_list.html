@@ -4,7 +4,8 @@
 {% block title %}Quản lý tài khoản nhân viên - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'accounts/css/account_employee_list_new.css' %}?v=6.0">
+    <link rel="stylesheet" href="{% static 'accounts/css/employee_list.css' %}">
+    <link rel="stylesheet" href="{% static 'payroll/css/payroll_list.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
@@ -13,14 +14,35 @@
 
 {% block content %}
 <section class="account-page">
-    <div class="account-toolbar">
-        <label class="account-search-box">
-            <img src="{% static 'images/search_icon.png' %}" alt="Tìm kiếm">
-            <input id="account-search-input" type="text" placeholder="Nhập tên nhân viên">
-        </label>
-        <button type="button" class="account-btn account-btn-primary" id="account-search-btn">Tìm kiếm</button>
-        <button type="button" class="account-btn account-btn-primary" data-open-modal="add-account-modal">+ Thêm</button>
-    </div>
+    <!-- Cấu trúc giống Bảng Lương: Row 1 (Input + Search + Thêm), Row 2 (Chi nhánh) -->
+    <form method="get" action="." class="top-control-bar" style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 25px;">
+        <!-- Hàng 1: Tìm kiếm và các nút chính -->
+        <div class="toolbar-row-top">
+            <div class="control-left">
+                <div class="search-wrapper">
+                    <input type="text" name="q" class="search-input-ge" placeholder="Tìm kiếm nhân viên..." value="{{ request.GET.q|default:'' }}">
+                </div>
+                <button type="submit" class="btn-search-ge">Tìm kiếm</button>
+            </div>
+            <div class="control-right">
+                <button type="button" class="btn-create-request" data-open-modal="add-account-modal">+ Thêm</button>
+                </div>
+        </div>
+
+        <!-- Hàng 2: Chi nhánh (giống Bảng Lương, bỏ Tháng và Năm) -->
+        <div class="toolbar-row" style="display: flex; justify-content: flex-start; align-items: center; width: 100%; gap: 20px;">
+            <div class="dropdown-wrapper">
+                <select class="branch-dropdown-ge" name="branch" onchange="this.form.submit()"
+                        style="background: white; font-size: 18px; padding: 10px 15px; border-radius: 6px; border: 1px solid #DADCE0; min-width: 200px; cursor: pointer;">
+                    {% for branch in branches %}
+                        <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>{{ branch.ten_chi_nhanh }}</option>
+                    {% empty %}
+                        <option value="" selected>Chưa có chi nhánh đang hoạt động</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </form>
 
     <div class="account-table-card">
         <table class="account-table">
@@ -50,16 +72,14 @@
                                 data-open-modal="edit-account-modal"
                                 data-full-name="{{ row.ho_ten }}"
                                 data-username="{{ row.ten_dang_nhap }}"
-                                data-role="{{ row.quyen }}"
-                            >
-                                <img src="{% static 'images/edit_icon.png' %}" alt="Sửa">
+                                data-role="{{ row.quyen }}">
+                              <i class="fas fa-pen"></i>
                             </button>
                             <button
                                 type="button"
                                 class="account-icon-btn js-deactivate-account"
-                                data-full-name="{{ row.ho_ten }}"
-                            >
-                                <img src="{% static 'images/delete_icon.png' %}" alt="Ngừng hoạt động">
+                                data-full-name="{{ row.ho_ten }}">
+                                <i class="fas fa-trash-alt"></i>
                             </button>
                         </div>
                     </td>
@@ -140,5 +160,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'accounts/js/account_employee_list.js' %}"></script>
+    <script src="{% static 'accounts/js/employee_list.js' %}"></script>
 {% endblock %}
