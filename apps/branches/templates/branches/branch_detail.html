@@ -61,7 +61,11 @@
 
         <!-- FOOTER -->
         <div class="branch-detail-popup-footer">
-            <a href="{% url 'branches:branch_list' %}" class="close-btn">Đóng</a>
+            {% if request.user.is_superuser or request.user.is_staff %}
+                <a href="{% url 'branches:branch_list' %}" class="close-btn">Đóng</a>
+            {% else %}
+                <a href="{% url 'dashboard' %}" class="close-btn">Đóng</a>
+            {% endif %}
         </div>
 
     </div>

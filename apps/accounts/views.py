@@ -10,158 +10,55 @@ from django.contrib.auth.models import User
 from .forms import LoginForm, ChangePasswordForm
 
 
-def _account_rows():
-    return [
-        {
-            'stt': 1,
-            'ho_ten': 'Nguyễn Văn An',
-            'ten_dang_nhap': 'NGUYENVANAN',
-            'quyen': 'Nhân viên',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-        {
-            'stt': 2,
-            'ho_ten': 'Lê Thị Hồng Châu',
-            'ten_dang_nhap': 'LETHIHONGCHAU',
-            'quyen': 'Nhân viên',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-        {
-            'stt': 3,
-            'ho_ten': 'Trần Tuấn Anh',
-            'ten_dang_nhap': 'TRANTUANANH',
-            'quyen': 'Nhân viên',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-        {
-            'stt': 4,
-            'ho_ten': 'Trình Phúc Lâm',
-            'ten_dang_nhap': 'TRINHPHUCLAM',
-            'quyen': 'Nhân viên',
-            'trang_thai': 'Ngừng hoạt động',
-            'trang_thai_key': 'inactive',
-        },
-        {
-            'stt': 5,
-            'ho_ten': 'Nguyễn Thị Anh',
-            'ten_dang_nhap': 'NGUYENTHIANH',
-            'quyen': 'Quản lý',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-    ]
-
-
-def _admin_accounts():
-    """Return only admin accounts - separate management list"""
-    return [
-        {
-            'stt': 1,
-            'ho_ten': 'Lê Minh Tuấn',
-            'ten_dang_nhap': 'LEMINHTUAN',
-            'quyen': 'Admin',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-        {
-            'stt': 2,
-            'ho_ten': 'Trần Thị Mai',
-            'ten_dang_nhap': 'TRANTHIMAI',
-            'quyen': 'Admin',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-        {
-            'stt': 3,
-            'ho_ten': 'Nguyễn Thị Anh',
-            'ten_dang_nhap': 'NGUYENTHIANH',
-            'quyen': 'Quản lý',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-    ]
-
-
-def _employee_accounts():
-    """Return only employee accounts - separate management list"""
-    return [
-        {
-            'stt': 1,
-            'ho_ten': 'Nguyễn Văn An',
-            'ten_dang_nhap': 'NGUYENVANAN',
-            'quyen': 'Nhân viên',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-        {
-            'stt': 2,
-            'ho_ten': 'Lê Thị Hồng Châu',
-            'ten_dang_nhap': 'LETHIHONGCHAU',
-            'quyen': 'Nhân viên',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-        {
-            'stt': 3,
-            'ho_ten': 'Trần Tuấn Anh',
-            'ten_dang_nhap': 'TRANTUANANH',
-            'quyen': 'Nhân viên',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-        {
-            'stt': 4,
-            'ho_ten': 'Trình Phúc Lâm',
-            'ten_dang_nhap': 'TRINHPHUCLAM',
-            'quyen': 'Nhân viên',
-            'trang_thai': 'Ngừng hoạt động',
-            'trang_thai_key': 'inactive',
-        },
-    ]
-
 
 def login_view(request):
-    """
-    Handle user login with form validation and authentication.
-    """
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-
     form = LoginForm()
 
     if request.method == 'POST':
         form = LoginForm(request.POST)
+
         if form.is_valid():
             user = form.cleaned_data['user']
-            login(request, user)
-            messages.success(request, 'Đăng nhập thành công')
 
-            # Identify role and redirect (same destination for now, but structure supports role-based)
-            if user.is_superuser or user.is_staff:
-                return redirect('dashboard')
+            # ❗ check active
+            if not user.is_active:
+                messages.error(request, 'Tài khoản đã bị khóa!')
+                return render(request, 'accounts/login.html', {'form': form})
+
+            login(request, user)
+
+            messages.success(request, 'Đăng nhập thành công 🎉')
+
+            # ✅ set role
+            if user.is_superuser:
+                role = 'Chủ'
+            elif user.is_staff:
+                role = 'Quản lý'
             else:
-                return redirect('dashboard')
+                role = 'Nhân viên'
+
+            request.session['role'] = role
+
+            return redirect('dashboard')
+
         else:
-            # Handle specific errors
-            for field, errors in form.errors.items():
-                if field == '__all__':
-                    # System error case
-                    messages.error(request, 'Đăng nhập thất bại, vui lòng thử lại sau')
-                elif field == 'username':
-                    messages.error(request, 'Tên đăng nhập không hợp lệ')
-                elif field == 'password':
-                    messages.error(request, 'Mật khẩu không hợp lệ')
+            # ❌ xử lý lỗi chi tiết
+            if '__all__' in form.errors:
+                messages.error(request, 'Sai tài khoản hoặc mật khẩu!')
+
+            if 'username' in form.errors:
+                messages.error(request, 'Tên đăng nhập không được để trống!')
+
+            if 'password' in form.errors:
+                messages.error(request, 'Mật khẩu không được để trống!')
 
     return render(request, 'accounts/login.html', {'form': form})
 
 
-# @login_required(login_url='/accounts/login/') # Kept commented out for easy frontend testing
+@login_required(login_url='/accounts/login/') # Kept commented out for easy frontend testing
 def dashboard_view(request):
-    return render(request, 'accounts/dashboard.html')
-
+    role = request.session.get('role', 'Nhân viên')
+    return render(request, 'accounts/dashboard.html', {'role': role})
 
 def account_employee_list_view(request):
     from apps.branches.models import ChiNhanh
@@ -177,24 +74,25 @@ def account_employee_list_view(request):
         },
     )
 
-
+@login_required(login_url='/accounts/login/')
 def account_admin_list_view(request):
     from apps.branches.models import ChiNhanh
     from django.contrib.auth.models import User
-    from apps.accounts.models import TaiKhoan
-    from apps.employees.models import NhanVien
 
     branches = ChiNhanh.objects.filter(trang_thai='active').order_by('ma_chi_nhanh')
     selected_branch = request.GET.get('branch') or (branches.first().ma_chi_nhanh if branches.exists() else None)
 
-    # Get search term
     search_term = request.GET.get('q', '').strip()
 
-    # Query all accounts from database (not just admin accounts)
-    # Changed to query all users to show all accounts
-    all_users = User.objects.all().select_related('taikhoan__ma_nv')
+    # 🔥 PHÂN QUYỀN TẠI ĐÂY
+    if request.user.is_superuser or request.user.is_staff:
+        # Admin / Chủ → xem tất cả
+        all_users = User.objects.all().select_related('taikhoan__ma_nv')
+    else:
+        # Nhân viên → chỉ xem chính mình
+        all_users = User.objects.filter(id=request.user.id).select_related('taikhoan__ma_nv')
 
-    # Apply search filter if search term is provided
+    # 🔍 SEARCH (sau khi đã phân quyền)
     if search_term:
         from django.db.models import Q
         all_users = all_users.filter(
@@ -204,31 +102,26 @@ def account_admin_list_view(request):
 
     account_rows = []
     for idx, user in enumerate(all_users, 1):
-        # Get TaiKhoan if exists
         try:
             tai_khoan = user.taikhoan
             nv = tai_khoan.ma_nv
         except:
-            tai_khoan = None
             nv = None
 
-        # Get role name
+        # 🎯 ROLE
         if user.is_superuser:
-            quyen = 'Admin'
+            quyen = 'Chủ'
         elif user.is_staff:
             quyen = 'Quản lý'
         else:
             quyen = 'Nhân viên'
 
-        # Get status
+        # 🎯 TRẠNG THÁI
         trang_thai = 'Đang hoạt động' if user.is_active else 'Ngừng hoạt động'
         trang_thai_key = 'active' if user.is_active else 'inactive'
 
-        # Get full name
-        if nv:
-            ho_ten = nv.ho_ten
-        else:
-            ho_ten = user.get_full_name() or user.username
+        # 🎯 TÊN
+        ho_ten = nv.ho_ten if nv else user.username
 
         account_rows.append({
             'stt': idx,
@@ -249,11 +142,15 @@ def account_admin_list_view(request):
         },
     )
 
-
 @csrf_exempt
 @require_http_methods(["POST"])
 def add_admin_account(request):
-    """Thêm mới tài khoản admin"""
+    if not (request.user.is_superuser or request.user.is_staff):
+        return JsonResponse({
+            'success': False,
+            'message': 'Bạn không có quyền!'
+        }, status=403)
+
     try:
         from apps.accounts.models import TaiKhoan
         from apps.employees.models import NhanVien
@@ -329,7 +226,11 @@ def add_admin_account(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def edit_admin_account(request):
-    """Chỉnh sửa tài khoản admin"""
+    if not (request.user.is_superuser or request.user.is_staff):
+        return JsonResponse({
+            'success': False,
+            'message': 'Bạn không có quyền!'
+        }, status=403)
     try:
         from apps.accounts.models import TaiKhoan
 
@@ -404,7 +305,11 @@ def edit_admin_account(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def delete_admin_account(request):
-    """Xóa tài khoản admin"""
+    if not (request.user.is_superuser or request.user.is_staff):
+        return JsonResponse({
+            'success': False,
+            'message': 'Bạn không có quyền!'
+        }, status=403)
     try:
         from apps.accounts.models import TaiKhoan
 
@@ -449,7 +354,11 @@ def delete_admin_account(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def get_admin_password(request):
-    """Lấy mật khẩu thật của tài khoản admin"""
+    if not (request.user.is_superuser or request.user.is_staff):
+        return JsonResponse({
+            'success': False,
+            'message': 'Bạn không có quyền!'
+        }, status=403)
     try:
         username = request.GET.get('username')
 
@@ -485,16 +394,11 @@ def get_admin_password(request):
 
 @login_required(login_url='/accounts/login/')
 def logout_view(request):
-    """
-    Handle user logout with confirmation.
-    """
-    if request.method == 'POST':
-        logout(request)
-        messages.success(request, 'Đã đăng xuất thành công')
-        return redirect('login')
+    logout(request)
+    request.session.flush()
 
-    # For GET requests, redirect to dashboard (logout should be POST)
-    return redirect('dashboard')
+    return redirect('accounts:login')
+
 
 
 @login_required(login_url='/accounts/login/')

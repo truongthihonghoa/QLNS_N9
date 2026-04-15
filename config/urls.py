@@ -8,7 +8,7 @@ from apps.accounts.views import dashboard_view
 
 
 urlpatterns = [
-    path("", RedirectView.as_view(pattern_name="dashboard", permanent=False)),
+    path("", RedirectView.as_view(pattern_name="accounts:login", permanent=False)),
     path("admin/", admin.site.urls),
     path("dashboard/", dashboard_view, name="dashboard"),
     path("accounts/", include("apps.accounts.urls")),
