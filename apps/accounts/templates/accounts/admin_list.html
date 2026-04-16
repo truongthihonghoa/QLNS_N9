@@ -22,7 +22,9 @@
                 <input type="text" name="q" class="search-input-ge" placeholder="Tìm kiếm admin..." value="{{ request.GET.q|default:'' }}">
             </div>
             <button type="submit" class="btn-search">Tìm kiếm</button>
-            <button type="button" class="btn-create" data-open-modal="add-account-modal">+ Thêm</button>
+            {% if request.user.is_superuser or request.user.is_staff %}
+                <button type="button" class="btn-create" data-open-modal="add-account-modal">+ Thêm</button>
+            {% endif %}
         </div>
 
         <!-- Hàng 2: Chi nhánh -->

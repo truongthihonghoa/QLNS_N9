@@ -39,7 +39,7 @@
     align-items: center;
     background-color: #f0f0f0; /* Màu nền xám nhạt như mẫu */
     border-radius: 12px;
-    height: 60px;
+    height: 52px;
     padding: 0 25px;
     border: none;
     box-sizing: border-box;
@@ -65,7 +65,7 @@
 
 .btn-search-ge,
 .btn-create-report {
-    height: 60px !important; /* Cao bằng thanh search cho đồng bộ */
+    height: 48px !important; /* Cao bằng thanh search cho đồng bộ */
     padding: 0 30px !important;
     background-color: #2E7D32 !important; /* Xanh lá GÉ */
     color: white !important;
