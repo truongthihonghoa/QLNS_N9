@@ -95,11 +95,14 @@
 
             <div class="toolbar-actions">
                 <button type="submit" class="btn-search">Tìm kiếm</button>
+                {% if is_admin %}
                 <button type="button" class="btn-primary" onclick="openSalaryModal()">Tính lương</button>
+                {% endif %}
             </div>
         </div>
 
         <div class="toolbar-row" style="display: flex; justify-content: flex-start; align-items: center; width: 100%; gap: 20px;">
+            {% if is_admin %}
             <div class="dropdown-wrapper">
                 <select class="branch-dropdown-ge" name="branch" onchange="this.form.submit()"
                         style="background: white; font-size: 16px; padding: 10px 15px; border-radius: 6px; border: 1px solid #DADCE0; min-width: 200px; cursor: pointer;">
@@ -110,6 +113,7 @@
                     {% endfor %}
                 </select>
             </div>
+            {% endif %}
             <div class="dropdown-wrapper">
                 <select class="period-dropdown-ge" name="month" onchange="this.form.submit()"
                         style="background: white; font-size: 16px; padding: 10px 15px; border-radius: 6px; border: 1px solid #DADCE0; min-width: 120px; cursor: pointer;">
@@ -149,7 +153,9 @@
         <table class="ge-main-table">
             <thead>
                 <tr>
+                    {% if is_admin %}
                     <th style="width: 44px;"></th>
+                    {% endif %}
                     <th>STT</th>
                     <th>Mã lương</th>
                     <th>Tên nhân viên</th>
@@ -161,17 +167,21 @@
                     <th>Phạt</th>
                     <th>Tổng lương</th>
                     <th>Trạng thái</th>
+                    {% if is_admin %}
                     <th class="action-column">Hành động</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
                 {% for payroll in payroll_rows %}
                 <tr data-status="{{ payroll.trang_thai_key|default:'cho-duyet' }}" data-ma-luong="{{ payroll.ma_luong }}">
+                    {% if is_admin %}
                     <td style="text-align:center;">
                         {% if payroll.trang_thai_key == 'da-duyet' %}
                             <input type="checkbox" class="payroll-send-checkbox" value="{{ payroll.ma_luong }}" {% if payroll.da_gui %}disabled{% endif %}>
                         {% endif %}
                     </td>
+                    {% endif %}
                     <td>{{ forloop.counter }}</td>
                     <td>{{ payroll.ma_luong }}</td>
                     <td>{{ payroll.ten_nv }}</td>
@@ -189,6 +199,7 @@
                             {% elif payroll.trang_thai_key == 'da-tu-choi' %}
                                 <i class="fas fa-times-circle" style="color: #dc3545; font-size: 18px;" title="Đã từ chối"></i>
                             {% else %}
+                                {% if is_admin %}
                                 <form method="post" action="{% url 'payroll_update_status' payroll.ma_luong %}" style="display:inline;" onsubmit="handlePayrollAction(event,this, 'approve'); return false;">
                                     {% csrf_token %}
                                     <input type="hidden" name="status" value="da-duyet">
@@ -203,32 +214,38 @@
                                         <i class="fas fa-times"></i>
                                     </button>
                                 </form>
+                                {% else %}
+                                <span style="color: #d97706; font-weight: 600;">{{ payroll.trang_thai }}</span>
+                                {% endif %}
                             {% endif %}
                         </div>
                     </td>
+                    {% if is_admin %}
                     <td class="action-column">
                         <div class="action-buttons">
                                 <a href="{% url 'payroll_edit' payroll.ma_luong %}" class="btn-action-ge btn-edit-ge" onclick="openEditPayrollModal(this)"><i class="fas fa-pen"></i></a>
                                 <button type="button" class="btn-action-ge btn-delete-ge" onclick="openDeletePayrollPopup(this)"><i class="fas fa-trash-alt"></i></button>
                         </div>
                     </td>
+                    {% endif %}
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="13" style="text-align: center;">Không có dữ liệu bảng lương.</td>
+                    <td colspan="{% if is_admin %}13{% else %}11{% endif %}" style="text-align: center;">Không có dữ liệu bảng lương.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
+    {% if is_admin %}
     <div id="export-approved-container" class="export-data-wrapper" style="display: none;">
         <div class="export-controls">
             <label style="display: inline-flex; align-items: center; gap: 12px; margin-right: 15px; font-weight: 700; font-size: 18px; cursor: pointer; user-select: none; font-family: 'Montserrat', sans-serif;">
-    <input type="checkbox" id="payroll-send-select-all"
-           style="width: 24px; height: 24px; cursor: pointer; accent-color: #174d17; margin: 0; vertical-align: middle;">
-    <span style="line-height: 1;">Chọn tất cả</span>
-</label>
+                <input type="checkbox" id="payroll-send-select-all"
+                       style="width: 24px; height: 24px; cursor: pointer; accent-color: #174d17; margin: 0; vertical-align: middle;">
+                <span style="line-height: 1;">Chọn tất cả</span>
+            </label>
             <button type="button" class="btn-export-final" id="payroll-send-btn" data-send-url="{% url 'payroll_send' %}">Gửi bảng lương</button>
             <select id="export-format-select" class="export-dropdown">
                 <option value="pdf">Xuất file PDF</option>
@@ -237,6 +254,7 @@
             <button type="button" class="btn-export-final" onclick="handleExportApproved()">Xuất báo cáo</button>
         </div>
     </div>
+    {% endif %}
 </div>
 
 <div id="salaryModal" class="salary-modal-overlay">

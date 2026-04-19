@@ -10,6 +10,8 @@ import datetime
 import json
 import traceback
 
+from django.core.exceptions import PermissionDenied
+
 def _is_admin(user):
     return user.is_authenticated and (user.is_staff or user.is_superuser)
 
@@ -25,6 +27,14 @@ def schedule_list_view(request):
     try:
         query = LichLamViec.objects.select_related('ma_nv', 'ma_chi_nhanh').all()
         
+        # PHÂN QUYỀN: Nếu là nhân viên, chỉ xem lịch của chính mình
+        if not _is_admin(request.user):
+            try:
+                ma_nv_me = request.user.taikhoan.ma_nv
+                query = query.filter(ma_nv=ma_nv_me)
+            except:
+                query = query.none()
+
         # Loc theo chi nhanh
         if branch_id != 'all':
             query = query.filter(ma_chi_nhanh_id=branch_id)
@@ -60,6 +70,9 @@ def schedule_list_view(request):
     })
 
 def schedule_create_view(request):
+    if not _is_admin(request.user):
+        raise PermissionDenied()
+        
     if request.method == 'POST':
         ngay_lam_str = request.POST.get('ngay_lam')
         khung_gio = request.POST.get('khung_gio')
@@ -103,6 +116,9 @@ def schedule_create_view(request):
     })
 
 def schedule_edit_view(request, schedule_id):
+    if not _is_admin(request.user):
+        raise PermissionDenied()
+        
     schedule = get_object_or_404(LichLamViec, ma_llv=schedule_id)
     if request.method == 'POST':
         khung_gio = request.POST.get('khung_gio')
@@ -121,6 +137,9 @@ def schedule_edit_view(request, schedule_id):
     })
 
 def schedule_delete_view(request, schedule_id):
+    if not _is_admin(request.user):
+        return JsonResponse({'success': False, 'error': 'Bạn không có quyền thực hiện thao tác này'}, status=403)
+        
     try:
         connection.close() 
         with transaction.atomic():
@@ -131,6 +150,9 @@ def schedule_delete_view(request, schedule_id):
 
 @require_http_methods(["POST"])
 def schedule_send_notification_view(request):
+    if not _is_admin(request.user):
+        return JsonResponse({'success': False, 'error': 'Bạn không có quyền thực hiện thao tác này'}, status=403)
+        
     try:
         data = json.loads(request.body)
         ids = data.get('ids', [])

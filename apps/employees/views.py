@@ -3,6 +3,10 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.core.exceptions import PermissionDenied
+
+def _is_admin(user):
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
 
 from apps.branches.models import ChiNhanh
 from .forms import EmployeeCreateForm, EmployeeUpdateForm
@@ -37,6 +41,8 @@ def get_next_employee_id():
 
 
 def api_next_employee_id(request):
+    if not _is_admin(request.user):
+        return JsonResponse({"error": "Forbidden"}, status=403)
     if request.method == "GET":
         return JsonResponse({"next_id": get_next_employee_id()})
     return JsonResponse({"error": "Invalid method"}, status=400)
@@ -77,6 +83,8 @@ def _build_employee_cards(queryset):
 
 
 def employee_list_view(request):
+    if not _is_admin(request.user):
+        raise PermissionDenied("Bạn không có quyền truy cập chức năng này.")
     search_query = request.GET.get("q", "").strip()
     branch_filter = request.GET.get("branch", "").strip()
     
@@ -105,6 +113,8 @@ def employee_list_view(request):
 
 
 def employee_add_view(request):
+    if not _is_admin(request.user):
+        raise PermissionDenied("Bạn không có quyền truy cập chức năng này.")
     if request.method == "POST":
         form = EmployeeCreateForm(request.POST, request.FILES)
         if form.is_valid():
@@ -123,6 +133,14 @@ def employee_add_view(request):
 
 
 def employee_detail_view(request, employee_id):
+    if not _is_admin(request.user):
+        # Cho phép nhân viên xem profile của chính mình
+        try:
+            if request.user.taikhoan.ma_nv_id != employee_id:
+                raise PermissionDenied("Bạn không có quyền xem thông tin nhân viên khác.")
+        except:
+            raise PermissionDenied()
+            
     employee = get_object_or_404(
         NhanVien.objects.select_related("ma_chi_nhanh", "ma_chi_nhanh__ma_nv_ql"),
         pk=employee_id,
@@ -139,6 +157,8 @@ def employee_detail_view(request, employee_id):
 
 
 def employee_edit_view(request, employee_id):
+    if not _is_admin(request.user):
+        raise PermissionDenied("Bạn không có quyền truy cập chức năng này.")
     employee = get_object_or_404(NhanVien, pk=employee_id)
     form = EmployeeUpdateForm(request.POST or None, request.FILES or None, instance=employee)
 

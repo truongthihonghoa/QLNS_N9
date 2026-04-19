@@ -153,6 +153,8 @@ def _build_add_context(request, branch, month, year):
 
 
 
+from django.core.exceptions import PermissionDenied
+
 def _status_key(db_value: str) -> str:
     # DB uses underscores, UI/JS expects hyphens.
     return {
@@ -161,6 +163,9 @@ def _status_key(db_value: str) -> str:
         'da_tu_choi': 'da-tu-choi',
     }.get(db_value or '', 'cho-duyet')
 
+
+def _is_admin(user):
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
 
 def payroll_list_view(request):
     branches = ChiNhanh.objects.filter(trang_thai='active').order_by('ma_chi_nhanh')
@@ -172,13 +177,22 @@ def payroll_list_view(request):
 
     qs = Luong.objects.select_related('nhan_vien', 'chi_nhanh').order_by('-updated_at', '-created_at')
 
-    if selected_branch:
+    # PHÂN QUYỀN: Nhân viên chỉ xem bảng lương của mình
+    is_admin = _is_admin(request.user)
+    if not is_admin:
+        try:
+            ma_nv_me = request.user.taikhoan.ma_nv
+            qs = qs.filter(nhan_vien=ma_nv_me)
+        except:
+            qs = qs.none()
+
+    if selected_branch and is_admin: # Chỉ lọc theo chi nhánh nếu là admin
         qs = qs.filter(chi_nhanh_id=selected_branch)
 
     if month and year and month.isdigit() and year.isdigit():
         qs = qs.filter(thang=int(month), nam=int(year))
 
-    if search_q:
+    if search_q and is_admin: # Chỉ tìm kiếm nếu là admin (hoặc nhân viên tìm kiếm trong lương của mình)
         qs = qs.filter(
             Q(ma_luong__icontains=search_q)
             | Q(nhan_vien__ma_nv__icontains=search_q)
@@ -205,7 +219,7 @@ def payroll_list_view(request):
     ]
 
     branch_employees = []
-    if selected_branch:
+    if selected_branch and is_admin:
         branch_employees = list(
             NhanVien.objects.filter(ma_chi_nhanh_id=selected_branch).order_by('ma_nv').values('ma_nv', 'ho_ten')
         )
@@ -215,7 +229,7 @@ def payroll_list_view(request):
     calculated_employees = []
     show_modal = request.GET.get('show_modal') == 'true'
     
-    if show_modal:
+    if show_modal and is_admin:
         eligible_employees = request.session.get('eligible_employees', [])
         calculated_employees = request.session.get('calculated_employees', [])
         # Clear session data after using
@@ -238,6 +252,7 @@ def payroll_list_view(request):
             'calc_info_url': reverse('payroll_calc_info'),
             'period_employees_url': reverse('payroll_period_employees'),
             'payroll_save_url': reverse('payroll_save'),
+            'is_admin': is_admin,
         },
     )
 

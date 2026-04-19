@@ -33,47 +33,32 @@
                     </div>
                 </div>
 
-                <div class="notification-bell" id="notification-bell">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge">3</span>
-                    <div class="notification-dropdown" id="notification-dropdown">
-                        <div class="notification-header">
-                            <h3>Notifications</h3>
-                            <a href="#" class="mark-as-read">Mark all as read</a>
-                        </div>
-                        <div class="notification-list">
-                            <div class="notification-item">
-                                <p class="title">Nhân viên A vừa check-in</p>
-                                <p class="description">Vị trí: Pha chế</p>
-                                <p class="time">15 minutes ago</p>
-                            </div>
-                            <div class="notification-item">
-                                <p class="title">Đơn hàng mới đã được tạo</p>
-                                <p class="description">Bởi: Quản lý B</p>
-                                <p class="time">1 hour ago</p>
-                            </div>
-                            <div class="notification-item">
-                                <p class="title">Ca làm sắp bắt đầu</p>
-                                <p class="description">Ca tối, 18:00 - 22:00</p>
-                                <p class="time">3 hours ago</p>
-                            </div>
-                        </div>
-                    </div>
+                <div class="logout-icon" style="margin-left: 20px; display: flex; align-items: center;">
+                    <form method="post" action="{% url 'logout' %}" style="margin: 0; display: flex;">
+                        {% csrf_token %}
+                        <button type="submit" title="Đăng xuất" style="background: none; border: none; cursor: pointer; color: #4e342e; font-size: 28px; padding: 10px; transition: all 0.3s ease;" onmouseover="this.style.color='#cf4949'; this.style.transform='scale(1.1)';" onmouseout="this.style.color='#4e342e'; this.style.transform='scale(1)';">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
         </header>
 
         <nav class="navigation-bar">
             <a href="{% url 'dashboard' %}" class="nav-item">Tổng quan</a>
+            {% if user.is_staff or user.is_superuser %}
             <a href="{% url 'account_admin_list' %}" class="nav-item">Tài khoản</a>
             <a href="{% url 'branches:branch_admin' %}" class="nav-item">Chi nhánh</a>
             <a href="{% url 'employee_list' %}" class="nav-item">Nhân Viên</a>
             <a href="{% url 'contract_list' %}" class="nav-item">Hợp Đồng</a>
+            {% endif %}
             <a href="{% url 'schedule_list' %}" class="nav-item">Lịch Làm Việc</a>
             <a href="{% url 'request_list' %}" class="nav-item">Đề Nghị</a>
             <a href="{% url 'payroll_list' %}" class="nav-item">Bảng Lương</a>
             <a href="{% url 'attendance_list' %}" class="nav-item">Chấm công</a>
+            {% if user.is_staff or user.is_superuser %}
             <a href="{% url 'reports:report_list' %}" class="nav-item">Báo Cáo</a>
+            {% endif %}
         </nav>
 
         <main class="main-content">

@@ -4,8 +4,8 @@
 {% block title %}Quản lý tài khoản nhân viên - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'accounts/css/employee_list.css' %}">
     <link rel="stylesheet" href="{% static 'payroll/css/payroll_list.css' %}">
+    <link rel="stylesheet" href="{% static 'accounts/css/employee_list.css' %}?v=2026-04-19-modal-mt">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
@@ -34,10 +34,11 @@
             <div class="dropdown-wrapper">
                 <select class="branch-dropdown-ge" name="branch" onchange="this.form.submit()"
                         style="background: white; font-size: 18px; padding: 10px 15px; border-radius: 6px; border: 1px solid #DADCE0; min-width: 200px; cursor: pointer;">
+                    <option value="{{ branch_all }}" {% if selected_branch == branch_all or selected_branch is None %}selected{% endif %}>Tất cả chi nhánh</option>
                     {% for branch in branches %}
                         <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>{{ branch.ten_chi_nhanh }}</option>
                     {% empty %}
-                        <option value="" selected>Chưa có chi nhánh đang hoạt động</option>
+                        <option value="" disabled>Chưa có chi nhánh đang hoạt động</option>
                     {% endfor %}
                 </select>
             </div>

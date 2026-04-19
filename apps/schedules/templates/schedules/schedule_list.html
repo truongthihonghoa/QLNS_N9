@@ -199,6 +199,7 @@
     </div>
 
     <!-- 2. ACTIONS BAR BELOW TOOLBAR (Buttons) -->
+    {% if is_admin %}
     <div class="schedule-actions-bar">
         <div class="btn-group">
             <button type="button" class="btn-action btn-notify" onclick="handleSendNotifications()">
@@ -209,30 +210,37 @@
             </a>
         </div>
     </div>
+    {% endif %}
 
     <!-- 3. TABLE -->
     <div class="request-table-card">
         <table class="request-table" id="requestTable">
             <thead>
                 <tr>
+                    {% if is_admin %}
                     <th style="width: 50px;"><input type="checkbox" id="select-all" style="width: 20px; height: 20px;" onclick="toggleSelectAll(this)"></th>
+                    {% endif %}
                     <th>Mã lịch</th>
                     <th>Nhân viên</th>
                     <th>Chi nhánh</th>
                     <th>Ngày làm</th>
                     <th>Khung giờ</th>
                     <th>Trạng thái</th>
+                    {% if is_admin %}
                     <th>Hành động</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody id="schedule-tbody">
                 {% for item in schedules %}
                 <tr class="schedule-row" data-status="{{ item.trang_thai }}" data-branch="{{ item.ten_chi_nhanh }}">
+                    {% if is_admin %}
                     <td>
                         {% if item.trang_thai == 'Chờ gửi' %}
                         <input type="checkbox" class="schedule-checkbox" value="{{ item.ma_llv }}" style="width: 20px; height: 20px;">
                         {% endif %}
                     </td>
+                    {% endif %}
                     <td>{{ item.ma_llv }}</td>
                     <td>{{ item.ten_nv }}</td>
                     <td>{{ item.ten_chi_nhanh }}</td>
@@ -247,6 +255,7 @@
                             {{ item.trang_thai }}
                         </span>
                     </td>
+                    {% if is_admin %}
                     <td>
                         <div class="action-buttons">
                             <a href="{% url 'schedule_edit' item.ma_llv %}" class="btn-action-ge btn-edit-ge" title="Chỉnh sửa">
@@ -257,6 +266,7 @@
                             </button>
                         </div>
                     </td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>

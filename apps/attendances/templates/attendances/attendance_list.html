@@ -10,6 +10,19 @@
 {% block content %}
 <div class="container">
     <h1>Chấm công</h1>
+
+    {% if is_admin %}
+    <div class="toolbar" style="margin-bottom: 20px;">
+        <form method="get" action=".">
+            <select name="branch" onchange="this.form.submit()" style="padding: 8px 15px; border-radius: 6px; border: 1px solid #ddd; font-family: Montserrat;">
+                {% for branch in branches %}
+                    <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>{{ branch.ten_chi_nhanh }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+    {% endif %}
+
     <table class="attendance-table">
         <thead>
             <tr>

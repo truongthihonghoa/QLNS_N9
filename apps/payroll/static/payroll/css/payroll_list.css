@@ -312,7 +312,8 @@
     margin-top: -10px;
 }
 
-.form-group label {
+/* Chỉ trong modal lương — tránh ảnh hưởng .form-group trên trang khác (vd. accounts) */
+.salary-modal-body .form-group label {
     display: block;
     margin-bottom: 20px;
     color: var(--ge-green-dark);

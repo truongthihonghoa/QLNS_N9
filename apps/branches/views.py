@@ -1,12 +1,16 @@
 from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.core.exceptions import PermissionDenied
 
 from .forms import ChiNhanhForm
 from .models import ChiNhanh
 
 
 def branch_list(request):
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise PermissionDenied("Bạn không có quyền truy cập chức năng này.")
+        
     keyword = (request.GET.get('q') or '').strip()
 
     branches = ChiNhanh.objects.select_related('ma_nv_ql').order_by('ma_chi_nhanh')
@@ -23,6 +27,9 @@ def branch_list(request):
 
 
 def branch_create(request):
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise PermissionDenied("Bạn không có quyền truy cập chức năng này.")
+        
     if request.method == 'POST':
         form = ChiNhanhForm(request.POST)
         if form.is_valid():
@@ -36,11 +43,17 @@ def branch_create(request):
 
 
 def branch_detail(request, pk):
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise PermissionDenied("Bạn không có quyền truy cập chức năng này.")
+        
     branch = get_object_or_404(ChiNhanh.objects.select_related('ma_nv_ql'), pk=pk)
     return render(request, 'branches/branch_detail.html', {'branch': branch})
 
 
 def branch_update(request, pk):
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise PermissionDenied("Bạn không có quyền truy cập chức năng này.")
+        
     branch = get_object_or_404(ChiNhanh, pk=pk)
 
     if request.method == 'POST':
@@ -56,6 +69,9 @@ def branch_update(request, pk):
 
 
 def branch_delete(request, pk):
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise PermissionDenied("Bạn không có quyền truy cập chức năng này.")
+        
     branch = get_object_or_404(ChiNhanh, pk=pk)
     branch.trang_thai = 'inactive'
     branch.save(update_fields=['trang_thai'])

@@ -11,6 +11,11 @@ from apps.branches.models import ChiNhanh
 from django.contrib.auth.models import User
 from django.db import transaction
 
+from django.core.exceptions import PermissionDenied
+
+def _is_admin(user):
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
+
 def _json_requested(request):
     return request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
@@ -92,6 +97,9 @@ def contract_list_view(request):
 
 @require_http_methods(["GET"])
 def contract_detail_view(request, contract_id):
+    if not _is_admin(request.user):
+        raise PermissionDenied()
+        
     hd = get_object_or_404(HopDongLaoDong, ma_hd=contract_id)
     ct = getattr(hd, 'chi_tiet', None)
     nv = hd.ma_nv
@@ -112,6 +120,9 @@ def contract_detail_view(request, contract_id):
     })
 
 def contract_add_view(request):
+    if not _is_admin(request.user):
+        raise PermissionDenied()
+        
     if request.method == 'POST':
         try:
             with transaction.atomic():
@@ -165,6 +176,9 @@ def contract_add_view(request):
     })
 
 def contract_edit_view(request, contract_id):
+    if not _is_admin(request.user):
+        raise PermissionDenied()
+        
     hd = get_object_or_404(HopDongLaoDong, ma_hd=contract_id)
     ct = getattr(hd, 'chi_tiet', None)
     
@@ -227,6 +241,9 @@ def contract_edit_view(request, contract_id):
 
 @require_http_methods(["DELETE"])
 def contract_delete_view(request, contract_id):
+    if not _is_admin(request.user):
+        return JsonResponse({'success': False, 'message': 'Bạn không có quyền thao tác.'}, status=403)
+        
     hd = get_object_or_404(HopDongLaoDong, ma_hd=contract_id)
     
     # Kiểm tra trạng thái thực tế từ Model

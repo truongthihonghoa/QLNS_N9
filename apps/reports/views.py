@@ -10,7 +10,15 @@ from apps.accounts.models import TaiKhoan
 from apps.employees.models import NhanVien
 
 
+from django.core.exceptions import PermissionDenied
+
+def _is_admin(user):
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
+
 def report_list_view(request):
+    if not _is_admin(request.user):
+        raise PermissionDenied("Bạn không có quyền truy cập chức năng này.")
+        
     from apps.branches.models import ChiNhanh
     branch_id = request.GET.get('branch', 'CN01')
     q = request.GET.get('q', '')
@@ -33,6 +41,9 @@ def api_aggregate_data(request):
     """
     Lấy dữ liệu chấm công từ ngày BĐ -> KT, nhóm theo nhân viên.
     """
+    if not _is_admin(request.user):
+        return JsonResponse({"status": "error", "message": "Forbidden"}, status=403)
+        
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -86,6 +97,9 @@ def api_save_report(request):
     """
     Lưu Báo Cáo và Báo Cáo chi tiết
     """
+    if not _is_admin(request.user):
+        return JsonResponse({"status": "error", "message": "Forbidden"}, status=403)
+        
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -156,6 +170,9 @@ def api_get_report_details(request, ma_bc):
     """
     Trả JSON chi tiết một bản ghi BaoCao
     """
+    if not _is_admin(request.user):
+        return JsonResponse({"status": "error", "message": "Forbidden"}, status=403)
+        
     try:
         bc = BaoCao.objects.filter(ma_bc=ma_bc).first()
         if not bc:
