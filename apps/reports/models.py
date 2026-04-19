@@ -1,5 +1,3 @@
-# apps/reports/models.py
-
 from django.db import models
 
 class BaoCao(models.Model):

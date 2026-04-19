@@ -82,12 +82,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
+# KẾT NỐI LẠI VỚI POSTGRESQL (SUPABASE) CỦA NHÓM
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.zuppllveaerdrgtxqtgm',
+        'PASSWORD': 'QLNS_n9123}',
+        'HOST': 'aws-1-ap-northeast-2.pooler.supabase.com',
+        'PORT': '6543',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
 
@@ -125,10 +131,19 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
-
+LOGIN_URL = '/accounts/login/'
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
+    BASE_DIR / 'apps' / 'accounts' / 'static',
+    BASE_DIR / 'apps' / 'branches' / 'static',
+    BASE_DIR / 'apps' / 'contracts' / 'static',
+    BASE_DIR / 'apps' / 'employees' / 'static',
+    BASE_DIR / 'apps' / 'payroll' / 'static',
+    BASE_DIR / 'apps' / 'reports' / 'static',
+    BASE_DIR / 'apps' / 'requests' / 'static',
+    BASE_DIR / 'apps' / 'schedules' / 'static',
+    BASE_DIR / 'apps' / 'attendances' / 'static',
 ]
 
 # Media files (User uploaded files)

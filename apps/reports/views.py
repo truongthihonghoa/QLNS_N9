@@ -9,6 +9,7 @@ from apps.attendances.models import ChamCong
 from apps.accounts.models import TaiKhoan
 from apps.employees.models import NhanVien
 
+
 def report_list_view(request):
     from apps.branches.models import ChiNhanh
     branch_id = request.GET.get('branch', 'CN01')
@@ -26,6 +27,7 @@ def report_list_view(request):
         'q': q,
     })
 
+
 @csrf_exempt
 def api_aggregate_data(request):
     """
@@ -37,28 +39,28 @@ def api_aggregate_data(request):
             start_date_str = data.get('start_date')
             end_date_str = data.get('end_date')
             branch_id = data.get('branch_id')
-            
+
             start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
             end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-            
+
             nhanviens = NhanVien.objects.all()
             if branch_id:
                 nhanviens = nhanviens.filter(ma_chi_nhanh=branch_id)
-            
+
             result = []
             for nv in nhanviens:
                 ccs = ChamCong.objects.filter(ma_nv=nv, ngay_lam__gte=start_date, ngay_lam__lte=end_date)
-                
+
                 so_ca_lam = ccs.count()
                 if so_ca_lam == 0:
-                    continue 
-                
+                    continue
+
                 so_gio_lam = sum(cc.so_gio_lam for cc in ccs)
 
                 # Cộng dồn ghi chú từ các bản ghi chấm công
                 ghi_chus = [cc.ghi_chu for cc in ccs if cc.ghi_chu]
                 ghi_chu_str = ", ".join(ghi_chus) if ghi_chus else "-"
-                
+
                 # Lấy mã chấm công đại diện (ví dụ bản ghi cuối cùng trong khoảng)
                 time_id = ccs.last().ma_cc if ccs.exists() else "-"
 
@@ -72,11 +74,12 @@ def api_aggregate_data(request):
                     "early": 0.0,
                     "note": ghi_chu_str
                 })
-            
+
             return JsonResponse({"status": "success", "data": result})
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=400)
     return JsonResponse({"status": "error", "message": "Invalid method"}, status=405)
+
 
 @csrf_exempt
 def api_save_report(request):
@@ -110,7 +113,7 @@ def api_save_report(request):
                 bc.ngay_kt = end_date
 
                 bc.save()
-                
+
                 BaoCao_CT.objects.filter(ma_bc=bc).delete()
             else:
                 import uuid
@@ -123,13 +126,13 @@ def api_save_report(request):
                     ma_chi_nhanh=chi_nhanh,
                     ma_tk=tk
                 )
-            
+
             for item in report_data:
                 nv = NhanVien.objects.filter(ma_nv=item.get('empId')).first()
                 cc_obj = None
                 if item.get('timeId'):
                     cc_obj = ChamCong.objects.filter(ma_cc=item.get('timeId')).first()
-                
+
                 if nv:
                     BaoCao_CT.objects.create(
                         ma_bc=bc,
@@ -142,7 +145,7 @@ def api_save_report(request):
                         dung_gio=item.get('early'),  # Changed from ve_som to dung_gio
                         ghi_chu=item.get('note')
                     )
-            
+
             return JsonResponse({"status": "success", "report_id": bc.ma_bc})
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=400)
@@ -157,7 +160,7 @@ def api_get_report_details(request, ma_bc):
         bc = BaoCao.objects.filter(ma_bc=ma_bc).first()
         if not bc:
             return JsonResponse({"status": "error", "message": "Not found"}, status=404)
-        
+
         details = BaoCao_CT.objects.filter(ma_bc=bc)
         result = []
         for d in details:
@@ -171,7 +174,7 @@ def api_get_report_details(request, ma_bc):
                 "early": d.dung_gio,  # Changed from ve_som to dung_gio
                 "note": d.ghi_chu if d.ghi_chu else "-"
             })
-            
+
         return JsonResponse({"status": "success", "data": result})
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=400)

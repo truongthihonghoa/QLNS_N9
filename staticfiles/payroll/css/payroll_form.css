@@ -1,0 +1,284 @@
+/* payroll_form.css */
+
+.payroll-form-container {
+    padding: 30px 20px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Để form không bị đẩy sát lên trên quá */
+    font-family: "Montserrat", sans-serif;
+}
+
+/* Container bao ngoài để định vị */
+.input-group-currency {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Show currency unit below the input (Add/Edit Payroll forms). */
+.input-with-currency {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.currency-below {
+    font-weight: 600;
+    font-size: 12px;
+    color: #7f8c8d;
+    line-height: 1;
+    /* Match `.form-group input { padding: 0 15px; }` so the unit aligns with the text inside inputs. */
+    padding-left: 15px;
+    font-family: "Montserrat", sans-serif;
+    pointer-events: none;
+    user-select: none;
+}
+
+.total-salary-group .currency-below {
+    color: #0f6b20;
+}
+
+/* Tùy chỉnh input để nhường chỗ cho chữ VNĐ */
+.input-group-currency input {
+    width: 100%;
+    padding-right: 60px !important; /* Khoảng trống bên phải cho chữ VNĐ */
+}
+
+/* Style cho chữ VNĐ */
+.currency-unit {
+    position: absolute;
+    right: 16px; /* Cách mép phải input */
+    font-weight: 600;
+    font-size: 14px;
+    color: #7f8c8d; /* Màu xám nhẹ cho chuyên nghiệp */
+    pointer-events: none; /* Để khi click vào chữ VNĐ vẫn focus được vào input */
+    font-family: "Montserrat", sans-serif;
+}
+
+/* Đặc biệt cho ô TỔNG LƯƠNG (màu xanh lá) */
+.total-salary-group .currency-unit {
+    color: #0f6b20; /* Màu xanh đậm cho khớp với số tiền */
+    font-size: 16px;
+}
+/* FORM NỀN TRẮNG CHÍNH */
+.payroll-form-card {
+    width: 100%;
+    max-width: 850px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+    padding: 30px; /* Padding đều các cạnh */
+    border: 1px solid rgba(15, 107, 32, 0.1);
+    box-sizing: border-box;
+}
+
+/* HEADER BÊN TRONG CARD */
+.inner-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f0f0f0; /* Đường kẻ mờ phân cách tiêu đề */
+}
+.payroll-warning-box {
+    margin-top: 18px;
+    margin-bottom: 0px;
+    padding: 12px 16px;
+    background: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 10px;
+    color: #856404;
+    font-size: 14px;
+    font-family: "Montserrat", sans-serif;
+}
+
+.warning-item {
+    padding: 3px 0;
+    font-weight: 500;
+}
+.back-btn-container {
+    margin-bottom: 15px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #0f6b20;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    padding: 8px 15px;
+    background: #f0f7f0;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.back-link:hover { background: #e1efe1; }
+
+.page-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.page-title {
+    font-weight: 700;
+    color: #0f6b20;
+    font-size: 22px;
+    border-left: 5px solid #0f6b20; /* Vạch xanh đặc trưng */
+    padding-left: 15px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.payroll-subtext {
+    font-size: 16px;
+    color: #666;
+    padding-left: 20px;
+    margin-top:15px;
+}
+
+/* CARD NHÂN VIÊN (VÙNG NHẬP LIỆU) */
+.payroll-employee-card {
+    background: #fbfcfd;
+    border: 1.5px solid #eef1f4;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.emp-card-header {
+    text-align: left;
+    margin-left: 8px
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    font-weight: 700;
+}
+
+.emp-name {
+    display: block;
+    font-weight: 700;
+    font-size: 18px;
+    color: black;
+}
+
+.emp-id {
+    font-size: 15px;
+    color: black;
+    padding-top: 10px;
+}
+
+/* Layout nhập liệu 2 cột */
+.emp-card-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group label {
+    font-weight: 700;
+    font-size: 13px;
+    color: #604534;
+}
+
+.form-group input {
+    height: 48px;
+    padding: 0 15px;
+    border-radius: 10px;
+    border: 1.5px solid #d8dde3;
+    background: #fff;
+}
+
+/* Tổng lương highlight */
+.full-width { grid-column: 1 / span 2; }
+
+.total-salary-input {
+    background: #f0f7f0 !important;
+    border: 1.5px solid #0f6b20 !important;
+    color: #0f6b20 !important;
+    font-weight: 700 !important;
+    font-size: 20px;
+}
+
+/* Nút Save/Hủy */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.save-btn {
+    background: #0f6b20;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    height:48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cancel-btn {
+    background: #eee;
+    color: #555;
+    height:48px;
+    padding: 12px 30px;
+    border-radius: 10px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+
+    /* Card padding gọn lại */
+    .payroll-form-card {
+        padding: 20px;
+    }
+
+    /* Nhân viên card */
+    .payroll-employee-card {
+        padding: 18px;
+    }
+
+    /* 👉 CHUYỂN 2 CỘT -> 1 CỘT */
+    .emp-card-body {
+        grid-template-columns: 1fr;
+    }
+
+    /* Full width giữ nguyên */
+    .full-width {
+        grid-column: span 1;
+    }
+
+    /* Input cho đẹp hơn trên mobile */
+    .form-group input {
+        height: 44px;
+        font-size: 14px;
+    }
+
+    /* 👉 BUTTON DÀN ĐỀU */
+    .form-actions {
+        flex-direction: row;
+    }
+
+    .form-actions .save-btn,
+    .form-actions .cancel-btn {
+        flex: 1;
+        text-align: center;
+    }
+}

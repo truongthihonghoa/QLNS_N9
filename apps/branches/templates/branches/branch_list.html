@@ -11,10 +11,9 @@
 <div class="container">
     <div class="toolbar">
         <form method="get" class="search-box">
-            <input type="text" name="q" value="{{ keyword }}" placeholder="Nhập tên chi nhánh...">
-            <button type="submit" class="btn-search">Tìm kiếm</button>
+            <input type="text" name="q" value="{{ keyword }}" placeholder="Nhập tên chi nhánh">
         </form>
-
+        <button type="submit" class="btn-search">Tìm kiếm</button>
         <a href="{% url 'branches:branch_create' %}" class="btn-primary">+ Thêm</a>
     </div>
 
@@ -51,12 +50,12 @@
                     <td>{{ branch.get_trang_thai_display }}</td>
 
                     <td class="branch-actions">
-                        <a href="{% url 'branches:branch_detail' branch.ma_chi_nhanh %}" class="btn-action btn-search-icon" title="Xem chi tiết">
-                            <img src="{% static 'images/search_icon.png' %}" alt="Xem">
+                        <a href="{% url 'branches:branch_detail' branch.ma_chi_nhanh %}" class="btn-action-ge btn-view-ge" title="Xem chi tiết">
+                            <i class="fas fa-eye"></i>
                         </a>
 
-                        <a href="{% url 'branches:branch_update' branch.ma_chi_nhanh %}" class="btn-action btn-edit-icon" title="Chỉnh sửa">
-                            <img src="{% static 'images/edit_icon.png' %}" alt="Sửa">
+                        <a href="{% url 'branches:branch_update' branch.ma_chi_nhanh %}" class="btn-action-ge btn-edit-ge" title="Chỉnh sửa">
+                            <i class="fas fa-pen"></i>
                         </a>
                     </td>
                 </tr>
@@ -89,8 +88,8 @@ document.addEventListener('DOMContentLoaded', function () {
     try { msg = JSON.parse(msgEl.textContent || '""'); } catch (e) { msg = ''; }
     if (!msg) return;
 
-    const content = toast.querySelector('.toast-content');
-    if (content) content.textContent = msg;
+    const toastMsg = document.getElementById("toast-message");
+    if (toastMsg) toastMsg.textContent = msg;
 
     toast.classList.add('show');
     setTimeout(function () { toast.classList.remove('show'); }, 3000);

@@ -1,85 +1,290 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Thêm Lịch Làm Việc - {{ block.super }}{% endblock %}
+{% block title %}Tạo lịch làm việc - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'schedules/css/schedule_list.css' %}">
+    <!-- Them tham so phien ban ?v=1.1 de xoa cache trinh duyet -->
+    <link rel="stylesheet" href="{% static 'schedules/css/schedule_list.css' %}?v=1.1">
     <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
+
+    <style>
+        /* CSS Cải thiện giao diện Form */
+        .schedule-form-page {
+            background-color: transparent !important;
+            min-height: auto;
+            padding: 30px 20px !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+        }
+
+        .schedule-card {
+            background: #ffffff !important;
+            border-radius: 16px !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+            padding: 30px !important;
+            width: 100% !important;
+            max-width: 850px !important;
+            border: 1px solid rgba(0,0,0,0.05) !important;
+        }
+
+        .create-header {
+            margin-bottom: 25px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
+            font-family: "Montserrat", sans-serif !important;
+        }
+
+        .create-header h2 {
+            color: #174d17;
+            font-weight: 800;
+            font-size: 20px;
+            margin: 0;
+            text-transform: uppercase;
+            font-family: "Montserrat", sans-serif !important;
+
+        }
+
+        .info-header-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid #edf2f7;
+        }
+
+        .employee-selection-section {
+            margin-top: 25px;
+        }
+
+        .employee-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #174d17;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 4px solid #174d17;
+        }
+
+        .field-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #604534;
+            font-size: 13px;
+        }
+
+        .field-group input, .field-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            outline: none;
+            background: #ffffff;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .employee-table-wrapper {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .modern-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .modern-table th {
+            background: #edf2f7;
+            color: #604534;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 13px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .modern-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f4f8;
+            color: #2d3748;
+            font-size: 13px;
+        }
+
+        /* CHỈNH LẠI TỶ LỆ CỘT CHO THẬT ĐỀU NHAU */
+        .col-check { width: 10%; text-align: center; }
+        .col-id { width: 25%; }
+        .col-name { width: 35%; }
+        .col-pos { width: 30%; }
+
+        .modern-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .form-footer-actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-save-solid, .btn-cancel-ghost {
+            min-width: 130px;
+            height: 44px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .btn-save-solid {
+            background-color: #0f6b20;
+            color: white;
+            box-shadow: 0 4px 10px rgba(15, 107, 32, 0.15);
+        }
+
+        .btn-cancel-ghost {
+            background-color: #e4e4e4;
+            color: #4f4f4f;
+            text-decoration: none;
+        }
+
+        .back-btn-pill {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: #174d17;
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .back-btn-pill i {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .custom-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #174d17;
+        }
+
+        .badge-position {
+            background: #e2f2e2;
+            color: #174d17;
+            padding: 2px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
 <div class="schedule-form-page">
-    <div class="schedule-form-card">
-        <div class="schedule-form-header">
-            <a href="{% url 'schedule_list' %}" class="schedule-back-link">
-                <img src="{% static 'images/back_icon.png' %}" alt="Quay lại">
-            </a>
-            <h2>THÊM LỊCH LÀM VIỆC</h2>
+    <div class="schedule-card">
+        <!-- Nut quay lai -->
+        <a href="javascript:void(0);" class="back-btn-pill" onclick="showCancelPopup()">
+            <i class="fas fa-arrow-left"></i> Danh sách lịch làm việc
+        </a>
+
+        <div class="create-header">
+            <h2 class="title">VUI LÒNG TẠO LỊCH LÀM VIỆC</h2>
         </div>
 
         <form class="schedule-form" method="POST" id="scheduleCreateForm">
             {% csrf_token %}
 
-            <section class="schedule-section">
-                <h3>Thông tin ca làm</h3>
-                <div class="schedule-form-grid">
-                    <div class="schedule-field">
-                        <label for="ngay_lam">Ngày Làm <span class="required">*</span></label>
-                        <input type="date" id="ngay_lam" name="ngay_lam" required>
-                    </div>
-                    <div class="schedule-field">
-                        <label for="khung_gio">Khung Giờ Ca Làm <span class="required">*</span></label>
-                        <select id="khung_gio" name="khung_gio" required>
-                            <option value="" selected disabled>Chọn khung giờ</option>
-                            {% for option in shift_options %}
-                            <option value="{{ option }}">{{ option }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+            <!-- PHẦN TRÊN CHỌN NGÀY VÀ CA LÀM -->
+            <div class="info-header-section">
+                <div class="field-group">
+                    <label for="ngay_lam">Ngày Làm <span class="required" style="color:red;">*</span></label>
+                    <input type="date" id="ngay_lam" name="ngay_lam" required>
                 </div>
-            </section>
-
-            <section class="schedule-section">
-                <h3>Thông tin nhân viên</h3>
-                <div class="schedule-employee-table">
-                    <div class="schedule-employee-head" style="display: flex; background: #f4f4f4; padding: 10px; font-weight: bold; border-bottom: 2px solid #ddd;">
-                        <span style="flex: 0.5; text-align: center;">Chọn</span>
-                        <span style="flex: 1;">Mã Nhân Viên</span>
-                        <span style="flex: 2;">Tên Nhân Viên</span>
-                        <span style="flex: 1.5;">Vị Trí Việc Làm</span>
-                    </div>
-                    <div class="schedule-employee-body">
-                        {% for employee in employee_options %}
-                        <div class="schedule-employee-item" style="display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee;">
-                            <div style="flex: 0.5; text-align: center;">
-                                <input type="checkbox" name="selected_employees" value="{{ employee.ma_nv }}" class="employee-checkbox">
-                            </div>
-                            <span style="flex: 1;">{{ employee.ma_nv }}</span>
-                            <span style="flex: 2;">{{ employee.ho_ten }}</span>
-                            <div style="flex: 1.5;">
-                                <span style="font-weight: 500; color: #333;">{{ employee.vi_tri_mac_dinh }}</span>
-                                <input type="hidden" name="position_{{ employee.ma_nv }}" value="{{ employee.vi_tri_mac_dinh }}">
-                            </div>
-                        </div>
+                <div class="field-group">
+                    <label for="khung_gio">Khung Giờ Ca Làm <span class="required" style="color:red;">*</span></label>
+                    <select id="khung_gio" name="khung_gio" required>
+                        <option value="" selected disabled>Chọn khung giờ</option>
+                        {% for option in shift_options %}
+                        <option value="{{ option }}">{{ option }}</option>
                         {% endfor %}
-                    </div>
+                    </select>
                 </div>
-                <small style="color: #666; margin-top: 10px; display: block;">Chọn nhân viên để gán vào ca làm việc (Vị trí đã được quy định sẵn theo hợp đồng)</small>
-            </section>
+            </div>
 
-            <div class="schedule-form-actions">
-                <a href="{% url 'schedule_list' %}" class="schedule-cancel-btn">HỦY</a>
-                <button type="submit" class="schedule-save-btn">LƯU</button>
+            <!-- PHẦN DƯỚI: DANH SÁCH NHÂN VIÊN -->
+            <div class="employee-selection-section">
+                <h3 class="employee-section-title">Chọn nhân viên áp dụng</h3>
+
+                <div class="employee-table-wrapper">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th class="col-check">Chọn</th>
+                                <th class="col-id">Mã NV</th>
+                                <th class="col-name">Tên Nhân Viên</th>
+                                <th class="col-pos">Vị Trí Việc Làm</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for employee in employee_options %}
+                            <tr>
+                                <td class="col-check">
+                                    <input type="checkbox" name="selected_employees" value="{{ employee.ma_nv }}" class="custom-checkbox">
+                                </td>
+                                <td class="col-id">{{ employee.ma_nv }}</td>
+                                <td class="col-name"><strong>{{ employee.ho_ten }}</strong></td>
+                                <td class="col-pos">
+                                    <span class="badge-position">{{ employee.vi_tri_mac_dinh }}</span>
+                                    <input type="hidden" name="position_{{ employee.ma_nv }}" value="{{ employee.vi_tri_mac_dinh }}">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <p style="color: #718096; font-size: 12px; margin-top: 12px; font-style: italic;">
+                    * Lưu ý: Vị trí việc làm được hệ thống tự động gán theo hợp đồng hiện tại của nhân viên.
+                </p>
+            </div>
+
+            <!-- NÚT BẤM -->
+            <div class="form-footer-actions">
+                <a href="javascript:void(0);" class="btn-cancel-ghost" onclick="showCancelPopup()">HỦY</a>
+                <button type="submit" class="btn-save-solid">LƯU LỊCH LÀM</button>
             </div>
         </form>
     </div>
 </div>
 
-{% include 'partials/popup_error.html' %}
 {% include 'partials/popup_confirm_cancel.html' %}
+{% include 'partials/popup_error.html' %}
 {% include 'partials/popup_success.html' %}
 {% endblock %}
 
@@ -92,5 +297,23 @@
                 ngayLamInput.setAttribute('min', today);
             }
         });
+
+        function showCancelPopup() {
+            const popup = document.getElementById('confirm-cancel-popup');
+            const noBtn = document.getElementById('confirm-no-btn');
+            const yesBtn = document.getElementById('confirm-yes-btn');
+
+            if (popup && noBtn && yesBtn) {
+                popup.style.display = 'flex';
+
+                noBtn.onclick = function() {
+                    popup.style.display = 'none';
+                };
+
+                yesBtn.onclick = function() {
+                    window.location.href = "{% url 'schedule_list' %}";
+                };
+            }
+        }
     </script>
 {% endblock %}

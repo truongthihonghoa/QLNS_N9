@@ -1,9 +1,21 @@
+                  /**
+ * Login Page JavaScript
+ * Handles: Password toggle, Forgot Password popup, Success notifications
+ */
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Login Button ---
-    const loginBtn = document.getElementById('login-btn');
-    if(loginBtn) {
-        loginBtn.addEventListener('click', function() {
-            window.location.href = this.dataset.dashboardUrl;
+    // --- Password Toggle (Eye Icon) ---
+    const eyeIcon = document.getElementById('eye-icon');
+    const passwordInput = document.querySelector('input[type="password"][name="password"]');
+
+    if (eyeIcon && passwordInput) {
+        eyeIcon.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.src = this.src.replace('eye_opened', 'eye_closed');
+            } else {
+                passwordInput.type = 'password';
+                this.src = this.src.replace('eye_closed', 'eye_opened');
+            }
         });
     }
 
@@ -29,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmCancelPopup = document.getElementById('confirm-cancel-popup');
     const confirmNoBtn = document.getElementById('confirm-no-btn');
     const confirmYesBtn = document.getElementById('confirm-yes-btn');
-    
+
     const showConfirmCancelPopup = () => {
         if (confirmCancelPopup) confirmCancelPopup.style.display = 'flex';
     };
@@ -37,12 +49,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (confirmCancelPopup) confirmCancelPopup.style.display = 'none';
     };
 
-    if (closeForgotPasswordBtn) closeForgotPasswordBtn.addEventListener('click', showConfirmCancelPopup);
-    if (cancelForgotPasswordBtn) cancelForgotPasswordBtn.addEventListener('click', showConfirmCancelPopup);
-    if (forgotPasswordPopup) {
-        forgotPasswordPopup.addEventListener('click', (e) => {
-            if (e.target === forgotPasswordPopup) showConfirmCancelPopup();
-        });
+    // Only show confirm popup when clicking cancel or X button (NOT on overlay click)
+    if (closeForgotPasswordBtn) {
+        closeForgotPasswordBtn.addEventListener('click', showConfirmCancelPopup);
+    }
+    if (cancelForgotPasswordBtn) {
+        cancelForgotPasswordBtn.addEventListener('click', showConfirmCancelPopup);
     }
 
     if (confirmNoBtn) confirmNoBtn.addEventListener('click', closeConfirmCancelPopup);
@@ -62,8 +74,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function showSuccessPopup(title, message) {
         closeForgotPasswordPopup();
         if (successPopup) {
-            successPopupTitle.textContent = title;
-            successPopupMessage.textContent = message;
+            if (successPopupTitle) successPopupTitle.textContent = title;
+            if (successPopupMessage) successPopupMessage.textContent = message;
             successPopup.style.display = 'flex';
         }
     }

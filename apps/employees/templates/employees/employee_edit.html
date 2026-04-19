@@ -1,42 +1,66 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Chinh sua nhan vien - {{ block.super }}{% endblock %}
+{% block title %}Chỉnh sửa nhân viên - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'employees/css/employee_edit.css' %}?v=3.0">
+    <link rel="stylesheet" href="{% static 'employees/css/employee_edit.css' %}?v=4.5">
     <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="edit-employee-container">
-    <div class="page-header">
-        <a href="{% url 'employee_list' %}" class="back-link">
-            <img src="{% static 'images/back_icon.png' %}" alt="Back" class="back-icon">
-        </a>
-        <h2 class="page-title">Chinh sua thong tin nhan vien</h2>
+    <div class="employee-form-card">
+        <div class="page-header">
+            <a href="{% url 'employee_detail' employee_id=employee.ma_nv %}" class="back-link">
+                <img src="{% static 'images/back_icon.png' %}" alt="Back" class="back-icon">
+                <span>Thông tin nhân viên</span>
+            </a>
+            <h2 class="page-title">Chỉnh sửa thông tin nhân viên: {{ employee.ho_ten }}</h2>
+        </div>
+
+        {% if form.non_field_errors %}
+            <div class="form-error-summary">{{ form.non_field_errors|join:', ' }}</div>
+        {% endif %}
+
+        <form
+            class="employee-form"
+            method="POST"
+            enctype="multipart/form-data"
+            data-employee-list-url="{% url 'employee_list' %}"
+            data-return-url="{% url 'employee_detail' employee_id=employee.ma_nv %}"
+        >
+            {% csrf_token %}
+            <div class="form-left">
+                <div class="avatar-upload-placeholder avatar-upload-card">
+                    <input type="file" name="anh_dai_dien" id="id_anh_dai_dien" class="employee-avatar-input" accept="image/*">
+                    {% if image_url %}
+                        <img src="{{ image_url }}" alt="{{ employee.ho_ten }}" class="avatar-preview-image" id="employee-avatar-preview">
+                    {% else %}
+                        <img src="{% static 'employees/img/upload_avatar_icon.png' %}" alt="Avatar" class="upload-icon avatar-preview-image is-empty" id="employee-avatar-preview">
+                    {% endif %}
+                    <button type="button" class="avatar-edit-trigger" id="employee-avatar-trigger" aria-label="Cập nhật ảnh đại diện">
+                        <img src="{% static 'images/edit_icon.png' %}" alt="">
+                    </button>
+                </div>
+                {% if form.anh_dai_dien.errors %}<p class="field-error">{{ form.anh_dai_dien.errors|join:', ' }}</p>{% endif %}
+                <p class="avatar-note">Bấm vào biểu tượng cây bút để thay đổi ảnh từ máy của bạn.</p>
+            </div>
+
+            <div class="form-right">
+                {% include 'employees/partials/employee_form_fields.html' with form=form employee=employee is_edit=True %}
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn">Hủy thao tác</button>
+                    <button type="submit" class="save-btn">Lưu thông tin</button>
+                </div>
+            </div>
+        </form>
     </div>
-    <p class="page-note">Cap nhat truc tiep theo model nhan vien hien tai.</p>
-
-    {% if form.non_field_errors %}
-        <div class="form-error-summary">{{ form.non_field_errors|join:', ' }}</div>
-    {% endif %}
-
-    <form class="employee-form" method="POST" data-employee-list-url="{% url 'employee_list' %}">
-        {% csrf_token %}
-        <div class="form-column form-column-wide">
-            {% include 'employees/partials/employee_form_fields.html' with form=form employee=employee is_edit=True %}
-        </div>
-        <div class="form-actions">
-            <button type="button" class="cancel-btn">Huy thao tac</button>
-            <button type="submit" class="save-btn">Luu thong tin</button>
-        </div>
-    </form>
 </div>
 
 {% include 'partials/popup_error.html' %}
-{% include 'partials/popup_confirm_cancel.html' %}
+{% include 'partials/popup_confirm_cancel.html' with confirm_cancel_title='XÁC NHẬN HỦY' confirm_cancel_message='Hệ thống sẽ không lưu các thay đổi hiện tại.<br>Bạn có chắc chắn muốn hủy không?' confirm_cancel_no_label='Không' confirm_cancel_yes_label='Đồng ý' %}
 
 {% if form.errors %}
     <div id="auto-show-invalid-info-popup" style="display: none;"></div>
@@ -44,5 +68,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'employees/js/employee_edit.js' %}?v=3.0"></script>
+    <script src="{% static 'employees/js/employee_edit.js' %}?v=4.2"></script>
 {% endblock %}

@@ -12,6 +12,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('contract-search-input');
     const searchBtn = document.getElementById('contract-search-btn');
     const searchEmpty = document.getElementById('contract-search-empty');
+    const branchFilter = document.getElementById('branch-filter-select');
+
+    if (branchFilter) {
+        branchFilter.addEventListener('change', function() {
+            const url = new URL(window.location.href);
+            if (this.value) {
+                url.searchParams.set('branch', this.value);
+            } else {
+                url.searchParams.delete('branch');
+            }
+            // Giữ lại tham số tìm kiếm nếu có
+            window.location.href = url.toString();
+        });
+    }
 
     function getCookie(name) {
         const cookieValue = document.cookie
@@ -35,48 +49,89 @@ document.addEventListener('DOMContentLoaded', function () {
             .trim();
     }
 
+    function formatNumber(num) {
+        if (!num) return '0';
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    }
+
     function populateDetailModal(data) {
         const elements = {
             'detail-contract-id': data.ma_hd,
-            'detail-contract-number': data.so_hd_hien_thi || data.ma_hd,
-            'detail-signed-date': data.ngay_ky || data.ngay_bd,
-            'detail-company-representative': data.dai_dien_ben_a || 'Truong Thi Hong Hoa',
-            'detail-company-position': data.chuc_vu_ben_a || 'Quan ly GE CAFE - Chi nhanh Le Hong Phong',
-            'detail-employee-name': (data.ten_nv || '').toUpperCase(),
-            'detail-employee-code': data.ma_nv,
-            'detail-birth-date': data.ngay_sinh || '15/05/1998',
-            'detail-contract-type': data.loai_hd,
-            'detail-start-date': data.ngay_bd,
-            'detail-end-date': data.ngay_kt,
-            'detail-salary-display': data.luong_hien_thi || data.tong_luong || data.muc_luong,
-            'detail-position': data.chuc_vu,
-            'detail-trang-thai': data.trang_thai || 'CO HIEU LUC',
-            'detail-sign-a': data.dai_dien_ben_a || 'Truong Thi Hong Hoa',
-            'detail-sign-b': data.ten_nv
+            'detail-contract-no-display': data.ma_hd,
+            'detail-employee-code-display': data.ma_nv,
+
+            // Bên A
+            'detail-nguoi-dai-dien': data.nguoi_dai_dien || '',
+            'detail-chuc-vu-dai-dien': data.chuc_vu_dai_dien || 'Quản lý Chi nhánh',
+            'detail-phone-ben-a': data.sdt_dai_dien || '',
+            'detail-sig-name-a': data.nguoi_dai_dien || '',
+
+            // Bên B
+            'detail-ten-nv': data.ten_nv || '',
+            'detail-ma-nv': data.ma_nv || '',
+            'detail-cccd': data.cccd || '',
+            'detail-ngay-sinh': data.ngay_sinh || '',
+            'detail-phone-ben-b': data.sdt_nv || '',
+            'detail-dia-chi': data.dia_chi || '',
+            'detail-sig-name-b': data.ten_nv || '',
+
+            // Điều khoản
+            'detail-loai-hd': data.loai_hd || '',
+            'detail-ngay-bd': data.ngay_bd || '',
+            'detail-ngay-kt': data.ngay_kt || '',
+            'detail-chuc-vu-nv': data.chuc_vu || '',
+            'detail-dia-diem-lv': data.dia_diem_lv || '',
+            'detail-so-gio-lam': data.so_gio_lam || '0',
+            'detail-luong-co-ban': formatNumber(data.muc_luong || data.luong_co_ban),
+            'detail-luong-theo-gio': formatNumber(data.luong_theo_gio),
+
+            // Xử lý ghi chú: Nếu trống thì ghi "Không"
+            'detail-ghi-chu': (data.ghi_chu && data.ghi_chu.trim() !== '' && data.ghi_chu !== 'Không có ghi chú.') ? data.ghi_chu : 'Không'
         };
 
         Object.entries(elements).forEach(([id, value]) => {
             const element = document.getElementById(id);
             if (element) {
-                element.textContent = value || '';
+                element.textContent = value;
             }
         });
     }
 
-    function openDetailFromButton(button) {
-        populateDetailModal({
-            ma_hd: button.dataset.contractId,
-            so_hd_hien_thi: button.dataset.contractId,
-            ngay_ky: button.dataset.startDate,
-            ten_nv: button.dataset.employeeName,
-            ma_nv: button.dataset.employeeId,
-            loai_hd: button.dataset.contractType,
-            ngay_bd: button.dataset.startDate,
-            ngay_kt: button.dataset.endDate,
-            chuc_vu: button.dataset.position,
-            luong_hien_thi: button.dataset.salary,
-            trang_thai: 'CO HIEU LUC'
-        });
+    async function openDetailFromButton(button) {
+        const contractId = button.dataset.contractId;
+
+        try {
+            const response = await fetch(`/contracts/${contractId}/detail/`);
+            if (response.ok) {
+                const data = await response.json();
+                populateDetailModal(data);
+            } else {
+                // Fallback nếu API lỗi
+                populateDetailModal({
+                    ma_hd: button.dataset.contractId,
+                    ma_nv: button.dataset.employeeId,
+                    ten_nv: button.dataset.employeeName,
+                    loai_hd: button.dataset.contractType,
+                    ngay_bd: button.dataset.startDate,
+                    ngay_kt: button.dataset.endDate,
+                    chuc_vu: button.dataset.position,
+                    muc_luong: button.dataset.salary,
+                    cccd: button.dataset.cccd,
+                    ngay_sinh: button.dataset.birthDate,
+                    sdt_nv: button.dataset.phoneNv,
+                    dia_chi: button.dataset.address,
+                    nguoi_dai_dien: button.dataset.representative,
+                    chuc_vu_dai_dien: button.dataset.repPosition,
+                    sdt_dai_dien: button.dataset.repPhone,
+                    dia_diem_lv: button.dataset.workPlace,
+                    so_gio_lam: button.dataset.workHours,
+                    luong_theo_gio: button.dataset.hourlySalary,
+                    ghi_chu: button.dataset.notes
+                });
+            }
+        } catch (err) {
+            console.error('Lỗi khi lấy chi tiết hợp đồng:', err);
+        }
 
         if (detailPopup) {
             detailPopup.style.display = 'flex';
@@ -85,92 +140,40 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateVisibleIndexes() {
         let visibleIndex = 1;
-
         getTableRows().forEach((row) => {
-            if (row.classList.contains('contract-row-hidden')) {
-                return;
-            }
-
+            if (row.classList.contains('contract-row-hidden')) return;
             const sttCell = row.querySelector('.contract-stt');
-            if (sttCell) {
-                sttCell.textContent = visibleIndex;
-            }
-            visibleIndex += 1;
+            if (sttCell) sttCell.textContent = visibleIndex++;
         });
     }
 
     function performSearch() {
         const keyword = normalizeText(searchInput ? searchInput.value : '');
         let visibleCount = 0;
-
         getTableRows().forEach((row) => {
-            const cells = Array.from(row.querySelectorAll('td'));
-            const searchText = normalizeText(cells
-                .slice(1, 5)
-                .map((cell) => cell.textContent || '')
-                .join(' '));
+            const searchText = normalizeText(row.innerText);
             const isMatch = !keyword || searchText.includes(keyword);
-
             row.classList.toggle('contract-row-hidden', !isMatch);
-            if (isMatch) {
-                visibleCount += 1;
-            }
+            if (isMatch) visibleCount++;
         });
-
         updateVisibleIndexes();
-
-        if (searchEmpty) {
-            searchEmpty.classList.toggle('is-visible', visibleCount === 0);
-        }
+        if (searchEmpty) searchEmpty.classList.toggle('is-visible', visibleCount === 0);
     }
 
     function parseDisplayDate(value) {
         const parts = String(value || '').split('/');
-        if (parts.length !== 3) {
-            return null;
-        }
-
+        if (parts.length !== 3) return null;
         const [day, month, year] = parts.map((part) => parseInt(part, 10));
-        if (!day || !month || !year) {
-            return null;
-        }
-
         return new Date(year, month - 1, day);
     }
 
     function isContractStillActive(endDateText) {
         const endDate = parseDisplayDate(endDateText);
-        if (!endDate) {
-            return true;
-        }
-
+        if (!endDate) return true;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         endDate.setHours(0, 0, 0, 0);
         return endDate >= today;
-    }
-
-    function showDeleteAlert() {
-        if (deleteAlert) {
-            deleteAlert.classList.add('is-visible');
-        }
-    }
-
-    function hideDeleteAlert() {
-        if (deleteAlert) {
-            deleteAlert.classList.remove('is-visible');
-        }
-    }
-
-    function showDeleteSuccessToast() {
-        if (!deleteSuccessToast) {
-            return;
-        }
-
-        deleteSuccessToast.classList.add('is-visible');
-        window.setTimeout(function () {
-            deleteSuccessToast.classList.remove('is-visible');
-        }, 2200);
     }
 
     detailButtons.forEach((button) => {
@@ -180,30 +183,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     if (detailCloseBtn) {
-        detailCloseBtn.addEventListener('click', function () {
-            detailPopup.style.display = 'none';
-        });
+        detailCloseBtn.addEventListener('click', () => detailPopup.style.display = 'none');
     }
 
     if (detailPopup) {
-        detailPopup.addEventListener('click', function (event) {
-            if (event.target === detailPopup) {
-                detailPopup.style.display = 'none';
-            }
-        });
+        detailPopup.addEventListener('click', (e) => { if (e.target === detailPopup) detailPopup.style.display = 'none'; });
     }
 
-    if (searchBtn) {
-        searchBtn.addEventListener('click', performSearch);
-    }
-
+    if (searchBtn) searchBtn.addEventListener('click', performSearch);
     if (searchInput) {
-        searchInput.addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                performSearch();
-            }
-        });
+        searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); performSearch(); } });
     }
 
     deleteButtons.forEach((button) => {
@@ -216,63 +205,67 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     if (deleteNoBtn) {
-        deleteNoBtn.addEventListener('click', function () {
-            deletePopup.style.display = 'none';
+        deleteNoBtn.addEventListener('click', () => {
+            if (deletePopup) deletePopup.style.display = 'none';
         });
     }
 
     if (deleteYesBtn) {
         deleteYesBtn.addEventListener('click', async function () {
-            deletePopup.style.display = 'none';
-
-            const deleteId = deletePopup.dataset.deleteId || '';
-            const targetButton = Array.from(document.querySelectorAll('.delete-btn')).find((button) => (button.dataset.deleteId || '') === deleteId);
-            if (!targetButton) return;
+            const deleteId = deletePopup.dataset.deleteId;
+            if (deletePopup) deletePopup.style.display = 'none';
 
             try {
                 const response = await fetch(`/contracts/${deleteId}/delete/`, {
                     method: 'DELETE',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRFToken': getCookie('csrftoken'),
+                    headers: { 
+                        'X-Requested-With': 'XMLHttpRequest', 
+                        'X-CSRFToken': getCookie('csrftoken') 
                     },
                 });
+                
                 const data = await response.json();
 
-                if (!response.ok || !data.success) {
-                    if (data.error_code === 'ACTIVE_CONTRACT' || isContractStillActive(targetButton.dataset.endDate || '')) {
-                        showDeleteAlert();
+                if (response.ok && data.success) {
+                    // Show Success Toast at bottom-right
+                    if (deleteSuccessToast) {
+                        deleteSuccessToast.classList.add('is-visible');
+                        
+                        // Wait 3 seconds then remove row and hide
+                        setTimeout(() => {
+                            deleteSuccessToast.classList.remove('is-visible');
+                            // Remove row from UI
+                            const row = document.querySelector(`.delete-btn[data-delete-id="${deleteId}"]`).closest('tr');
+                            if (row) {
+                                row.remove();
+                                updateVisibleIndexes();
+                            }
+                        }, 3000);
+                    } else {
+                        location.reload();
                     }
-                    return;
+                } else {
+                    // Show Centered Alert (Active Contract or Other Error)
+                    if (deleteAlert) {
+                        deleteAlert.classList.add('is-visible');
+                        
+                        // Auto-hide alert after 3 seconds
+                        setTimeout(() => {
+                            deleteAlert.classList.remove('is-visible');
+                        }, 3000);
+                    } else {
+                        alert(data.message || 'Không thể xóa hợp đồng này');
+                    }
                 }
-
-                const targetRow = targetButton.closest('tr');
-                if (targetRow) {
-                    targetRow.remove();
-                }
-                updateVisibleIndexes();
-                if (searchEmpty) {
-                    const visibleRows = Array.from(document.querySelectorAll('#contract-table-body tr')).filter((row) => !row.classList.contains('contract-row-hidden'));
-                    searchEmpty.classList.toggle('is-visible', visibleRows.length === 0);
-                }
-                showDeleteSuccessToast();
-            } catch (_error) {
-                if (isContractStillActive(targetButton.dataset.endDate || '')) {
-                    showDeleteAlert();
-                }
+            } catch (err) { 
+                console.error('Lỗi khi xóa hợp đồng:', err);
             }
         });
     }
 
     if (deleteAlertClose) {
-        deleteAlertClose.addEventListener('click', hideDeleteAlert);
-    }
-
-    if (deleteAlert) {
-        deleteAlert.addEventListener('click', function (event) {
-            if (event.target === deleteAlert) {
-                hideDeleteAlert();
-            }
+        deleteAlertClose.addEventListener('click', () => {
+            if (deleteAlert) deleteAlert.classList.remove('is-visible');
         });
     }
 });

@@ -1,0 +1,22 @@
+{# Reusable Employee Card Component - Tránh l p code #}
+<div class="employee-card {% if status == 'calculated' %}calculated{% endif %}" 
+     onclick="window.location.href='{% url 'payroll_add' %}?employee_id={{ employee.ma_nv }}&month={{ month }}&year={{ year }}'"
+     data-emp-id="{{ employee.ma_nv }}">
+    <div class="employee-info">
+        <div class="employee-details">
+            <div class="employee-name">{{ employee.ho_ten }}</div>
+            <div class="employee-meta">
+                Mã NV: {{ employee.ma_nv }} | 
+                Chi nhánh: {{ employee.chi_nhanh }} |
+                H p ng: {{ employee.hop_dong.ma_hop_dong }}
+            </div>
+        </div>
+        <div class="employee-status status-{{ status }}">
+            {% if status == 'pending' %}
+                Chua tính luoong
+            {% elif status == 'calculated' %}
+                a tính luoong
+            {% endif %}
+        </div>
+    </div>
+</div>

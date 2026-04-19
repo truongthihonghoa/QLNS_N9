@@ -2220,7 +2220,7 @@
       "ngay_bd": "2026-02-01",
       "ngay_kt": "2026-02-28",
       "ngay_tao": "2026-04-01",
-      "tong": 20506750.0,
+      "ma_chi_nhanh_id": "CN01",
       "ma_tk": 1
     }
   },
@@ -2231,7 +2231,7 @@
       "ngay_bd": "2026-02-01",
       "ngay_kt": "2026-02-28",
       "ngay_tao": "2026-04-01",
-      "tong": 7779200.0,
+      "ma_chi_nhanh_id": "CN01",
       "ma_tk": 4
     }
   },
@@ -2242,7 +2242,7 @@
       "ngay_bd": "2026-02-01",
       "ngay_kt": "2026-02-28",
       "ngay_tao": "2026-04-01",
-      "tong": 20506750.0,
+      "ma_chi_nhanh_id": "CN02",
       "ma_tk": 1
     }
   },
@@ -2253,7 +2253,7 @@
       "ngay_bd": "2026-02-01",
       "ngay_kt": "2026-02-28",
       "ngay_tao": "2026-04-01",
-      "tong": 7779200.0,
+      "ma_chi_nhanh_id": "CN01",
       "ma_tk": 4
     }
   },
@@ -2794,36 +2794,11 @@
   },
   {
     "model": "attendances.chamcong",
-    "pk": "CC00001",
-    "fields": {
-      "ma_nv": "NV00004",
-      "ngay_lam": "2026-02-08",
-      "gio_vao": "06:00:00",
-      "gio_ra": "12:00:00",
-      "so_gio_lam": 6.0,
-      "trang_thai": "Hoàn thành",
-      "ghi_chu": "Đúng giờ"
-    }
-  },
-  {
-    "model": "attendances.chamcong",
-    "pk": "CC00002",
-    "fields": {
-      "ma_nv": "NV00001",
-      "ngay_lam": "2026-02-08",
-      "gio_vao": "12:05:00",
-      "gio_ra": "17:00:00",
-      "so_gio_lam": 4.9,
-      "trang_thai": "Hoàn thành",
-      "ghi_chu": "Vào trễ 5p"
-    }
-  },
-  {
-    "model": "attendances.chamcong",
     "pk": "CC00003",
     "fields": {
       "ma_nv": "NV00012",
       "ngay_lam": "2026-02-08",
+      "ca_lam": "Tối",
       "gio_vao": "17:00:00",
       "gio_ra": "22:00:00",
       "so_gio_lam": 5.0,
@@ -2837,11 +2812,12 @@
     "fields": {
       "ma_nv": "NV00008",
       "ngay_lam": "2026-02-09",
+      "ca_lam": "Chiều",
       "gio_vao": "12:00:00",
       "gio_ra": "17:15:00",
       "so_gio_lam": 5.25,
       "trang_thai": "Hoàn thành",
-      "ghi_chu": "Tăng ca 15p"
+      "ghi_chu": "Tăng ca 15 phút"
     }
   },
   {
@@ -2850,11 +2826,12 @@
     "fields": {
       "ma_nv": "NV00015",
       "ngay_lam": "2026-02-10",
+      "ca_lam": "Sáng",
       "gio_vao": "06:10:00",
       "gio_ra": "12:00:00",
       "so_gio_lam": 5.8,
       "trang_thai": "Hoàn thành",
-      "ghi_chu": "Vào trễ 10p"
+      "ghi_chu": "Vào trễ 10 phút"
     }
   },
   {
@@ -2863,6 +2840,7 @@
     "fields": {
       "ma_nv": "NV00002",
       "ngay_lam": "2026-02-10",
+      "ca_lam": "Chiều",
       "gio_vao": "12:00:00",
       "gio_ra": "17:00:00",
       "so_gio_lam": 5.0,
@@ -2876,6 +2854,7 @@
     "fields": {
       "ma_nv": "NV00001",
       "ngay_lam": "2026-02-16",
+      "ca_lam": "Sáng",
       "gio_vao": "06:00:00",
       "gio_ra": "12:00:00",
       "so_gio_lam": 6.0,
@@ -2889,6 +2868,7 @@
     "fields": {
       "ma_nv": "NV00002",
       "ngay_lam": "2026-02-16",
+      "ca_lam": "Sáng",
       "gio_vao": "06:15:00",
       "gio_ra": "12:00:00",
       "so_gio_lam": 5.75,
@@ -2902,6 +2882,7 @@
     "fields": {
       "ma_nv": "NV00003",
       "ngay_lam": "2026-02-16",
+      "ca_lam": "Chiều",
       "gio_vao": "12:00:00",
       "gio_ra": "17:00:00",
       "so_gio_lam": 5.0,
@@ -2915,6 +2896,7 @@
     "fields": {
       "ma_nv": "NV00004",
       "ngay_lam": "2026-02-16",
+      "ca_lam": "Chiều",
       "gio_vao": "12:07:00",
       "gio_ra": "17:00:00",
       "so_gio_lam": 4.8,
@@ -2928,6 +2910,7 @@
     "fields": {
       "ma_nv": "NV00005",
       "ngay_lam": "2026-02-17",
+      "ca_lam": "Sáng",
       "gio_vao": "06:00:00",
       "gio_ra": "12:00:00",
       "so_gio_lam": 6.0,
@@ -2941,6 +2924,7 @@
     "fields": {
       "ma_nv": "NV00006",
       "ngay_lam": "2026-02-17",
+      "ca_lam": "Sáng",
       "gio_vao": "06:10:00",
       "gio_ra": "12:00:00",
       "so_gio_lam": 5.8,
@@ -2954,6 +2938,7 @@
     "fields": {
       "ma_nv": "NV00007",
       "ngay_lam": "2026-02-17",
+      "ca_lam": "Chiều",
       "gio_vao": "12:00:00",
       "gio_ra": "17:00:00",
       "so_gio_lam": 5.0,
@@ -2967,6 +2952,7 @@
     "fields": {
       "ma_nv": "NV00008",
       "ngay_lam": "2026-02-17",
+      "ca_lam": "Tối",
       "gio_vao": "17:20:00",
       "gio_ra": "22:00:00",
       "so_gio_lam": 4.6,
@@ -2980,6 +2966,7 @@
     "fields": {
       "ma_nv": "NV00009",
       "ngay_lam": "2026-02-18",
+      "ca_lam": "Sáng",
       "gio_vao": "06:00:00",
       "gio_ra": "12:00:00",
       "so_gio_lam": 6.0,
@@ -2993,6 +2980,7 @@
     "fields": {
       "ma_nv": "NV00010",
       "ngay_lam": "2026-02-18",
+      "ca_lam": "Chiều",
       "gio_vao": "12:05:00",
       "gio_ra": "17:00:00",
       "so_gio_lam": 4.9,
@@ -3006,6 +2994,7 @@
     "fields": {
       "ma_nv": "NV00011",
       "ngay_lam": "2026-02-18",
+      "ca_lam": "Tối",
       "gio_vao": "17:00:00",
       "gio_ra": "22:00:00",
       "so_gio_lam": 5.0,
@@ -3019,6 +3008,7 @@
     "fields": {
       "ma_nv": "NV00012",
       "ngay_lam": "2026-02-19",
+      "ca_lam": "Sáng",
       "gio_vao": "06:12:00",
       "gio_ra": "12:00:00",
       "so_gio_lam": 5.8,
@@ -3032,6 +3022,7 @@
     "fields": {
       "ma_nv": "NV00013",
       "ngay_lam": "2026-02-19",
+      "ca_lam": "Chiều",
       "gio_vao": "12:00:00",
       "gio_ra": "17:00:00",
       "so_gio_lam": 5.0,
@@ -3045,6 +3036,7 @@
     "fields": {
       "ma_nv": "NV00014",
       "ngay_lam": "2026-02-19",
+      "ca_lam": "Tối",
       "gio_vao": "17:00:00",
       "gio_ra": "22:00:00",
       "so_gio_lam": 5.0,
@@ -3052,25 +3044,14 @@
       "ghi_chu": "Đúng giờ"
     }
   },
-  {
-    "model": "attendances.chamcong",
-    "pk": "CC00037",
-    "fields": {
-      "ma_nv": "NV00015",
-      "ngay_lam": "2026-02-20",
-      "gio_vao": "06:00:00",
-      "gio_ra": "12:00:00",
-      "so_gio_lam": 6.0,
-      "trang_thai": "Hoàn thành",
-      "ghi_chu": "Đúng giờ"
-    }
-  },
+
   {
     "model": "attendances.chamcong",
     "pk": "CC00040",
     "fields": {
       "ma_nv": "NV00001",
       "ngay_lam": "2026-02-18",
+      "ca_lam": "Sáng",
       "gio_vao": "06:00:00",
       "gio_ra": "12:00:00",
       "so_gio_lam": 6.0,
@@ -3084,6 +3065,7 @@
     "fields": {
       "ma_nv": "NV00002",
       "ngay_lam": "2026-02-18",
+      "ca_lam": "Sáng",
       "gio_vao": "06:20:00",
       "gio_ra": "12:00:00",
       "so_gio_lam": 5.6,
@@ -3097,6 +3079,7 @@
     "fields": {
       "ma_nv": "NV00003",
       "ngay_lam": "2026-02-19",
+      "ca_lam": "Chiều",
       "gio_vao": "12:00:00",
       "gio_ra": "17:00:00",
       "so_gio_lam": 5.0,
@@ -3110,6 +3093,7 @@
     "fields": {
       "ma_nv": "NV00004",
       "ngay_lam": "2026-02-19",
+      "ca_lam": "Chiều",
       "gio_vao": "12:10:00",
       "gio_ra": "17:00:00",
       "so_gio_lam": 4.8,
@@ -3123,6 +3107,7 @@
     "fields": {
       "ma_nv": "NV00005",
       "ngay_lam": "2026-02-20",
+      "ca_lam": "Sáng",
       "gio_vao": "06:00:00",
       "gio_ra": "12:00:00",
       "so_gio_lam": 6.0,
@@ -3136,6 +3121,7 @@
     "fields": {
       "ma_nv": "NV00006",
       "ngay_lam": "2026-02-20",
+      "ca_lam": "Sáng",
       "gio_vao": "06:15:00",
       "gio_ra": "12:00:00",
       "so_gio_lam": 5.75,
@@ -3149,6 +3135,7 @@
     "fields": {
       "ma_nv": "NV00007",
       "ngay_lam": "2026-02-18",
+      "ca_lam": "Chiều",
       "gio_vao": "12:00:00",
       "gio_ra": "17:00:00",
       "so_gio_lam": 5.0,
@@ -3162,6 +3149,7 @@
     "fields": {
       "ma_nv": "NV00008",
       "ngay_lam": "2026-02-18",
+      "ca_lam": "Tối",
       "gio_vao": "17:05:00",
       "gio_ra": "22:00:00",
       "so_gio_lam": 4.9,
@@ -3175,6 +3163,7 @@
     "fields": {
       "ma_nv": "NV00009",
       "ngay_lam": "2026-02-19",
+      "ca_lam": "Sáng",
       "gio_vao": "06:00:00",
       "gio_ra": "12:00:00",
       "so_gio_lam": 6.0,
@@ -3188,6 +3177,7 @@
     "fields": {
       "ma_nv": "NV00010",
       "ngay_lam": "2026-02-19",
+      "ca_lam": "Chiều",
       "gio_vao": "12:30:00",
       "gio_ra": "17:00:00",
       "so_gio_lam": 4.5,
@@ -3201,6 +3191,7 @@
     "fields": {
       "ma_nv": "NV00011",
       "ngay_lam": "2026-02-20",
+      "ca_lam": "Tối",
       "gio_vao": "17:00:00",
       "gio_ra": "22:00:00",
       "so_gio_lam": 5.0,
@@ -3214,6 +3205,7 @@
     "fields": {
       "ma_nv": "NV00012",
       "ngay_lam": "2026-02-20",
+      "ca_lam": "Sáng",
       "gio_vao": "06:08:00",
       "gio_ra": "12:00:00",
       "so_gio_lam": 5.8,
@@ -3227,6 +3219,7 @@
     "fields": {
       "ma_nv": "NV00013",
       "ngay_lam": "2026-02-18",
+      "ca_lam": "Chiều",
       "gio_vao": "12:00:00",
       "gio_ra": "17:00:00",
       "so_gio_lam": 5.0,
@@ -3236,23 +3229,11 @@
   },
   {
     "model": "attendances.chamcong",
-    "pk": "CC00053",
-    "fields": {
-      "ma_nv": "NV00014",
-      "ngay_lam": "2026-02-19",
-      "gio_vao": "17:12:00",
-      "gio_ra": "22:00:00",
-      "so_gio_lam": 4.8,
-      "trang_thai": "Hoàn thành",
-      "ghi_chu": "Trễ 12 phút"
-    }
-  },
-  {
-    "model": "attendances.chamcong",
     "pk": "CC00054",
     "fields": {
       "ma_nv": "NV00015",
       "ngay_lam": "2026-02-20",
+      "ca_lam": "Sáng",
       "gio_vao": "06:00:00",
       "gio_ra": "12:00:00",
       "so_gio_lam": 6.0,

@@ -1,0 +1,107 @@
+/* Nền xám bao quanh modal */
+.contract-detail-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none; /* Đổi thành flex khi test */
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 0;
+    z-index: 2500;
+    overflow-y: auto;
+}
+
+.contract-detail-modal {
+    width: min(850px, 95%);
+    background: #f4f4f4;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Header xanh lá */
+.contract-top-header {
+    background: #174d17;
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-title { font-size: 16px; font-weight: 500; }
+
+.top-close-btn {
+    background: transparent; border: none; color: white;
+    font-size: 24px; cursor: pointer;
+}
+
+/* Thanh công cụ trắng */
+.contract-tool-bar {
+    background: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    font-size: 13px;
+}
+
+.btn-print {
+    padding: 5px 12px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+/* Tờ giấy trắng */
+.contract-paper {
+    background: white;
+    width: 90%;
+    margin: 25px auto;
+    padding: 50px 60px;
+    font-family: "Times New Roman", Times, serif;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.paper-header { text-align: center; margin-bottom: 30px; }
+.header-line { width: 120px; height: 1px; background: black; margin: 10px auto; }
+.paper-title { margin: 20px 0 5px; font-weight: bold; }
+
+.section-label { display: block; margin: 20px 0 10px; text-decoration: underline; }
+
+/* Dòng thông tin có chấm chấm */
+.contract-line {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 8px;
+}
+
+.contract-line span { font-weight: bold; min-width: fit-content; }
+
+.contract-line p, .contract-line strong {
+    flex: 1;
+    border-bottom: 1px dotted #aaa;
+    margin: 0;
+    padding-left: 10px;
+}
+
+.text-success { color: #28a745; border-bottom: none !important; }
+
+/* Chữ ký */
+.paper-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+    text-align: center;
+}
+
+.sig-name { margin-top: 70px; font-weight: bold; }
+
+/* CSS khi In */
+@media print {
+    body * { visibility: hidden; }
+    .contract-paper, .contract-paper * { visibility: visible; }
+    .contract-paper { position: absolute; left: 0; top: 0; width: 100%; margin: 0; box-shadow: none; }
+}

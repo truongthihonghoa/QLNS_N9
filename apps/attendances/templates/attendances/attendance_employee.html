@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chấm công theo ca - {{ nhan_vien.ho_ten }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'attendances/css/attendance_employee.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="employee-dashboard">
+    <!-- Header: Greeting & Clock -->
+    <header class="dashboard-header">
+        <div class="welcome-text">
+            <h1 style="color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Chào buổi sáng, {{ nhan_vien.ho_ten }}!</h1>
+            <p style="color: white; font-size: 16px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">
+                Vị trí: <strong>{{ nhan_vien.chuc_vu }}</strong> | Chi nhánh: <strong>{{ nhan_vien.ma_chi_nhanh.ten_chi_nhanh }}</strong>
+            </p>
+        </div>
+        <div class="clock-container" style="text-align: right;">
+            <h2 id="digital-clock" style="color: white; font-size: 42px; font-weight: 800; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">00:00:00</h2>
+            <p id="digital-date" style="color: rgba(255,255,255,0.9); font-weight: 600; margin: 0; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">Đang tải...</p>
+        </div>
+    </header>
+
+    <!-- Success/Error Messages -->
+    {% if messages %}
+        <div class="messages-container" style="margin-bottom: 30px;">
+            {% for message in messages %}
+                {% if "đăng nhập thành công" not in message.message|lower %}
+                    <div class="alert alert-{{ message.tags }}" style="padding: 15px; border-radius: 12px; background: {% if message.tags == 'success' %}#E8F5E9; color: #2E7D32;{% else %}#FFEBEE; color: #C62828;{% endif %} margin-bottom: 10px; font-weight: 600; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Shift Group Section -->
+    <section class="shift-group-section" style="background: var(--ge-white); border-radius: 20px; padding: 24px; box-shadow: var(--ge-shadow); margin-bottom: 40px; border-left: 5px solid var(--ge-primary);">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h2 style="font-size: 20px; font-weight: 800; color: var(--ge-secondary); margin: 0;">
+                Nhân viên trong ca: <span style="color: var(--ge-primary);">{{ ca_lam_title }}</span>
+            </h2>
+            <div style="background: #E8F5E9; color: var(--ge-primary); padding: 8px 16px; border-radius: 30px; font-weight: 700; font-size: 14px;">
+                <i class="fas fa-users"></i> {{ shift_attendance|length }} Nhân viên
+            </div>
+        </div>
+        
+        <div style="overflow-x: auto;">
+            <table class="history-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="text-align: left; border-bottom: 2px solid #F5F5F5;">
+                        <th style="padding: 12px; width: 50px;">STT</th>
+                        <th style="padding: 12px;">Họ tên</th>
+                        <th style="padding: 12px;">Giờ vào</th>
+                        <th style="padding: 12px;">Giờ ra</th>
+                        <th style="padding: 12px;">Ghi chú</th>
+                        <th style="padding: 12px; text-align: center;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in shift_attendance %}
+                        <tr class="{% if item.is_self %}self-row{% endif %}">
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white; background: {% if item.is_self %}var(--ge-primary){% else %}#8D6E63{% endif %}; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                        {{ item.ho_ten|slice:":1" }}
+                                    </div>
+                                    <div>
+                                        <span style="display: block; font-weight: 700; color: #333;">{{ item.ho_ten }}</span>
+                                        {% if item.is_self %}<small style="color: var(--ge-primary); font-weight: 700;">(Bạn)</small>{% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if item.attendance.gio_vao %}
+                                    <span style="color: var(--ge-success); font-weight: 700; font-size: 16px;">{{ item.attendance.gio_vao|time:"H:i" }}</span>
+                                {% else %}
+                                    <span style="color: #BBB; font-style: italic;">Chưa vào</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.attendance.gio_ra %}
+                                    <span style="color: var(--ge-secondary); font-weight: 700; font-size: 16px;">{{ item.attendance.gio_ra|time:"H:i" }}</span>
+                                {% else %}
+                                    <span style="color: #BBB; font-style: italic;">--:--</span>
+                                {% endif %}
+                            </td>
+                            <td style="font-size: 13px; color: #666; max-width: 150px;">
+                                {{ item.attendance.ghi_chu|default:"-" }}
+                            </td>
+                            <td style="text-align: center;">
+                                {% if item.is_self %}
+                                    {% if not item.attendance or not item.attendance.gio_vao %}
+                                        <form action="{% url 'attendance_checkin' %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="ge-btn-action checkin">
+                                                <i class="fas fa-sign-in-alt"></i> Check-in
+                                            </button>
+                                        </form>
+                                    {% elif not item.attendance.gio_ra %}
+                                        <form action="{% url 'attendance_checkout' %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="ge-btn-action checkout">
+                                                <i class="fas fa-sign-out-alt"></i> Check-out
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <span class="badge-status badge-success">Hoàn thành</span>
+                                    {% endif %}
+                                {% else %}
+                                    {% if item.attendance.gio_vao and not item.attendance.gio_ra %}
+                                        <span class="badge-status badge-working">Đang làm</span>
+                                    {% elif item.attendance.gio_ra %}
+                                        <span class="badge-status badge-success">Đã về</span>
+                                    {% else %}
+                                        <span class="badge-status" style="background: #EEE; color: #999;">Vắng</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 50px; color: #999;">
+                                <i class="fas fa-calendar-times" style="font-size: 48px; display: block; margin-bottom: 15px; opacity: 0.3;"></i>
+                                Không tìm thấy ai cùng ca làm việc với bạn hôm nay.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Personal Summary Card -->
+    <div style="background: var(--ge-secondary); border-radius: 20px; padding: 25px; color: white; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--ge-shadow);">
+        <div>
+            <h3 style="margin: 0; font-size: 15px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Tổng giờ làm tháng này</h3>
+            <p style="margin: 5px 0 0 0; font-size: 32px; font-weight: 800;">{{ total_hours_month }} Giờ</p>
+        </div>
+        <i class="fas fa-chart-line" style="font-size: 40px; opacity: 0.3;"></i>
+    </div>
+
+    <!-- History: Personal -->
+    <section class="history-section" style="background: white; border-radius: 20px; padding: 24px; box-shadow: var(--ge-shadow);">
+        <h2 style="font-size: 20px; font-weight: 700; color: var(--ge-secondary); margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #EEE;">
+            Lịch sử chấm công cá nhân
+        </h2>
+        <div style="overflow-x: auto;">
+            <table class="history-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="text-align: left; color: #888; font-size: 13px; text-transform: uppercase;">
+                        <th style="padding: 12px;">Ngày</th>
+                        <th style="padding: 12px;">Giờ vào</th>
+                        <th style="padding: 12px;">Giờ ra</th>
+                        <th style="padding: 12px;">Thời lượng</th>
+                        <th style="padding: 12px;">Ghi chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for at in self_attendances %}
+                        <tr>
+                            <td style="padding: 15px 12px; font-weight: 600;">{{ at.ngay_lam|date:"d/m/Y" }}</td>
+                            <td style="padding: 15px 12px; color: var(--ge-success);">{{ at.gio_vao|time:"H:i" }}</td>
+                            <td style="padding: 15px 12px; color: var(--ge-secondary);">{% if at.gio_ra %}{{ at.gio_ra|time:"H:i" }}{% else %}--:--{% endif %}</td>
+                            <td style="padding: 15px 12px; font-weight: 700;">{% if at.so_gio_lam %}{{ at.so_gio_lam }}h{% else %}-{% endif %}</td>
+                            <td style="padding: 15px 12px; font-size: 13px; color: #666;">{{ at.ghi_chu|default:"-" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 30px; color: #999;">Bạn chưa có dữ liệu lịch sử.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<style>
+    .history-table td {
+        padding: 16px 12px;
+        border-bottom: 1px solid #F5F5F5;
+        vertical-align: middle;
+    }
+    
+    .self-row td {
+        background-color: #F1F8E9 !important;
+    }
+    
+    .self-row td:first-child {
+        box-shadow: inset 4px 0 0 var(--ge-primary);
+    }
+    
+    .ge-btn-action {
+        padding: 10px 24px;
+        border-radius: 10px;
+        border: none;
+        font-family: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .ge-btn-action.checkin { background: var(--ge-primary); color: white; }
+    .ge-btn-action.checkout { background: var(--ge-secondary); color: white; }
+    .ge-btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+    .ge-btn-action:active { transform: translateY(0); }
+    
+    .badge-status {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-block;
+    }
+    .badge-success { background: #E8F5E9; color: var(--ge-success); }
+    .badge-working { background: #E3F2FD; color: #1565C0; animation: soft-pulse 2s infinite; }
+    
+    @keyframes soft-pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.7; }
+        100% { opacity: 1; }
+    }
+</style>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('digital-clock').textContent = `${hours}:${minutes}:${seconds}`;
+        
+        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        document.getElementById('digital-date').textContent = now.toLocaleDateString('vi-VN', options);
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+</script>
+{% endblock %}

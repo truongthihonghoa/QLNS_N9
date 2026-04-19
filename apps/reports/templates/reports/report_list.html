@@ -6,180 +6,7 @@
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <link rel="stylesheet" href="{% static 'reports/css/reports.css' %}?v=2.2">
-<style>
-    :root {
-        --ge-green-dark: #174D17;
-        --ge-green-light: #CDE0C9;
-        --border-color: #DADCE0;
-        --text-color: #333;
-    }
 
-    .report-management-container {
-        padding: 20px;
-        font-family: 'Montserrat', sans-serif;
-    }
-
-    /* Header Row: Branch filter + Create button */
-    .report-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-    }
-
-    .dropdown-ge {
-        background: white;
-        font-size: 18px;
-        padding: 0 15px;
-        height: 52px;
-        border-radius: 6px;
-        border: 1px solid var(--border-color);
-        min-width: 300px;
-        cursor: pointer;
-    }
-
-    .btn-create-report {
-        height: 52px;
-        padding: 0 24px;
-        background-color: var(--ge-green-dark);
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-weight: 600;
-        cursor: pointer;
-        font-size: 18px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: background 0.2s ease;
-    }
-
-    .btn-create-report:hover {
-        background-color: #1B5E20;
-    }
-
-    /* Table */
-    .ge-table-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        overflow-x: auto; /* Giữ cuộn ngang nếu bảng quá rộng */
-        width: 100%;
-        position: relative;
-    }
-
-    /* Tùy chỉnh thanh cuộn ngang cho bảng chính */
-    .ge-table-card::-webkit-scrollbar {
-        height: 8px;
-    }
-    .ge-table-card::-webkit-scrollbar-thumb {
-        background: #ccc;
-        border-radius: 10px;
-    }
-
-    .ge-main-table {
-        width: 100%;
-        min-width: 1100px;
-        border-collapse: collapse; /* Quay lại collapse nếu không dùng sticky header nội bộ */
-        table-layout: fixed;
-    }
-
-    .ge-main-table th, .ge-main-table td {
-        padding: 12px 15px; /* Giảm padding từ 20px xuống 12px */
-        text-align: left;
-        font-size: 15px;    /* Giảm font size từ 18px xuống 15px */
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        border-bottom: 1px solid #eee;
-    }
-
-    /* Định nghĩa độ rộng cố định cho từng cột bảng chính */
-    .ge-main-table th:nth-child(1), .ge-main-table td:nth-child(1) { width: 50px; text-align: center; }
-    .ge-main-table th:nth-child(2), .ge-main-table td:nth-child(2) { width: 120px; }
-    .ge-main-table th:nth-child(3), .ge-main-table td:nth-child(3) { width: auto; }
-    .ge-main-table th:nth-child(4), .ge-main-table td:nth-child(4) { width: 130px; }
-    .ge-main-table th:nth-child(5), .ge-main-table td:nth-child(5) { width: 140px; }
-    .ge-main-table th:nth-child(6), .ge-main-table td:nth-child(6) { width: 150px; }
-
-    .ge-main-table th {
-        background-color: var(--ge-green-dark);
-        color: white;
-        font-weight: 600;
-        border-bottom: 2px solid #143d14;
-    }
-
-    .ge-main-table td {
-        color: var(--text-color);
-    }
-
-    .ge-main-table tr:hover {
-        background-color: #f9f9f9;
-    }
-
-    /* Action buttons */
-    .action-buttons {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .btn-action-ge {
-        background: white;
-        border: 1px solid #333;
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-size: 16px;
-    }
-
-    .btn-view-ge { color: #174D17; border-color: #174D17; }
-    .btn-edit-ge { color: #f59e0b; border-color: #f59e0b; }
-    .btn-excel-ge { color: white; background-color: #174D17; border-color: #174D17; }
-
-    /* Search bar */
-    .search-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .search-input-ge {
-        height: 52px;
-        padding: 0 15px;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        font-size: 18px;
-        outline: none;
-        min-width: 280px;
-    }
-
-    .btn-search-ge {
-        height: 52px;
-        padding: 0 20px;
-        background-color: var(--ge-green-dark);
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 18px;
-        font-weight: 600;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: background 0.2s ease;
-    }
-
-    .btn-search-ge:hover {
-        background-color: #1B5E20;
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -187,8 +14,21 @@
 
     <!-- Toolbar: Branch filter + Search + Create button -->
     <div class="report-toolbar">
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <!-- Branch dropdown -->
+        <div class="report-row">
+            <form method="GET" action="{% url 'reports:report_list' %}" class="search-row">
+                <input type="hidden" name="branch" value="{{ selected_branch }}">
+                <input type="text" name="q" placeholder="Tìm kiếm báo cáo..." value="{{ q }}">
+            </form>
+
+            <div class="button-group">
+                <button type="submit" form="search-form" class="btn-search-ge">Tìm kiếm</button>
+
+                <button class="btn-create-report" id="btn-create-report">
+                    <i class="fas fa-plus" style="margin-right: 8px;"></i> Tạo báo cáo
+                </button>
+            </div>
+        </div>
+        <div class="toolbar-row">
             <form method="GET" action="{% url 'reports:report_list' %}" id="branch-form">
                 <input type="hidden" name="q" value="{{ q }}">
                 <select name="branch" class="dropdown-ge" onchange="this.form.submit()">
@@ -200,18 +40,7 @@
                     {% endfor %}
                 </select>
             </form>
-
-            <!-- Search form -->
-            <form method="GET" action="{% url 'reports:report_list' %}" class="search-row">
-                <input type="hidden" name="branch" value="{{ selected_branch }}">
-                <input type="text" name="q" class="search-input-ge" placeholder="Nhập mã báo cáo..." value="{{ q }}">
-                <button type="submit" class="btn-search-ge">Tìm kiếm</button>
-            </form>
         </div>
-
-        <button class="btn-create-report" id="btn-create-report">
-            <i class="fas fa-plus"></i> Tạo báo cáo
-        </button>
     </div>
 
     <!-- Reports Table -->
@@ -238,7 +67,7 @@
                     <td>
                         <div class="action-buttons">
                             <button type="button" class="btn-action-ge btn-view-ge" title="Xem"><i class="fas fa-eye"></i></button>
-                            <button type="button" class="btn-action-ge btn-edit-ge" title="Sửa"><i class="fas fa-edit"></i></button>
+                            <button type="button" class="btn-action-ge btn-edit-ge" title="Sửa"><i class="fas fa-pen"></i></button>
                             <button type="button" class="btn-action-ge btn-excel-ge" title="Xuất Excel"><i class="fas fa-file-excel"></i></button>
                         </div>
                     </td>
@@ -630,7 +459,7 @@
           body: JSON.stringify({ start_date: start, end_date: end, branch_id: branchId })
         });
         const result = await response.json();
-        
+
         if (result.status === 'success') {
           renderTable(tbodyId, result.data);
           if(callback) callback(result.data);
@@ -684,7 +513,7 @@
 
         const start = startDateInput.value;
         const end = endDateInput.value;
-        
+
         try {
           const res = await fetch('/reports/api/save/', {
             method: 'POST',
@@ -715,17 +544,17 @@
 
     if (mainTableBody) {
       mainTableBody.addEventListener('click', async function (e) {
-        
+
         // Xem
         if (e.target.closest('.btn-view-ge')) {
           const row = e.target.closest('tr');
           const reportId = row.getAttribute('data-report-id');
           const dates = row.cells[2].textContent.trim().split(' - ');
-          
+
           document.getElementById('view-start-date').value = parseDateToISO(dates[0]);
           document.getElementById('view-end-date').value = parseDateToISO(dates[1]);
           document.getElementById('popup-view').style.display = 'flex';
-          
+
           document.getElementById('view-report-body').innerHTML = `<tr><td colspan="6" class="empty-state-row">Đang tải dữ liệu...</td></tr>`;
 
           try {
@@ -736,13 +565,13 @@
             }
           } catch(e) {}
         }
-        
+
         // Sửa
         if (e.target.closest('.btn-edit-ge')) {
           const row = e.target.closest('tr');
           const reportId = row.getAttribute('data-report-id');
           const dates = row.cells[2].textContent.trim().split(' - ');
-          
+
           document.getElementById('edit-start-date').value = parseDateToISO(dates[0]);
           document.getElementById('edit-end-date').value = parseDateToISO(dates[1]);
           document.getElementById('popup-edit').style.display = 'flex';
@@ -750,7 +579,7 @@
 
           window.currentEditingRow = row;
           window.currentEditingId = reportId;
-          
+
           try {
             const res = await fetch(`/reports/api/get/${reportId}/`);
             const data = await res.json();
@@ -766,10 +595,10 @@
         if (e.target.closest('.btn-excel-ge')) {
           const downloadPopup = document.getElementById('popup-downloading');
           const successPopup = document.getElementById('popup-success');
-          
+
           if (downloadPopup) {
             downloadPopup.style.display = 'flex';
-            
+
             // Giả lập thời gian tải xuống
             setTimeout(() => {
               downloadPopup.style.display = 'none';
@@ -819,14 +648,14 @@
 
       const start = document.getElementById('edit-start-date').value;
       const end = document.getElementById('edit-end-date').value;
-      
+
       try {
           const res = await fetch('/reports/api/save/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                start_date: start, 
-                end_date: end, 
+            body: JSON.stringify({
+                start_date: start,
+                end_date: end,
                 report_data: window.editReportData,
                 report_id: window.currentEditingId
             })

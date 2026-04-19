@@ -5,6 +5,81 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'requests/css/request_review.css' %}">
+    <style>
+        /* Nhúng trực tiếp để đảm bảo ghi đè hoàn toàn và đồng bộ với Lịch làm việc */
+        .request-page {
+            font-family: "Montserrat", sans-serif !important;
+        }
+
+        .request-table-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #e8ecef;
+        }
+
+        .request-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .request-table th {
+            background: rgba(23, 77, 23, 0.88);
+            color: #fff;
+            text-align: left !important;
+            padding: 22px 16px;
+            font: 700 20px "Montserrat", sans-serif !important;
+            white-space: nowrap;
+            text-transform: capitalize !important;
+            letter-spacing: -0.01em;
+        }
+
+        /* Padding cho cột đầu tiên đồng bộ với Lịch làm việc */
+        .request-table th:first-child,
+        .request-table td:first-child {
+            padding-left: 30px !important;
+        }
+
+        .request-table td {
+            padding: 20px 16px;
+            border-bottom: 1px solid #ececec;
+            font: 700 19px "Montserrat", sans-serif !important;
+            background: #fff;
+            text-align: left !important;
+            color: #1a1a1a;
+            letter-spacing: -0.01em;
+            vertical-align: middle;
+        }
+
+        .request-table tbody tr:nth-child(even) td {
+            background: #f4f7f4;
+        }
+
+        .request-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 110px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font: 700 16px "Montserrat", sans-serif !important;
+        }
+
+        .request-action-cell {
+            text-align: left !important;
+        }
+
+        /* Đồng bộ cả ô tìm kiếm */
+        .request-search-box input {
+            font: 700 18px "Montserrat", sans-serif !important;
+            letter-spacing: -0.01em;
+        }
+
+        .request-type-label {
+            font-weight: 700 !important;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
