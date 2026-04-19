@@ -11,6 +11,7 @@
 
 {% block content %}
 <section class="employee-page">
+    {% if role != 'Nhân viên' %}
     <form method="get" class="employee-toolbar">
         <label class="employee-search" for="employee-search-input">
             <i class="fas fa-search" style="color: #666; opacity: 0.6;"></i>
@@ -27,6 +28,7 @@
         </div>
         <a href="{% url 'employee_add' %}" class="toolbar-btn toolbar-btn-add">+ Thêm</a>
     </form>
+    {% endif %}
 
     <div class="employee-board employee-board-rounded">
         {% if employee_cards %}

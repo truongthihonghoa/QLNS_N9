@@ -16,6 +16,7 @@
 {% block content %}
 <div class="contract-page">
     <section class="contract-list-section" id="contract-list-section">
+        {% if role != 'Nhân viên' %}
         <div class="contract-toolbar">
             <label class="contract-search" for="contract-search-input">
                 <input type="text" id="contract-search-input" placeholder="Nhập tên nhân viên">
@@ -31,6 +32,7 @@
             </div>
             <a href="{% url 'contract_add' %}" class="contract-add-btn">+ Thêm</a>
         </div>
+        {% endif %}
 
         <div class="contract-table-card">
             <table class="contract-table">
@@ -85,12 +87,14 @@
                             >
                                 <i class="fas fa-eye"></i>
                             </button>
+                            {% if role != 'Nhân viên' %}
                             <a href="{% url 'contract_edit' contract_id=contract.ma_hd %}" class="contract-icon-btn edit-btn" title="Chỉnh sửa">
                                 <i class="fas fa-pen"></i>
                             </a>
                             <button type="button" class="contract-icon-btn delete-btn" data-delete-id="{{ contract.ma_hd }}" data-end-date="{{ contract.ngay_kt }}" title="Xóa">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}

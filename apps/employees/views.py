@@ -77,22 +77,32 @@ def _build_employee_cards(queryset):
 
 
 def employee_list_view(request):
+    role = request.session.get("role", "Nhân viên")
     search_query = request.GET.get("q", "").strip()
     branch_filter = request.GET.get("branch", "").strip()
-    
-    employees = NhanVien.objects.select_related("ma_chi_nhanh").order_by("ma_nv")
-    
-    if branch_filter:
-        employees = employees.filter(ma_chi_nhanh_id=branch_filter)
 
-    if search_query:
-        employees = employees.filter(
-            Q(ho_ten__icontains=search_query)
-            | Q(ma_nv__icontains=search_query)
-            | Q(sdt__icontains=search_query)
-            | Q(chuc_vu__icontains=search_query)
-            | Q(ma_chi_nhanh__ten_chi_nhanh__icontains=search_query)
-        )
+    employees = NhanVien.objects.select_related("ma_chi_nhanh").order_by("ma_nv")
+
+    if role == "Nhân viên":
+        # Nhân viên chỉ thấy chính mình
+        try:
+            user_ma_nv = request.user.taikhoan.ma_nv.ma_nv
+            employees = employees.filter(ma_nv=user_ma_nv)
+        except Exception:
+            employees = employees.none()
+    else:
+        # Chủ và Quản lý thấy tất cả theo bộ lọc
+        if branch_filter:
+            employees = employees.filter(ma_chi_nhanh_id=branch_filter)
+
+        if search_query:
+            employees = employees.filter(
+                Q(ho_ten__icontains=search_query)
+                | Q(ma_nv__icontains=search_query)
+                | Q(sdt__icontains=search_query)
+                | Q(chuc_vu__icontains=search_query)
+                | Q(ma_chi_nhanh__ten_chi_nhanh__icontains=search_query)
+            )
 
     context = {
         "employee_cards": _build_employee_cards(employees),
@@ -100,11 +110,17 @@ def employee_list_view(request):
         "employee_count": employees.count(),
         "branches": ChiNhanh.objects.all(),
         "current_branch": branch_filter,
+        "role": role,
     }
     return render(request, "employees/employee_list.html", context)
 
 
 def employee_add_view(request):
+    role = request.session.get("role", "Nhân viên")
+    if role == "Nhân viên":
+        messages.error(request, "Bạn không có quyền thực hiện chức năng này.")
+        return redirect("employee_list")
+
     if request.method == "POST":
         form = EmployeeCreateForm(request.POST, request.FILES)
         if form.is_valid():
@@ -123,6 +139,18 @@ def employee_add_view(request):
 
 
 def employee_detail_view(request, employee_id):
+    role = request.session.get("role", "Nhân viên")
+
+    # Kiểm tra quyền: Nhân viên chỉ được xem chính mình
+    if role == "Nhân viên":
+        try:
+            user_ma_nv = request.user.taikhoan.ma_nv.ma_nv
+            if user_ma_nv != employee_id:
+                messages.error(request, "Bạn không có quyền xem thông tin của nhân viên khác.")
+                return redirect("employee_list")
+        except Exception:
+            return redirect("employee_list")
+
     employee = get_object_or_404(
         NhanVien.objects.select_related("ma_chi_nhanh", "ma_chi_nhanh__ma_nv_ql"),
         pk=employee_id,
@@ -134,11 +162,17 @@ def employee_detail_view(request, employee_id):
         "manager_name": manager.ho_ten if manager else "",
         "initials": "".join(word[0] for word in words[:2]).upper() if words else "NV",
         "image_url": employee.anh_dai_dien.url if employee.anh_dai_dien else "",
+        "role": role,
     }
     return render(request, "employees/employee_detail.html", context)
 
 
 def employee_edit_view(request, employee_id):
+    role = request.session.get("role", "Nhân viên")
+    if role == "Nhân viên":
+        messages.error(request, "Bạn không có quyền thực hiện chức năng này.")
+        return redirect("employee_detail", employee_id=employee_id)
+
     employee = get_object_or_404(NhanVien, pk=employee_id)
     form = EmployeeUpdateForm(request.POST or None, request.FILES or None, instance=employee)
 

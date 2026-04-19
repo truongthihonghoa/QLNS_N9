@@ -98,7 +98,9 @@
 
                 <div class="form-actions">
                     <a href="{% url 'employee_list' %}" class="detail-btn detail-btn-muted">Hủy</a>
+                    {% if role != 'Nhân viên' %}
                     <a href="{% url 'employee_edit' employee_id=employee.ma_nv %}" class="detail-btn detail-btn-primary">Chỉnh sửa</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
