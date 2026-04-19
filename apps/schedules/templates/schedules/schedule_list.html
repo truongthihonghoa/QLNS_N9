@@ -8,283 +8,697 @@
 <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
 <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
 <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}">
+<!-- FullCalendar CSS -->
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+<!-- Redesign CSS -->
+<link rel="stylesheet" href="{% static 'css/schedules/calendar_redesign.css' %}">
 
 <style>
-    .schedule-page-container {
-        padding: 20px 0;
-        min-height: 100vh;
-        font-family: "Montserrat", sans-serif;
+    /* Premium overrides */
+    #calendar .fc-header-toolbar {
+        display: none !important;
+        /* We use our custom toolbar for the main calendar */
     }
 
-    /* Toolbar Styling */
-    .schedule-toolbar {
-        display: flex;
-        gap: 15px;
-        align-items: center;
-        margin-bottom: 20px;
+    /* Fix stacking context for modals */
+    .main-content {
+        z-index: auto !important;
     }
-
-    .search-box {
-        display: flex;
-        gap: 8px;
-        flex: 1;
-    }
-
-    .search-box input {
-        flex: 1;
-        height: 52px;
-        border: 1px solid #dadce0;
-        border-radius: 10px;
-        padding: 0 18px;
-        background: #ffffff;
-        font: 600 18px "Montserrat", sans-serif;
-        box-sizing: border-box;
-        letter-spacing: -0.01em;
-    }
-
-    .filter-select {
-        height: 52px;
-        border: 1px solid #dadce0;
-        border-radius: 10px;
-        padding: 0 15px;
-        background: #ffffff;
-        font: 600 18px "Montserrat", sans-serif;
-        width: 200px;
-        outline: none;
-        cursor: pointer;
-        letter-spacing: -0.01em;
-    }
-
-    /* Actions Bar */
-    .schedule-actions-bar {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        margin-bottom: 25px;
-    }
-
-    .btn-group {
-        display: flex;
-        gap: 15px;
-    }
-
-    .btn-action {
-        height: 52px;
-        width: 200px;
-        border-radius: 10px;
-        border: none;
-        font: 700 18px "Montserrat", sans-serif;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        transition: all 0.2s;
-        text-decoration: none;
-    }
-
-    .btn-add { background: rgba(23, 77, 23, 0.87); color: white; }
-    .btn-notify { background: #28a745; color: white; }
-
-    /* Table Styling */
-    .request-table-card {
-        background: transparent;
-        border-radius: 14px;
-        overflow: hidden;
-    }
-
-    .request-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .request-table th {
-        background: rgba(23, 77, 23, 0.88);
-        color: #fff;
-        font: 600 20px "Montserrat", sans-serif;
-        padding: 22px 16px;
-        text-align: left;
-        text-transform: capitalize;
-        letter-spacing: -0.01em;
-    }
-
-    /* Padding cho cột đầu tiên */
-    .request-table th:first-child,
-    .request-table td:first-child {
-        padding-left: 30px;
-    }
-
-    .request-table tbody tr:nth-child(odd) { background: #ebe7e4; }
-    .request-table tbody tr:nth-child(even) { background: rgba(243, 240, 238, 0.93); }
-
-    .request-table td {
-        padding: 22px 16px;
-        text-align: left;
-        font: 600 19px "Montserrat", sans-serif;
-        color: #1a1a1a;
-        vertical-align: middle;
-        letter-spacing: -0.01em;
-    }
-
-    .badge {
-        padding: 0;
-        border-radius: 0;
-        font-size: 19px;
-        font-weight: 700;
-        display: inline-block;
-        text-transform: none !important;
-        background-color: transparent !important;
-        font-family: "Montserrat", sans-serif;
-    }
-    .badge-cho-gui { color: #C58B00; }
-    .badge-cho-xac-nhan { color: #E53935; }
-    .badge-da-gui, .badge-da-xep-lich { color: #008000; }
-
-    /* --- ACTION BUTTONS --- */
-    .action-buttons {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-start;
-        align-items: center;
-    }
-
-    .btn-action-ge {
-        background: white !important;
-        border: 1.5px solid #000 !important;
-        width: 42px !important;
-        height: 42px !important;
-        border-radius: 50% !important;
-        display: inline-flex !important;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-size: 18px !important;
-        padding: 0 !important;
-        text-decoration: none !important;
-    }
-
-    .btn-edit-ge { color: #000 !important; }
-    .btn-edit-ge:hover { background-color: #000 !important; color: white !important; }
-
-    .btn-delete-ge { color: #dc3545 !important; }
-    .btn-delete-ge:hover { background-color: #dc3545 !important; color: white !important; border-color: #dc3545 !important; }
-
 </style>
+
 {% endblock %}
 
 {% block content %}
-<div class="schedule-page-container">
-    <!-- 1. TOOLBAR ON TOP (Search & Filters) -->
-    <div class="schedule-toolbar">
-        <div class="search-box">
-            <input type="text" id="schedule-search" placeholder="Nhập tên nhân viên, mã lịch..." oninput="filterTable()">
+<!-- 1. Custom Toolbar (Premium Style) -->
+<div class="odoo-toolbar">
+    <div class="toolbar-left-section" style="display: flex; align-items: center; gap: 20px;">
+        <div class="toolbar-left">
+            <a href="{% url 'schedule_create' %}" class="btn-premium"><i class="fas fa-plus"></i> TẠO LỊCH</a>
         </div>
 
-        <select class="filter-select" id="branch-filter" onchange="applyFilters()">
-            <option value="all" {% if selected_branch == 'all' %}selected{% endif %}>Tất cả chi nhánh</option>
-            {% for branch in branches %}
-                <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>
-                    {{ branch.ten_chi_nhanh }}
+        <div class="toolbar-nav-group" style="display: flex; align-items: center; gap: 10px;">
+            <div style="display: flex; background: #F3F4F6; border-radius: 50px; padding: 4px;">
+                <button class="btn-premium-nav" onclick="calendar.prev()"><i class="fas fa-chevron-left"></i></button>
+
+                <div class="dropdown" style="position: relative;">
+                    <button class="btn-premium-nav" id="current-view-label"
+                        style="min-width: 80px; text-transform: uppercase;">TUẦN</button>
+                    <div class="dropdown-content" style="min-width: 120px; border-radius: 12px; top: 110%;">
+                        <a href="#" onclick="calendar.changeView('timeGridDay'); return false;">Ngày</a>
+                        <a href="#" onclick="calendar.changeView('timeGridWeek'); return false;">Tuần</a>
+                        <a href="#" onclick="calendar.changeView('dayGridMonth'); return false;">Tháng</a>
+                    </div>
+                </div>
+
+                <button class="btn-premium-nav" onclick="calendar.next()"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <button class="btn-premium-nav" onclick="calendar.today()"
+                style="padding: 10px 20px !important; background: var(--primary-green) !important; color: white !important;">HÔM
+                NAY</button>
+        </div>
+    </div>
+
+    <div class="toolbar-right-section" style="display: flex; align-items: center; gap: 25px;">
+        <div class="branch-filter-pill">
+            <select id="branch-filter" onchange="filterCalendar()">
+                <option value="all">TẤT CẢ CHI NHÁNH</option>
+                {% for branch in branches %}
+                <option value="{{ branch.ten_chi_nhanh }}" {% if selected_branch == branch.ten_chi_nhanh %}selected{% endif %}>
+                    {{ branch.ten_chi_nhanh|upper }}
                 </option>
-            {% endfor %}
-        </select>
-
-        <select class="filter-select" id="status-filter" onchange="applyFilters()">
-            <option value="all" {% if selected_status == 'all' %}selected{% endif %}>Tất cả trạng thái</option>
-            <option value="Chờ gửi" {% if selected_status == 'Chờ gửi' %}selected{% endif %}>Chờ gửi</option>
-            <option value="Chờ xác nhận" {% if selected_status == 'Chờ xác nhận' %}selected{% endif %}>Chờ xác nhận</option>
-            <option value="Đã xếp lịch" {% if selected_status == 'Đã xếp lịch' %}selected{% endif %}>Đã xếp lịch</option>
-        </select>
-    </div>
-
-    <!-- 2. ACTIONS BAR BELOW TOOLBAR (Buttons) -->
-    <div class="schedule-actions-bar">
-        <div class="btn-group">
-            <button type="button" class="btn-action btn-notify" onclick="handleSendNotifications()">
-                <i class="fas fa-paper-plane"></i> Gửi thông báo
-            </button>
-            <a href="{% url 'schedule_create' %}" class="btn-action btn-add">
-                <i class="fas fa-plus"></i> Tạo lịch làm việc
-            </a>
-        </div>
-    </div>
-
-    <!-- 3. TABLE -->
-    <div class="request-table-card">
-        <table class="request-table" id="requestTable">
-            <thead>
-                <tr>
-                    <th style="width: 50px;"><input type="checkbox" id="select-all" style="width: 20px; height: 20px;" onclick="toggleSelectAll(this)"></th>
-                    <th>Mã lịch</th>
-                    <th>Nhân viên</th>
-                    <th>Chi nhánh</th>
-                    <th>Ngày làm</th>
-                    <th>Khung giờ</th>
-                    <th>Trạng thái</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody id="schedule-tbody">
-                {% for item in schedules %}
-                <tr class="schedule-row" data-status="{{ item.trang_thai }}" data-branch="{{ item.ten_chi_nhanh }}">
-                    <td>
-                        {% if item.trang_thai == 'Chờ gửi' %}
-                        <input type="checkbox" class="schedule-checkbox" value="{{ item.ma_llv }}" style="width: 20px; height: 20px;">
-                        {% endif %}
-                    </td>
-                    <td>{{ item.ma_llv }}</td>
-                    <td>{{ item.ten_nv }}</td>
-                    <td>{{ item.ten_chi_nhanh }}</td>
-                    <td>{{ item.ngay_lam }}</td>
-                    <td>{{ item.khung_gio }}</td>
-                    <td>
-                        <span class="badge
-                            {% if item.trang_thai == 'Chờ gửi' %}badge-cho-gui
-                            {% elif item.trang_thai == 'Chờ xác nhận' %}badge-cho-xac-nhan
-                            {% elif item.trang_thai == 'Đã gửi' or item.trang_thai == 'Đã xếp lịch' %}badge-da-xep-lich
-                            {% endif %}">
-                            {{ item.trang_thai }}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="{% url 'schedule_edit' item.ma_llv %}" class="btn-action-ge btn-edit-ge" title="Chỉnh sửa">
-                                <i class="fas fa-pen"></i>
-                            </a>
-                            <button type="button" onclick="openDeletePopup('{{ item.ma_llv }}')" class="btn-action-ge btn-delete-ge" title="Xóa">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
                 {% endfor %}
-            </tbody>
-        </table>
+            </select>
+        </div>
 
-        <div id="no-results" style="display: none; text-align: center; padding: 50px; font: 600 20px Montserrat; color: #888;">
-            Không tìm thấy lịch làm việc nào phù hợp.
+        <div class="toolbar-actions" style="display: flex; align-items: center; gap: 10px;">
+            <div class="search-input-pill">
+                <i class="fas fa-search"></i>
+                <input type="text" id="schedule-search" placeholder="Tìm kiếm tên..." oninput="filterCalendar()">
+            </div>
+
+            <button class="btn-premium" onclick="filterCalendar()">
+                <i class="fas fa-search"></i> TÌM KIẾM
+            </button>
+
+            <button class="btn-premium" onclick="handleSendNotifications()"
+                style="background: #28a745 !important; margin-left: 5px;">
+                <i class="fas fa-paper-plane"></i> GỬI THÔNG BÁO
+            </button>
         </div>
     </div>
 </div>
+
+
+
+<div class="schedule-layout">
+    <!-- 2. MAIN CALENDAR AREA -->
+    <div class="calendar-main">
+        <div id="calendar" style="padding: 20px;"></div>
+    </div>
+
+    <!-- 3. SIDEBAR -->
+    <div class="calendar-sidebar">
+        <div class="sidebar-section">
+            <div id="mini-calendar"></div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">
+                <span><i class="fas fa-users"></i> NHÂN VIÊN</span>
+                <button class="btn-outline-green" onclick="selectAllEmployees()">TẤT CẢ</button>
+            </div>
+            <ul class="staff-list" id="attendee-list">
+                <!-- Populated by JS -->
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal Chi tiết sự kiện (Improved Odoo Style - Green Theme) -->
+<div id="eventModal" class="odoo-modal">
+    <div class="odoo-modal-content">
+        <div class="odoo-modal-header">
+            <h3 id="modalTitle">Chi tiết ca làm việc</h3>
+            <span class="odoo-modal-close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="odoo-modal-body">
+            <div class="modal-info-item">
+                <i class="fas fa-calendar-day"></i>
+                <span id="modalDate"></span>
+            </div>
+            <div class="modal-info-item">
+                <i class="fas fa-clock"></i>
+                <span id="modalShift"></span>
+            </div>
+            <div class="modal-info-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span id="modalBranch"></span>
+            </div>
+            <div class="modal-divider"></div>
+            <div id="modalEmployeeList" class="employee-list-container">
+                <!-- Populated by JS -->
+            </div>
+            <div id="modalStatusTag" class="modal-status-tag"></div>
+        </div>
+        <div class="odoo-modal-footer">
+            <a id="btnEditEvent" href="#" class="btn-modal-edit">Chỉnh sửa</a>
+            <button id="btnDeleteEvent" class="btn-modal-delete">Xóa ca làm</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Gửi thông báo (Table View - UC 4.4) -->
+<div id="notificationTableModal" class="odoo-modal">
+    <div class="odoo-modal-content"
+        style="max-width: 900px; width: 95%; border: none; overflow: hidden; border-radius: 20px;">
+        <div class="odoo-modal-header" style="background: var(--primary-green); padding: 25px 30px; border: none;">
+            <h3 style="color: #FFFFFF; font-weight: 800; font-size: 20px; letter-spacing: 0.5px;">GỬI THÔNG BÁO LỊCH LÀM
+                VIỆC</h3>
+            <span class="odoo-modal-close" onclick="closeNotificationModal()"
+                style="color: rgba(255,255,255,0.8);">&times;</span>
+        </div>
+        <div class="odoo-modal-body" style="padding: 0; background: #FFFFFF;">
+            <div class="notification-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px; text-align: center;">
+                                <input type="checkbox" id="selectAllNotifications" onchange="toggleAllCheckboxes(this)">
+                            </th>
+                            <th>NỘI DUNG LỊCH LÀM</th>
+                            <th style="width: 160px; text-align: center;">TRẠNG THÁI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="notificationTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="odoo-modal-footer"
+            style="padding: 25px 30px; background: #F9FAFB; border-top: 1px solid #E5E7EB; justify-content: flex-end;">
+            <button class="btn-modal-delete" onclick="closeNotificationModal()"
+                style="flex: none; min-width: 120px; height: 48px; border-radius: 12px; font-weight: 700;">HUỶ</button>
+            <button id="btnConfirmSend" class="btn-modal-edit btn-confirm-send" onclick="confirmSendNotifications()"
+                style="flex: none; min-width: 240px; height: 48px; border-radius: 12px; font-weight: 800; font-size: 15px;">
+                <i class="fas fa-paper-plane" style="margin-right: 10px;"></i> GỬI THÔNG BÁO (<span
+                    id="selectedCount">0</span>)
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Data -->
+<script id="schedules-data" type="application/json">
+[
+    {% for item in schedules %}
+    {
+        "ma_llv": "{{ item.ma_llv|escapejs }}",
+        "ten_nv": "{{ item.ten_nv|escapejs }}",
+        "chuc_vu": "{{ item.chuc_vu|escapejs }}",
+        "ten_chi_nhanh": "{{ item.ten_chi_nhanh|escapejs }}",
+        "ngay_lam": "{{ item.ngay_lam|escapejs }}",
+        "khung_gio": "{{ item.khung_gio|escapejs }}",
+        "trang_thai": "{{ item.trang_thai|escapejs }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+</script>
 
 <!-- Includes -->
 {% include 'partials/popup_confirm_delete.html' %}
 {% include 'partials/popup_error.html' %}
 {% include 'partials/toast_notification.html' %}
 
+<!-- Scripts -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/vi.js'></script>
+
 <script>
+    let calendar;
+    let miniCalendar;
     let currentDeleteId = '';
 
-    function toggleSelectAll(master) {
-        const checkboxes = document.querySelectorAll('.schedule-checkbox');
-        checkboxes.forEach(cb => cb.checked = master.checked);
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+        const miniCalendarEl = document.getElementById('mini-calendar');
+        const schedulesData = JSON.parse(document.getElementById('schedules-data').textContent);
+
+        // Prepare Attendees for Sidebar AND Group events by Shift
+        const attendees = {};
+        const shiftGroups = {};
+
+        schedulesData.forEach(function (item) {
+            const parts = item.ngay_lam.split('/');
+            const dateStr = parts[2] + '-' + parts[1].padStart(2, '0') + '-' + parts[0].padStart(2, '0');
+
+            // Normalize normalization to avoid side-by-side splitting
+            const normalizedShift = item.khung_gio.trim().toUpperCase();
+            const normalizedBranch = item.ten_chi_nhanh.trim().toUpperCase();
+            const shiftKey = `${dateStr}_${normalizedShift}_${normalizedBranch}`;
+
+            // Collect unique attendees for sidebar
+            if (!attendees[item.ten_nv]) {
+                attendees[item.ten_nv] = {
+                    name: item.ten_nv,
+                    initials: item.ten_nv.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
+                    color: stringToColor(item.ten_nv)
+                };
+            }
+
+            // Group by Shift
+            if (!shiftGroups[shiftKey]) {
+                shiftGroups[shiftKey] = {
+                    id: item.ma_llv, // Use first one as ID
+                    dateStr: dateStr,
+                    khung_gio: item.khung_gio,
+                    chi_nhanh: item.ten_chi_nhanh,
+                    trang_thai: item.trang_thai,
+                    ngay_lam: item.ngay_lam,
+                    employees: []
+                };
+            }
+            shiftGroups[shiftKey].employees.push({
+                id: item.ma_llv,
+                name: item.ten_nv,
+                chuc_vu: item.chuc_vu,
+                status: item.trang_thai
+            });
+        });
+
+        const events = Object.values(shiftGroups).map(function (group) {
+            let bgColor = '#EBF5FF'; // Default Blue (6-12h)
+            let borderColor = '#3B82F6';
+            let textColor = '#1E40AF';
+
+            if (group.khung_gio.includes('12:00 - 17:00')) {
+                bgColor = '#F0FDF4'; // Green (12-17h)
+                borderColor = '#22C55E';
+                textColor = '#166534';
+            } else if (group.khung_gio.includes('17:00 - 22:00')) {
+                bgColor = '#FFFBEB'; // Yellow/Amber (17-22h)
+                borderColor = '#F59E0B';
+                textColor = '#92400E';
+            }
+
+            const timeParts = group.khung_gio.split(' - ');
+            const startTime = (timeParts[0] || "08:00").trim();
+            const endTime = (timeParts[1] || "12:00").trim();
+
+            let className = 'shift-morning';
+            if (group.khung_gio.includes('12:00 - 17:00')) {
+                className = 'shift-afternoon';
+            } else if (group.khung_gio.includes('17:00 - 22:00')) {
+                className = 'shift-evening';
+            }
+
+            return {
+                id: group.id,
+                title: group.employees.map(e => e.name).join(', '),
+                start: group.dateStr + 'T' + startTime + ':00',
+                end: group.dateStr + 'T' + endTime + ':00',
+                extendedProps: {
+                    employees: group.employees,
+                    ca_lam: group.khung_gio,
+                    trang_thai: group.trang_thai,
+                    chi_nhanh: group.chi_nhanh,
+                    ngay_lam: group.ngay_lam
+                },
+                className: className,
+            };
+        });
+
+        // Initialize Main Calendar
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            locale: 'vi',
+            firstDay: 1,
+            slotMinTime: '06:00:00',
+            slotMaxTime: '23:00:00',
+            scrollTime: '06:00:00',
+            expandRows: true,
+            dayHeaderContent: function (arg) {
+                const dayNames = ['CN', 'THỨ 2', 'THỨ 3', 'THỨ 4', 'THỨ 5', 'THỨ 6', 'THỨ 7'];
+                const dayName = dayNames[arg.date.getDay()];
+                const dayNumber = arg.date.getDate();
+                return {
+                    html: `<div class="header-day-name">${dayName}</div><div class="header-day-number">${dayNumber}</div>`
+                };
+            },
+            slotLabelContent: function (arg) {
+                let hour = arg.date.getHours();
+                let timeStr = (hour < 10 ? '0' + hour : hour) + ':00';
+                return timeStr;
+            },
+            headerToolbar: false, // We use custom toolbar
+            allDaySlot: false,
+            events: events,
+            eventClick: function (info) {
+                showEventDetail(info.event);
+            },
+            height: 'auto',
+            nowIndicator: true,
+            eventContent: function (arg) {
+                const emps = arg.event.extendedProps.employees;
+                const timeStr = arg.event.extendedProps.ca_lam;
+                const branch = arg.event.extendedProps.chi_nhanh;
+
+                // Badge for staff count
+                const badgeHtml = emps.length > 1 ? `<div style="background: var(--primary-green); color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; position: absolute; top: 10px; right: 10px; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">${emps.length}</div>` : '';
+
+                let empsHtml = emps.map((e) => {
+                    return `
+                        <div style="margin-bottom: 10px; display: flex; flex-direction: column;">
+                            <div style="font-weight: 800; font-size: 13px; color: #111827; line-height: 1.2;">${e.name}</div>
+                            <div style="font-size: 10px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1px;">${e.chuc_vu || 'Nhân viên'}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                return {
+                    html: `
+                        <div style="position: relative; height: 100%; display: flex; flex-direction: column; overflow: hidden;">
+                            <div style="font-size: 11px; font-weight: 800; color: #4B5563; margin-bottom: 10px; opacity: 0.8;">${timeStr}</div>
+                            <div style="flex: 1;">${empsHtml}</div>
+                            ${badgeHtml}
+                        </div>
+                    `
+                };
+            },
+
+            datesSet: function (info) {
+                // Update the custom view label in toolbar
+                const label = document.getElementById('current-view-label');
+                if (label) {
+                    if (info.view.type === 'timeGridWeek') label.textContent = 'TUẦN';
+                    else if (info.view.type === 'dayGridMonth') label.textContent = 'THÁNG';
+                    else label.textContent = 'NGÀY';
+                }
+            }
+        });
+
+
+        // Initialize Mini Calendar
+        miniCalendar = new FullCalendar.Calendar(miniCalendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'vi',
+            headerToolbar: {
+                left: 'prev,next',
+                center: 'title',
+                right: ''
+            },
+            dayHeaderContent: function (arg) {
+                const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+                return days[arg.date.getDay()];
+            },
+            height: 'auto',
+            contentHeight: 220,
+            dateClick: function (info) {
+                calendar.gotoDate(info.date);
+            }
+        });
+        calendar.render();
+        miniCalendar.render();
+        populateAttendeeList(attendees);
+    });
+
+
+
+    function populateAttendeeList(attendees) {
+        const list = document.getElementById('attendee-list');
+        list.innerHTML = '';
+        Object.values(attendees).forEach(person => {
+            const li = document.createElement('li');
+            li.className = 'staff-item';
+            li.innerHTML = `
+                <input type="checkbox" class="staff-checkbox" checked onchange="filterCalendar()">
+                <div class="staff-dot" style="background-color: ${person.color}"></div>
+                <span class="staff-name">${person.name}</span>
+            `;
+            list.appendChild(li);
+        });
     }
 
-    function applyFilters() {
-        const branch = document.getElementById('branch-filter').value;
-        const status = document.getElementById('status-filter').value;
-        window.location.href = `?branch=${branch}&status=${status}`;
+    function selectAllEmployees() {
+        const checkboxes = document.querySelectorAll('.staff-checkbox');
+        // Check if all are currently checked
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        
+        // If all checked, uncheck all. Otherwise, check all.
+        checkboxes.forEach(cb => cb.checked = !allChecked);
+        
+        filterCalendar();
+    }
+
+
+    function stringToColor(str) {
+        const colors = ['#714B67', '#00A09D', '#E97451', '#5DADE2', '#48C9B0', '#F4D03F', '#EB984E', '#AF7AC5'];
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return colors[Math.abs(hash) % colors.length];
+    }
+
+    function showEventDetail(event) {
+        closeNotificationModal(); // Close notification modal if open
+        const props = event.extendedProps;
+        const employees = props.employees;
+
+        // Render Employee List
+        const listContainer = document.getElementById('modalEmployeeList');
+        if (listContainer) {
+            listContainer.innerHTML = '';
+
+            employees.forEach(emp => {
+                const names = emp.name.trim().split(' ');
+                let initials = '';
+                if (names.length >= 2) {
+                    initials = names[0][0] + names[names.length - 1][0];
+                } else if (names.length === 1) {
+                    initials = names[0].substring(0, 2);
+                }
+                const initialsText = initials.toUpperCase();
+
+                const empHtml = `
+                    <div class="participant-info" style="margin-bottom: 20px;">
+                        <div class="participant-avatar" style="background-color: var(--primary-green);">${initialsText}</div>
+                        <div class="participant-details">
+                            <span class="name">${emp.name}</span>
+                            <span class="role">${emp.chuc_vu || 'Nhân viên'}</span>
+                        </div>
+                    </div>
+                `;
+                listContainer.insertAdjacentHTML('beforeend', empHtml);
+            });
+        }
+
+        document.getElementById('modalDate').textContent = props.ngay_lam;
+        document.getElementById('modalShift').textContent = props.ca_lam;
+        document.getElementById('modalBranch').textContent = props.chi_nhanh;
+
+        // Check if date is in the past to hide Edit/Delete buttons
+        const parts = props.ngay_lam.split('/');
+        const eventDate = new Date(parts[2], parts[1] - 1, parts[0]);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const isPast = eventDate < today;
+
+        const statusTag = document.getElementById('modalStatusTag');
+        if (statusTag) {
+            statusTag.className = 'modal-status-tag';
+            if (props.trang_thai === 'Chờ gửi') {
+                statusTag.textContent = 'Chưa gửi';
+                statusTag.classList.add('status-chua-gui');
+            } else {
+                statusTag.textContent = 'Đã gửi';
+                statusTag.classList.add('status-da-gui');
+            }
+        }
+
+        const editUrl = "{% url 'schedule_edit' 'PLACEHOLDER' %}".replace('PLACEHOLDER', event.id);
+        const btnEdit = document.getElementById('btnEditEvent');
+        const btnDelete = document.getElementById('btnDeleteEvent');
+
+        if (isPast) {
+            if (btnEdit) btnEdit.style.display = 'none';
+            if (btnDelete) btnDelete.style.display = 'none';
+        } else {
+            if (btnEdit) {
+                btnEdit.style.display = 'inline-flex';
+                btnEdit.href = editUrl;
+            }
+            if (btnDelete) {
+                btnDelete.style.display = 'inline-flex';
+                btnDelete.onclick = function () {
+                    closeModal();
+                    openDeletePopup(event.id);
+                };
+            }
+        }
+
+        const modal = document.getElementById('eventModal');
+        if (modal) modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('eventModal').style.display = 'none';
+    }
+
+    window.onclick = function (event) {
+        if (event.target == document.getElementById('eventModal')) {
+            closeModal();
+        }
+    }
+
+    function filterCalendar() {
+        const q = document.getElementById('schedule-search').value.toLowerCase();
+        const branchFilter = document.getElementById('branch-filter').value;
+
+        // Get names of checked employees
+        const checkedNames = Array.from(document.querySelectorAll('.staff-item'))
+            .filter(item => item.querySelector('.staff-checkbox').checked)
+            .map(item => item.querySelector('.staff-name').textContent);
+
+        calendar.getEvents().forEach(event => {
+            const employees = event.extendedProps.employees;
+            const branch = event.extendedProps.chi_nhanh;
+
+            // Match search query
+            const searchMatch = q === "" || employees.some(emp => emp.name.toLowerCase().includes(q));
+
+            // Match checked names
+            const nameMatch = employees.some(emp => checkedNames.includes(emp.name));
+
+            // Match branch
+            const branchMatch = branchFilter === "all" || branch === branchFilter;
+
+            if (searchMatch && nameMatch && branchMatch) {
+                event.setProp('display', 'auto');
+            } else {
+                event.setProp('display', 'none');
+            }
+        });
+    }
+
+
+    function clearFilter(type) {
+        let params = new URLSearchParams(window.location.search);
+        if (type === 'branch') params.set('branch', 'all');
+        if (type === 'status') params.set('status', 'all');
+        window.location.href = `?${params.toString()}`;
+    }
+
+    function handleSendNotifications() {
+        closeModal(); // Close detail modal if open
+        const schedulesData = JSON.parse(document.getElementById('schedules-data').textContent);
+        const pendingSchedules = schedulesData.filter(s => s.trang_thai === 'Chờ gửi');
+
+        if (pendingSchedules.length === 0) {
+            return showErrorPopup("Thông báo", "Không tìm thấy ca làm nào ở trạng thái 'Chưa gửi' để gửi thông báo.");
+        }
+
+        // Open modal and populate table
+        const modal = document.getElementById('notificationTableModal');
+        const tableBody = document.getElementById('notificationTableBody');
+        tableBody.innerHTML = '';
+
+        // Group by Date + Shift + Branch to match context
+        const groups = {};
+        schedulesData.forEach(item => {
+            const normalizedShift = item.khung_gio.trim().toUpperCase();
+            const normalizedBranch = item.ten_chi_nhanh.trim().toUpperCase();
+            const key = `${item.ngay_lam}_${normalizedShift}_${normalizedBranch}`;
+
+            if (!groups[key]) {
+                groups[key] = {
+                    ngay: item.ngay_lam,
+                    ca: item.khung_gio,
+                    chi_nhanh: item.ten_chi_nhanh,
+                    trang_thai: item.trang_thai,
+                    employees: [],
+                    ids: []
+                };
+            }
+            groups[key].employees.push(item.ten_nv);
+            groups[key].ids.push(item.ma_llv);
+        });
+
+        Object.values(groups).forEach(group => {
+            const isUnsent = group.trang_thai === 'Chờ gửi';
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td style="text-align: center;">
+                    ${isUnsent ? `<input type="checkbox" class="notif-checkbox" value="${group.ids.join(',')}" onchange="updateSelectedCount()">` : ''}
+                </td>
+                <td>
+                    <div class="notif-info-group">
+                        <span class="notif-main-info">${group.ngay} | ${group.ca}</span>
+                        <span class="notif-sub-info">${group.chi_nhanh}</span>
+                        <span class="notif-staff-list">${group.employees.join(', ')}</span>
+                    </div>
+                </td>
+                <td style="text-align: center;">
+                    <span class="status-badge-${isUnsent ? 'pending' : 'sent'}" 
+                          style="background: ${isUnsent ? '#FEF3C7' : '#F0FDF4'}; 
+                                 color: ${isUnsent ? '#D97706' : '#22C55E'};">
+                        ${isUnsent ? 'CHƯA GỬI' : 'ĐÃ GỬI'}
+                    </span>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        document.getElementById('selectAllNotifications').checked = false;
+        updateSelectedCount();
+        modal.style.display = 'flex';
+    }
+
+    function closeNotificationModal() {
+        document.getElementById('notificationTableModal').style.display = 'none';
+    }
+
+    function toggleAllCheckboxes(masterCb) {
+        const checkboxes = document.querySelectorAll('.notif-checkbox');
+        checkboxes.forEach(cb => cb.checked = masterCb.checked);
+        updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+        const checked = document.querySelectorAll('.notif-checkbox:checked');
+        let totalRecords = 0;
+        checked.forEach(cb => {
+            totalRecords += cb.value.split(',').length;
+        });
+        document.getElementById('selectedCount').textContent = totalRecords;
+
+        const btn = document.getElementById('btnConfirmSend');
+        btn.disabled = totalRecords === 0;
+        btn.style.cursor = totalRecords === 0 ? 'not-allowed' : 'pointer';
+    }
+
+    function confirmSendNotifications() {
+        const checked = document.querySelectorAll('.notif-checkbox:checked');
+        let allSelectedIds = [];
+        checked.forEach(cb => {
+            allSelectedIds = allSelectedIds.concat(cb.value.split(','));
+        });
+
+        if (allSelectedIds.length === 0) return;
+
+        // Visual feedback
+        const btn = document.getElementById('btnConfirmSend');
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG GỬI...';
+        btn.disabled = true;
+
+        fetch('/schedules/send-notification/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ ids: allSelectedIds })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    closeNotificationModal();
+                    showToast("Gửi thông báo thành công");
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                    showErrorPopup("Lỗi", data.error || "Hệ thống lỗi, vui lòng thử lại");
+                }
+            })
+            .catch(err => {
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                showErrorPopup("Lỗi", "Hệ thống lỗi, vui lòng thử lại");
+            });
     }
 
     function openDeletePopup(id) {
@@ -292,9 +706,8 @@
         const popup = document.getElementById('confirm-delete-popup');
         if (popup) {
             const msgElem = popup.querySelector('.message-line1');
-            if (msgElem) msgElem.textContent = "Bạn có chắc chắn xóa ca làm ?";
+            if (msgElem) msgElem.textContent = "Bạn có chắc chắn muốn xóa ca làm này?";
             popup.style.display = 'flex';
-
             document.getElementById('delete-popup-no-btn').onclick = () => popup.style.display = 'none';
             document.getElementById('delete-popup-yes-btn').onclick = executeDelete;
         }
@@ -305,15 +718,12 @@
         fetch(`/schedules/delete/${currentDeleteId}/`)
             .then(res => res.json())
             .then(data => {
-                if(data.success) {
+                if (data.success) {
                     showToast("Đã xóa lịch làm việc thành công");
-                    setTimeout(() => location.reload(), 1500);
+                    setTimeout(() => location.reload(), 1000);
                 } else {
-                    showErrorPopup("Lỗi", data.error);
+                    showErrorPopup("Lỗi", data.error || "Có lỗi xảy ra");
                 }
-            })
-            .catch(err => {
-                showErrorPopup("Lỗi", "Database đang bận, vui lòng thử lại sau.");
             });
     }
 
@@ -336,51 +746,6 @@
             document.getElementById('error-popup-exit-btn').onclick = () => popup.style.display = 'none';
             document.getElementById('error-popup-back-btn').onclick = () => popup.style.display = 'none';
         }
-    }
-
-    function handleSendNotifications() {
-        const selected = Array.from(document.querySelectorAll('.schedule-checkbox:checked')).map(cb => cb.value);
-        if (selected.length === 0) {
-            return showErrorPopup("Thông báo", "Vui lòng chọn ít nhất một ca làm đang ở trạng thái 'Chờ gửi' để gửi thông báo");
-        }
-
-        fetch('/schedules/send-notification/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({ ids: selected })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                showToast("Gửi thông báo thành công");
-                setTimeout(() => location.reload(), 1500);
-            } else {
-                showErrorPopup("Lỗi", data.error);
-            }
-        });
-    }
-
-    function filterTable() {
-        const q = document.getElementById('schedule-search').value.toLowerCase();
-        const rows = document.querySelectorAll('.schedule-row');
-        let visibleCount = 0;
-
-        rows.forEach(row => {
-            const text = row.innerText.toLowerCase();
-            const matchesSearch = text.includes(q);
-            if (matchesSearch) {
-                row.style.display = '';
-                visibleCount++;
-            } else {
-                row.style.display = 'none';
-            }
-        });
-
-        document.getElementById('no-results').style.display = visibleCount === 0 ? 'block' : 'none';
-        document.getElementById('requestTable').style.display = visibleCount === 0 ? 'none' : 'table';
     }
 </script>
 {% endblock %}
