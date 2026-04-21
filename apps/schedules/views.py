@@ -25,6 +25,13 @@ def schedule_list_view(request):
     try:
         query = LichLamViec.objects.select_related('ma_nv', 'ma_chi_nhanh').all()
         
+        # Phân quyền: Nếu không phải admin thì chỉ lấy ca làm việc của bản thân
+        if not _is_admin(request.user):
+            if hasattr(request.user, 'taikhoan') and request.user.taikhoan.ma_nv:
+                query = query.filter(ma_nv=request.user.taikhoan.ma_nv).exclude(trang_thai='Chờ gửi')
+            else:
+                query = query.none()
+        
         # Loc theo chi nhanh
         if branch_id != 'all':
             query = query.filter(ma_chi_nhanh_id=branch_id)

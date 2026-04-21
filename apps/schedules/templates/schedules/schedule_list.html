@@ -33,7 +33,9 @@
 <div class="odoo-toolbar">
     <div class="toolbar-left-section" style="display: flex; align-items: center; gap: 20px;">
         <div class="toolbar-left">
+            {% if is_admin %}
             <a href="{% url 'schedule_create' %}" class="btn-premium"><i class="fas fa-plus"></i> TẠO LỊCH</a>
+            {% endif %}
         </div>
 
         <div class="toolbar-nav-group" style="display: flex; align-items: center; gap: 10px;">
@@ -80,10 +82,12 @@
                 <i class="fas fa-search"></i> TÌM KIẾM
             </button>
 
+            {% if is_admin %}
             <button class="btn-premium" onclick="handleSendNotifications()"
                 style="background: #28a745 !important; margin-left: 5px;">
                 <i class="fas fa-paper-plane"></i> GỬI THÔNG BÁO
             </button>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -501,7 +505,9 @@
         const btnEdit = document.getElementById('btnEditEvent');
         const btnDelete = document.getElementById('btnDeleteEvent');
 
-        if (isPast) {
+        const isAdmin = {% if is_admin %}true{% else %}false{% endif %};
+
+        if (isPast || !isAdmin) {
             if (btnEdit) btnEdit.style.display = 'none';
             if (btnDelete) btnDelete.style.display = 'none';
         } else {
