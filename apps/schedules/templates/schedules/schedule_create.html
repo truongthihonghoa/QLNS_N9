@@ -127,10 +127,11 @@
         }
 
         /* CHỈNH LẠI TỶ LỆ CỘT CHO THẬT ĐỀU NHAU */
-        .col-check { width: 10%; text-align: center; }
-        .col-id { width: 25%; }
-        .col-name { width: 35%; }
-        .col-pos { width: 30%; }
+        .col-check { width: 5%; text-align: center; }
+        .col-id { width: 15%; }
+        .col-name { width: 25%; }
+        .col-branch { width: 30%; }
+        .col-pos { width: 25%; }
 
         .modern-table tr:hover {
             background-color: #f8fafc;
@@ -249,6 +250,7 @@
                                 <th class="col-check">Chọn</th>
                                 <th class="col-id">Mã NV</th>
                                 <th class="col-name">Tên Nhân Viên</th>
+                                <th class="col-branch">Chi Nhánh</th>
                                 <th class="col-pos">Vị Trí Việc Làm</th>
                             </tr>
                         </thead>
@@ -260,6 +262,7 @@
                                 </td>
                                 <td class="col-id">{{ employee.ma_nv }}</td>
                                 <td class="col-name"><strong>{{ employee.ho_ten }}</strong></td>
+                                <td class="col-branch">{{ employee.ten_chi_nhanh }}</td>
                                 <td class="col-pos">
                                     <span class="badge-position">{{ employee.vi_tri_mac_dinh }}</span>
                                     <input type="hidden" name="position_{{ employee.ma_nv }}" value="{{ employee.vi_tri_mac_dinh }}">
