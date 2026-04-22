@@ -945,60 +945,52 @@ def payroll_edit_view(request, ma_luong):
 
 
 def my_salary_view(request):
-    # 1. Lấy tham số filter từ URL
-    q = request.GET.get('q', '').strip()
+    q = request.GET.get('q', '')
     month = request.GET.get('month')
     year = request.GET.get('year')
 
-    payroll_rows = []
-
     try:
-        # 2. Tìm tài khoản liên kết với User đang đăng nhập (auth_user.id == accounts_taikhoan.user_id)
-        # Trong ảnh của bạn, bảng này tên là accounts_taikhoan
+        # 1. Từ user đang đăng nhập, tìm bản ghi tương ứng trong bảng accounts_taikhoan
         tai_khoan = TaiKhoan.objects.get(user_id=request.user.id)
 
-        # 3. Lấy thông tin nhân viên từ tài khoản (cột ma_nv_id trong ảnh)
-        nhan_vien = tai_khoan.ma_nv
+        # 2. Từ tài khoản, lấy thông tin nhân viên (liên kết qua ma_nv_id)
+        # Giả sử trong model TaiKhoan bạn đặt tên field liên kết là 'nhan_vien' hoặc 'ma_nv'
+    nhan_vien = tai_khoan.nhan_vien
 
-        # 4. Truy vấn bảng lương của nhân viên này
-        payrolls = Luong.objects.filter(nhan_vien=nhan_vien).order_by('-nam', '-thang')
+    # 3. Lấy danh sách lương của nhân viên đó
+    payrolls = Luong.objects.filter(nhan_vien=nhan_vien)
 
-        # 🔍 Xử lý bộ lọc Search
-        if q:
-            payrolls = payrolls.filter(
-                Q(ma_luong__icontains=q) |
-                Q(nhan_vien__ho_ten__icontains=q)
-            )
+    # 🔍 Bộ lọc tìm kiếm
+    if q:
+        payrolls = payrolls.filter(
+            Q(ma_luong__icontains=q) |
+            Q(nhan_vien__ho_ten__icontains=q)
+        )
 
-        if month and month.isdigit():
-            payrolls = payrolls.filter(thang=int(month))
+    if month:
+        payrolls = payrolls.filter(thang=month)
 
-        if year and year.isdigit():
-            payrolls = payrolls.filter(nam=int(year))
+    if year:
+        payrolls = payrolls.filter(nam=year)
 
-        # 🔄 Format dữ liệu để hiển thị lên table (như trong ảnh UI bạn gửi)
-        for p in payrolls:
-            payroll_rows.append({
-                'ma_luong': p.ma_luong,
-                'ho_ten': p.nhan_vien.ho_ten,
-                'ky_luong': f"{p.thang:02d}/{p.nam}",
-                'luong_co_ban': f"{p.luong_co_ban:,.0f}",
-                'luong_theo_gio': f"{p.luong_theo_gio:,.0f}",
-                'so_gio_lam': p.so_gio_lam,
-                'thuong': f"{p.thuong:,.0f}",
-                'phat': f"{p.phat:,.0f}",
-                'tong_luong': f"{p.tong_luong:,.0f}",
-                # Dùng get_trang_thai_display() để hiện "Đang chờ duyệt" thay vì code trong DB
-                'trang_thai': p.get_trang_thai_display() if hasattr(p, 'get_trang_thai_display') else p.trang_thai,
-            })
+    # 🔄 Định dạng dữ liệu hiển thị
+    payroll_rows = []
+    for p in payrolls:
+        payroll_rows.append({
+            'ma_luong': p.ma_luong,
+            'ho_ten': p.nhan_vien.ho_ten,
+            'ky_luong': f"{p.thang:02d}/{p.nam}",
+            'luong_co_ban': f"{p.luong_co_ban:,.0f}",
+            'luong_theo_gio': f"{p.luong_theo_gio:,.0f}",
+            'so_gio_lam': p.so_gio_lam,
+            'thuong': f"{p.thuong:,.0f}",
+            'phat': f"{p.phat:,.0f}",
+            'tong_luong': f"{p.tong_luong:,.0f}",
+            'trang_thai': p.get_trang_thai_display() if hasattr(p, 'get_trang_thai_display') else p.trang_thai,
+        })
 
-    except TaiKhoan.DoesNotExist:
-        # Nếu user đăng nhập không có trong bảng accounts_taikhoan (ví dụ tài khoản admin)
-        pass
+
 
     return render(request, 'payroll/payroll_detail.html', {
-        'payroll_rows': payroll_rows,
-        'q': q,
-        'selected_month': month,
-        'selected_year': year
+        'payroll_rows': payroll_rows
     })

@@ -15,4 +15,5 @@ urlpatterns = [
     path('calculate/', views.payroll_calculate_view, name='payroll_calculate'),
     path('add/', views.payroll_add_view, name='payroll_add'),
     path('edit/<str:ma_luong>/', views.payroll_edit_view, name='payroll_edit'),
+    path('my-salary/', views.my_salary_view, name='my_salary'),
 ]
