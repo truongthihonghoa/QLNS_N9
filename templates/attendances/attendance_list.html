@@ -1,129 +1,447 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Danh Sách Chấm Công - GÉ CAFE HRM{% endblock %}
+{% block title %}Chấm Công - GÉ CAFE HRM{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    :root {
-        --ge-green-dark: #174D17;
-        --ge-green-light: #CDE0C9;
-        --border-color: #DADCE0;
-        --text-color: #333;
-    }
-
-    .attendance-management-container {
-        padding: 20px;
+    body {
+        margin: 0;
         font-family: 'Montserrat', sans-serif;
+        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        background-size: cover;
+        background-attachment: fixed;
+        color: white;
     }
 
-    /* Toolbar Row: Only Branch Filter */
-    .toolbar-row-filters {
+    .attendance-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    /* Header Section */
+    .attendance-header {
         display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        width: 100%;
-        margin-bottom: 25px;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 40px;
     }
 
-    .dropdown-ge {
-        background: white;
+    .greeting-box h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0 0 5px 0;
+    }
+
+    .greeting-box p {
         font-size: 18px;
-        padding: 0 15px; /* Adjust padding for fixed height */
-        height: 52px;
-        border-radius: 6px;
-        border: 1px solid var(--border-color);
-        min-width: 300px;
-        cursor: pointer;
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    .clock-box {
+        text-align: right;
+    }
+
+    .real-time-clock {
+        font-size: 48px;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 5px;
+    }
+
+    .real-time-date {
+        font-size: 18px;
+        opacity: 0.8;
+    }
+
+    /* Cards */
+    .ge-card {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        color: #333;
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .card-header {
+        padding: 25px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+    }
+
+    .card-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #174D17;
+        margin: 0;
+    }
+
+    .shift-badge {
+        background: #f0f7f0;
+        color: #174D17;
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 14px;
         display: flex;
         align-items: center;
+        gap: 8px;
     }
 
-    /* Table Styles */
-    .ge-table-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        overflow: hidden;
-    }
-
-    .ge-main-table {
+    /* Shift Table */
+    .shift-table {
         width: 100%;
         border-collapse: collapse;
     }
 
-    .ge-main-table th {
-        background-color: var(--ge-green-dark);
-        color: white;
-        padding: 20px 15px;
+    .shift-table th {
         text-align: left;
-        font-size: 18px;
+        padding: 15px 30px;
+        font-size: 13px;
+        color: #999;
+        text-transform: uppercase;
+        font-weight: 600;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .shift-table td {
+        padding: 20px 30px;
+        border-bottom: 1px solid #f5f5f5;
+        font-size: 15px;
+        vertical-align: middle;
+    }
+
+    .col-stt { width: 50px; }
+    .col-name { width: 300px; }
+    .col-time { width: 120px; }
+    .col-note { width: 250px; }
+    .col-action { text-align: right; }
+
+    .employee-row-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #5D4037;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .emp-name-stack {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .emp-name {
+        font-weight: 700;
+        color: #333;
+    }
+
+    .emp-tag {
+        font-size: 12px;
+        color: #174D17;
         font-weight: 600;
     }
 
-    .ge-main-table td {
-        padding: 22px 15px;
-        border-bottom: 1px solid #eee;
-        font-size: 18px;
-        color: var(--text-color);
+    .time-val {
+        font-weight: 600;
+        color: #666;
     }
 
-    .ge-main-table tr:hover {
-        background-color: #f9f9f9;
+    .time-val.active {
+        color: #174D17;
+        font-weight: 700;
+    }
+
+    .status-badge {
+        padding: 6px 15px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .status-vangg { background: #f5f5f5; color: #999; }
+    .status-lamm { background: #e8f5e9; color: #2e7d32; }
+    .status-donee { background: #e3f2fd; color: #1976d2; }
+
+    /* Buttons */
+    .btn-check {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+    }
+
+    .btn-check-in { background: #174D17; color: white; }
+    .btn-check-in:hover { background: #0F3D0F; }
+    .btn-check-out { background: #5D4037; color: white; }
+    .btn-check-out:hover { background: #3E2723; }
+    .btn-disabled { background: #eee; color: #aaa; cursor: not-allowed; }
+
+    .self-row {
+        background: #e8f5e9 !important; /* Clearly light green */
+        border-left: 4px solid #174D17;
+    }
+
+    /* Summary Section */
+    .summary-card {
+        background: #4B3832;
+        color: white;
+        padding: 30px;
+        border-radius: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .summary-info h3 {
+        font-size: 14px;
+        text-transform: uppercase;
+        margin: 0 0 10px 0;
+        opacity: 0.7;
+    }
+
+    .summary-info .hours-val {
+        font-size: 36px;
+        font-weight: 700;
+    }
+
+    .summary-icon {
+        font-size: 48px;
+        opacity: 0.2;
+    }
+
+    /* Manager View Styles (Keep existing for managers) */
+    .manager-view {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        color: #333;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="attendance-management-container">
-    <div class="toolbar-row-filters">
-        <form method="GET" action="{% url 'attendance_list' %}">
-            <select name="branch" class="dropdown-ge" onchange="this.form.submit()">
-                <option value="">-- Tất cả chi nhánh --</option>
-                {% for branch in branches %}
-                    <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>
-                        {{ branch.ten_chi_nhanh }}
-                    </option>
-                {% endfor %}
-            </select>
-        </form>
-    </div>
+<div class="attendance-container">
+    {% if is_manager %}
+        <!-- MANAGER VIEW -->
+        <div class="manager-view">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h1 style="color: #174D17; margin: 0;">Quản lý Chấm công</h1>
+                <form method="GET" action="{% url 'attendances:attendance_list' %}">
+                    <select name="branch" class="dropdown-ge" onchange="this.form.submit()" style="height: 44px; padding: 0 15px; border-radius: 8px; border: 1px solid #ddd;">
+                        <option value="">-- Tất cả chi nhánh --</option>
+                        {% for branch in branches %}
+                            <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>
+                                {{ branch.ten_chi_nhanh }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
 
-    <div class="ge-table-card">
-        <table class="ge-main-table">
-            <thead>
-                <tr>
-                    <th>STT</th>
-                    <th>Mã Chấm Công</th>
-                    <th>Nhân Viên</th>
-                    <th>Ngày Làm</th>
-                    <th>Giờ Vào</th>
-                    <th>Giờ Ra</th>
-                    <th>Số Giờ Làm</th>
-                    <th>Trạng Thái</th>
-                    <th>Ghi Chú</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for attendance in attendances %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ attendance.ma_cc }}</td>
-                    <td>{{ attendance.ma_nv.ho_ten }}</td>
-                    <td>{{ attendance.ngay_lam|date:"d/m/Y" }}</td>
-                    <td>{{ attendance.gio_vao|time:"H:i"|default:"-" }}</td>
-                    <td>{{ attendance.gio_ra|time:"H:i"|default:"-" }}</td>
-                    <td><strong>{{ attendance.so_gio_lam }}</strong></td>
-                    <td>{{ attendance.trang_thai|default:"-" }}</td>
-                    <td>{{ attendance.ghi_chu|default:"-" }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="9" style="text-align: center;">Không có dữ liệu chấm công.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+            <table class="ge-main-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #174D17; color: white;">
+                        <th style="padding: 15px; text-align: left;">Nhân Viên</th>
+                        <th style="padding: 15px; text-align: left;">Ngày Làm</th>
+                        <th style="padding: 15px; text-align: left;">Giờ Vào</th>
+                        <th style="padding: 15px; text-align: left;">Giờ Ra</th>
+                        <th style="padding: 15px; text-align: left;">Số Giờ</th>
+                        <th style="padding: 15px; text-align: left;">Trạng Thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attendance in attendances %}
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 15px;">{{ attendance.ma_nv.ho_ten }}</td>
+                        <td style="padding: 15px;">{{ attendance.ngay_lam|date:"d/m/Y" }}</td>
+                        <td style="padding: 15px;">{{ attendance.gio_vao|time:"H:i"|default:"-" }}</td>
+                        <td style="padding: 15px;">{{ attendance.gio_ra|time:"H:i"|default:"-" }}</td>
+                        <td style="padding: 15px;">{{ attendance.so_gio_lam }}</td>
+                        <td style="padding: 15px;">{{ attendance.trang_thai }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <!-- EMPLOYEE VIEW -->
+        <div class="attendance-header">
+            <div class="greeting-box">
+                <h1>Chào, {{ employee.ho_ten }}!</h1>
+                <p>Vị trí: {{ employee.chuc_vu }} | Chi nhánh: {{ employee.ma_chi_nhanh.ten_chi_nhanh }}</p>
+            </div>
+            <div class="clock-box">
+                <div id="clock" class="real-time-clock">00:00:00</div>
+                <div id="date" class="real-time-date">Thứ Hai, ngày 20 tháng 4, 2026</div>
+            </div>
+        </div>
+
+        <div class="ge-card">
+            <div class="card-header">
+                <h2 class="card-title">Nhân viên trong ca: <span style="color: #666;">{{ current_shift.ca_lam|default:"Không có ca" }}</span></h2>
+                <div class="shift-badge">
+                    <i class="fas fa-users"></i> {{ shift_colleagues|length }} Nhân viên
+                </div>
+            </div>
+            
+            <table class="shift-table">
+                <thead>
+                    <tr>
+                        <th class="col-stt">STT</th>
+                        <th class="col-name">Họ tên</th>
+                        <th class="col-time">Giờ vào</th>
+                        <th class="col-time">Giờ ra</th>
+                        <th class="col-note">Ghi chú</th>
+                        <th class="col-action">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for colleague in shift_colleagues %}
+                    <tr class="{% if colleague.is_self %}self-row{% endif %}">
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <div class="employee-row-info">
+                                <div class="avatar-circle">{{ colleague.ho_ten.0 }}</div>
+                                <div class="emp-name-stack">
+                                    <span class="emp-name">{{ colleague.ho_ten }}</span>
+                                    {% if colleague.is_self %}<span class="emp-tag">(Bạn)</span>{% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="time-val {% if colleague.gio_vao %}active{% endif %}">
+                                {{ colleague.gio_vao|time:"H:i"|default:"Chưa vào" }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="time-val {% if colleague.gio_ra %}active{% endif %}">
+                                {{ colleague.gio_ra|time:"H:i"|default:"--:--" }}
+                            </span>
+                        </td>
+                        <td>{{ colleague.ghi_chu }}</td>
+                        <td class="col-action">
+                            {% if colleague.is_self %}
+                                <form method="POST" action="{% url 'attendances:check_in_out' %}" style="margin: 0;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="ma_nv" value="{{ colleague.ma_nv }}">
+                                    {% if not colleague.gio_vao %}
+                                        <button type="submit" name="action" value="check_in" class="btn-check btn-check-in">Check in</button>
+                                    {% elif not colleague.gio_ra %}
+                                        <button type="submit" name="action" value="check_out" class="btn-check btn-check-out">Check out</button>
+                                    {% else %}
+                                        <span class="status-badge status-donee">Hoàn thành</span>
+                                    {% endif %}
+                                </form>
+                            {% else %}
+                                {% if colleague.gio_ra %}
+                                    <span class="status-badge status-donee">Hoàn thành</span>
+                                {% elif colleague.gio_vao %}
+                                    <span class="status-badge status-lamm">Đang làm</span>
+                                {% else %}
+                                    <span class="status-badge status-vangg">Vắng</span>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: #888;">Không có ca làm việc hôm nay.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-info">
+                <h3>Tổng giờ làm tháng này</h3>
+                <div class="hours-val">{{ total_hours_month }} Giờ</div>
+            </div>
+            <div class="summary-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+        </div>
+
+        <div class="ge-card">
+            <div class="card-header">
+                <h2 class="card-title">Lịch sử chấm công cá nhân</h2>
+            </div>
+            <table class="shift-table">
+                <thead>
+                    <tr>
+                        <th>Ngày</th>
+                        <th>Giờ vào</th>
+                        <th>Giờ ra</th>
+                        <th>Thời lượng</th>
+                        <th>Ghi chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in history %}
+                    <tr>
+                        <td style="font-weight: 600;">{{ item.ngay_lam|date:"d/m/Y" }}</td>
+                        <td style="color: #2e7d32; font-weight: 600;">{{ item.gio_vao|time:"H:i" }}</td>
+                        <td style="color: #5D4037; font-weight: 600;">{{ item.gio_ra|time:"H:i"|default:"--" }}</td>
+                        <td><strong>{{ item.so_gio_lam }}h</strong></td>
+                        <td>{{ item.ghi_chu|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 30px;">Chưa có lịch sử chấm công.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
 </div>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        
+        // Update Clock
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+        
+        // Update Date
+        const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+        const months = ['tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6', 'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'];
+        
+        const dayName = days[now.getDay()];
+        const day = now.getDate();
+        const monthName = months[now.getMonth()];
+        const year = now.getFullYear();
+        
+        document.getElementById('date').textContent = `${dayName}, ngày ${day} ${monthName}, ${year}`;
+    }
+
+    if (document.getElementById('clock')) {
+        setInterval(updateClock, 1000);
+        updateClock();
+    }
+</script>
 {% endblock %}

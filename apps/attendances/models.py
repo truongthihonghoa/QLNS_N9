@@ -8,7 +8,7 @@ class ChamCong(models.Model):
         ('TOI', 'Ca tối'),
     ]
 
-    ma_cc = models.CharField(max_length=20, primary_key=True)
+    ma_cc = models.CharField(max_length=50, primary_key=True)
 
     ma_nv = models.ForeignKey(
         'employees.NhanVien',
