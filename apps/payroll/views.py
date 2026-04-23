@@ -18,17 +18,18 @@ from ..employees.models import NhanVien
 from ..contracts.models import HopDongLaoDong
 from ..attendances.models import ChamCong
 from .models import Luong
+from ..accounts.models import TaiKhoan
+
 
 # HELPER FUNCTIONS - T�ch logic kinh doanh
 
 # HELPER FUNCTIONS - T�ch logic kinh doanh
 def _validate_payroll_request(request):
-
     branch = request.POST.get('branch')
     month = request.POST.get('month')
     year = request.POST.get('year')
     selected_employees = request.POST.getlist('selected_employees')
-    
+
     errors = []
     if not branch:
         errors.append('Vui l?ng ch n chi nh�nh')
@@ -38,52 +39,50 @@ def _validate_payroll_request(request):
         errors.append('Vui l?ng ch n n m')
     if not selected_employees:
         errors.append('Vui l?ng ch n �t nh t m t nh�n vi�n')
-    
+
     if errors:
         for error in errors:
             messages.error(request, error)
         return None
-    
+
     return {
         'branch': branch,
-        'month': month, 
+        'month': month,
         'year': year,
         'selected_employees': selected_employees
     }
 
 
 def _get_period_dates(month, year):
-
     start_date = datetime.date(int(year), int(month), 1)
     end_date = datetime.date(
-        int(year), 
-        int(month), 
+        int(year),
+        int(month),
         calendar.monthrange(int(year), int(month))[1]
     )
     return start_date, end_date
 
 
 def _get_employee_data(employee_id, start_date, end_date, ky_luong):
-
     try:
         employee = NhanVien.objects.get(ma_nv=employee_id)
-        
+
         # Ki m tra h p ng
         contract = HopDongLaoDong.objects.filter(
             ma_nv=employee,
             ngay_bat_dau__lte=end_date,
             ngay_ket_thuc__gte=start_date
         ).first()
-        
+
         if not contract:
             return None
-        
+
         # Ki m tra luoong ton tai
         existing_payroll = Luong.objects.filter(
             ma_nv=employee,
             ky_luong=ky_luong
         ).first()
-        
+
         emp_data = {
             'ma_nv': employee.ma_nv,
             'ho_ten': employee.ho_ten,
@@ -96,36 +95,34 @@ def _get_employee_data(employee_id, start_date, end_date, ky_luong):
                 'luong_theo_gio': contract.luong_theo_gio,
             }
         }
-        
+
         return emp_data, existing_payroll is not None
-        
+
     except NhanVien.DoesNotExist:
         return None, False
 
 
 def _process_selected_employees(selected_employees, month, year):
-
     start_date, end_date = _get_period_dates(month, year)
     ky_luong = f"{month}/{year}"
-    
+
     eligible_employees = []
     calculated_employees = []
-    
+
     for emp_id in selected_employees:
         result = _get_employee_data(emp_id, start_date, end_date, ky_luong)
-        
+
         if result[0]:  # C� d liu nh�n vi�n
             emp_data, is_calculated = result
             if is_calculated:
                 calculated_employees.append(emp_data)
             else:
                 eligible_employees.append(emp_data)
-    
+
     return eligible_employees, calculated_employees
 
 
 def _save_calculation_to_session(request, data, eligible, calculated):
-
     request.session['payroll_calculation_data'] = {
         'branch': data['branch'],
         'month': data['month'],
@@ -137,9 +134,8 @@ def _save_calculation_to_session(request, data, eligible, calculated):
 
 
 def _build_add_context(request, branch, month, year):
-
     calc_data = request.session.get('payroll_calculation_data', {})
-    
+
     return {
         'branch': branch,
         'month': month,
@@ -149,8 +145,6 @@ def _build_add_context(request, branch, month, year):
         'calculated_employees': calc_data.get('calculated_employees', []),
         'selected_employees': calc_data.get('selected_employees', []),
     }
-
-
 
 
 def _status_key(db_value: str) -> str:
@@ -214,7 +208,7 @@ def payroll_list_view(request):
     eligible_employees = []
     calculated_employees = []
     show_modal = request.GET.get('show_modal') == 'true'
-    
+
     if show_modal:
         eligible_employees = request.session.get('eligible_employees', [])
         calculated_employees = request.session.get('calculated_employees', [])
@@ -324,58 +318,58 @@ def payroll_period_employees_view(request):
         branch = (request.POST.get('branch') or '').strip()
         month = (request.POST.get('month') or '').strip()
         year = (request.POST.get('year') or '').strip()
-        
+
         print(f"DEBUG: POST request - branch: {branch}, month: {month}, year: {year}")
-        
+
         if not branch or not month.isdigit() or not year.isdigit():
             print(f"DEBUG: Invalid POST params - branch: {branch}, month: {month}, year: {year}")
             return redirect('payroll_list')
-        
+
         m = int(month)
         y = int(year)
         if m < 1 or m > 12 or y < 1900 or y > 2100:
             print(f"DEBUG: Invalid date range - month: {m}, year: {y}")
             return redirect('payroll_list')
-        
+
         # Get employees with valid contracts during selected period
         period_start = datetime.date(y, m, 1)
         period_end = datetime.date(y, m, calendar.monthrange(y, m)[1])
-        
+
         print(f"DEBUG: Period range - start: {period_start}, end: {period_end}")
-        
+
         employees_qs = NhanVien.objects.filter(
             ma_chi_nhanh_id=branch,
             hop_dong__ngay_bat_dau__lte=period_end,
             hop_dong__ngay_ket_thuc__gte=period_start
         ).distinct().order_by('ma_nv')
-        
+
         print(f"DEBUG: Found {employees_qs.count()} employees with active contracts")
-        
+
         calculated_ids = set(
             Luong.objects.filter(chi_nhanh_id=branch, thang=m, nam=y).values_list('nhan_vien_id', flat=True)
         )
-        
+
         print(f"DEBUG: Found {len(calculated_ids)} calculated employee IDs: {calculated_ids}")
-        
+
         calculated_employees = list(
             employees_qs.filter(ma_nv__in=calculated_ids).values('ma_nv', 'ho_ten')
         )
         eligible_employees = list(
             employees_qs.exclude(ma_nv__in=calculated_ids).values('ma_nv', 'ho_ten')
         )
-        
+
         print(f"DEBUG: Eligible employees: {eligible_employees}")
         print(f"DEBUG: Calculated employees: {calculated_employees}")
-        
+
         # Store data in session to display in modal
         request.session['eligible_employees'] = eligible_employees
         request.session['calculated_employees'] = calculated_employees
         request.session['selected_month'] = month
         request.session['selected_year'] = year
-        
+
         # Redirect back to payroll list with query params to show modal
         return redirect(f'{reverse("payroll_list")}?branch={branch}&month={month}&year={year}&show_modal=true')
-    
+
     else:
         # Handle GET request (AJAX)
         branch = (request.GET.get('branch') or '').strip()
@@ -397,15 +391,15 @@ def payroll_period_employees_view(request):
         # Employees in selected branch with valid contracts during selected period
         period_start = datetime.date(y, m, 1)
         period_end = datetime.date(y, m, calendar.monthrange(y, m)[1])
-        
+
         print(f"DEBUG: Period range - start: {period_start}, end: {period_end}")
-        
+
         employees_qs = NhanVien.objects.filter(
             ma_chi_nhanh_id=branch,
             hop_dong__ngay_bat_dau__lte=period_end,
             hop_dong__ngay_ket_thuc__gte=period_start
         ).distinct().order_by('ma_nv')
-        
+
         print(f"DEBUG: Found {employees_qs.count()} employees with active contracts")
 
         calculated_ids = set(
@@ -490,6 +484,7 @@ def _parse_money(value):
     except:
         return 0
 
+
 def _next_ma_luong() -> str:
     # Try to generate sequential ML0001, ML0002... based on existing numeric suffixes.
     max_n = 0
@@ -542,10 +537,10 @@ def payroll_save_view(request):
             'phat': _parse_money(request.POST.get('phat')),
             # Always compute on the server for consistency/safety.
             'tong_luong': (
-                _parse_money(request.POST.get('luong_co_ban'))
-                + (_parse_money(request.POST.get('luong_theo_gio')) * float(request.POST.get('so_gio_lam') or 0))
-                + _parse_money(request.POST.get('thuong'))
-                - _parse_money(request.POST.get('phat'))
+                    _parse_money(request.POST.get('luong_co_ban'))
+                    + (_parse_money(request.POST.get('luong_theo_gio')) * float(request.POST.get('so_gio_lam') or 0))
+                    + _parse_money(request.POST.get('thuong'))
+                    - _parse_money(request.POST.get('phat'))
             ),
         }
 
@@ -606,7 +601,7 @@ def payroll_delete_view(request, ma_luong: str):
 
     # Kiểm xem có phải AJAX request không
     wants_json = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in (
-        request.headers.get('Accept', '') or ''
+            request.headers.get('Accept', '') or ''
     )
     if wants_json:
         return JsonResponse({'status': 'success', 'message': 'Xóa bảng lương thành công'})
@@ -688,6 +683,7 @@ def payroll_send_view(request):
     return JsonResponse({'status': 'success', 'updated': updated})
 
     return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
 
 @require_POST
 def payroll_calculate_view(request):
@@ -897,7 +893,6 @@ def payroll_edit_view(request, ma_luong):
     # 1. Lấy bản ghi bảng lương
     obj = get_object_or_404(Luong.objects.select_related('nhan_vien', 'chi_nhanh'), pk=ma_luong)
 
-
     # 3. XỬ LÝ LƯU (POST)
     if request.method == "POST":
         # Lấy dữ liệu Thưởng/Phạt từ form gửi lên
@@ -940,4 +935,64 @@ def payroll_edit_view(request, ma_luong):
         'year': obj.nam,
         'employees': [employee_data],  # Truyền vào list
         'ma_luong': obj.ma_luong,
+    })
+
+
+def my_salary_view(request):
+    # 1. Lấy tham số filter từ URL
+    q = request.GET.get('q', '').strip()
+    month = request.GET.get('month')
+    year = request.GET.get('year')
+
+    payroll_rows = []
+
+    try:
+        # 2. Tìm tài khoản liên kết với User đang đăng nhập (auth_user.id == accounts_taikhoan.user_id)
+        # Trong ảnh của bạn, bảng này tên là accounts_taikhoan
+        tai_khoan = TaiKhoan.objects.get(user_id=request.user.id)
+
+        # 3. Lấy thông tin nhân viên từ tài khoản (cột ma_nv_id trong ảnh)
+        nhan_vien = tai_khoan.ma_nv
+
+        # 4. Truy vấn bảng lương của nhân viên này
+        payrolls = Luong.objects.filter(nhan_vien=nhan_vien).order_by('-nam', '-thang')
+
+        # 🔍 Xử lý bộ lọc Search
+        if q:
+            payrolls = payrolls.filter(
+                Q(ma_luong__icontains=q) |
+                Q(nhan_vien__ho_ten__icontains=q)
+            )
+
+        if month and month.isdigit():
+            payrolls = payrolls.filter(thang=int(month))
+
+        if year and year.isdigit():
+            payrolls = payrolls.filter(nam=int(year))
+
+        # 🔄 Format dữ liệu để hiển thị lên table (như trong ảnh UI bạn gửi)
+        for p in payrolls:
+            payroll_rows.append({
+                'ma_luong': p.ma_luong,
+                'ho_ten': p.nhan_vien.ho_ten,
+                'ky_luong': f"{p.thang:02d}/{p.nam}",
+                'luong_co_ban': f"{p.luong_co_ban:,.0f}",
+                'luong_theo_gio': f"{p.luong_theo_gio:,.0f}",
+                'so_gio_lam': p.so_gio_lam,
+                'thuong': f"{p.thuong:,.0f}",
+                'phat': f"{p.phat:,.0f}",
+                'tong_luong': f"{p.tong_luong:,.0f}",
+                # Dùng get_trang_thai_display() để hiện "Đang chờ duyệt" thay vì code trong DB
+                'trang_thai': p.get_trang_thai_display() if hasattr(p, 'get_trang_thai_display') else p.trang_thai,
+            })
+
+    except TaiKhoan.DoesNotExist:
+        # Nếu user đăng nhập không có trong bảng accounts_taikhoan (ví dụ tài khoản admin)
+        pass
+
+    return render(request, 'payroll/payroll_detail.html', {
+        'payroll_rows': payroll_rows,
+        'q': q,
+        'selected_month': month,
+        'selected_year': year
     })
