@@ -1,19 +1,12 @@
 from django.core.validators import RegexValidator
 from django.db import models
 
+
 class NhanVien(models.Model):
     GIOI_TINH_CHOICES = [
         ("Nam", "Nam"),
         ("Nữ", "Nữ"),
         ("Khác", "Khác"),
-    ]
-
-    VI_TRI_CHOICES = [
-        ("Thu ngân", "Thu ngân"),
-        ("Phục vụ", "Phục vụ"),
-        ("Quản lý", "Quản lý"),
-        ("Giữ xe", "Giữ xe"),
-        ("Pha chế", "Pha chế"),
     ]
 
     CHUC_VU_CHOICES = [
@@ -35,7 +28,6 @@ class NhanVien(models.Model):
         verbose_name="Số điện thoại",
     )
     chuc_vu = models.CharField(max_length=50, choices=CHUC_VU_CHOICES, verbose_name="Chức vụ")
-    vi_tri_vl = models.CharField(max_length=50, choices=VI_TRI_CHOICES, verbose_name="Vị trí việc làm")
     dia_chi = models.CharField(max_length=255, null=True, blank=True, verbose_name="Địa chỉ")
     gioi_tinh = models.CharField(
         max_length=10,
@@ -45,6 +37,12 @@ class NhanVien(models.Model):
         verbose_name="Giới tính",
     )
     tk_ngan_hang = models.CharField(max_length=30, unique=True, verbose_name="Tài khoản ngân hàng")
+    anh_dai_dien = models.ImageField(
+        upload_to="employees/avatars/",
+        null=True,
+        blank=True,
+        verbose_name="Ảnh đại diện",
+    )
     ma_chi_nhanh = models.ForeignKey(
         "branches.ChiNhanh",
         on_delete=models.CASCADE,

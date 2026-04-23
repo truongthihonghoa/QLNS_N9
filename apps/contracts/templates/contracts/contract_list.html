@@ -4,7 +4,7 @@
 {% block title %}Quản Lý Hợp Đồng - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'contracts/css/contract_list.css' %}?v=20260401c">
+    <link rel="stylesheet" href="{% static 'contracts/css/contract_list.css' %}?v=20260414v">
     <link rel="stylesheet" href="{% static 'contracts/css/contract_detail.css' %}?v=20260401c">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
@@ -16,15 +16,23 @@
 {% block content %}
 <div class="contract-page">
     <section class="contract-list-section" id="contract-list-section">
+        {% if role != 'Nhân viên' %}
         <div class="contract-toolbar">
             <label class="contract-search" for="contract-search-input">
                 <input type="text" id="contract-search-input" placeholder="Nhập tên nhân viên">
             </label>
             <button type="button" class="contract-search-btn" id="contract-search-btn">Tìm kiếm</button>
+            <div class="contract-filter-branch">
+                <select id="branch-filter-select" class="filter-select">
+                    <option value="">Tất cả chi nhánh</option>
+                    {% for branch in branches %}
+                        <option value="{{ branch.ma_chi_nhanh }}" {% if current_branch == branch.ma_chi_nhanh %}selected{% endif %}>{{ branch.ten_chi_nhanh }}</option>
+                    {% endfor %}
+                </select>
+            </div>
             <a href="{% url 'contract_add' %}" class="contract-add-btn">+ Thêm</a>
         </div>
-
-        <p class="contract-search-empty" id="contract-search-empty">Không tìm thấy hợp đồng phù hợp.</p>
+        {% endif %}
 
         <div class="contract-table-card">
             <table class="contract-table">
@@ -79,17 +87,24 @@
                             >
                                 <i class="fas fa-eye"></i>
                             </button>
+                            {% if role != 'Nhân viên' %}
                             <a href="{% url 'contract_edit' contract_id=contract.ma_hd %}" class="contract-icon-btn edit-btn" title="Chỉnh sửa">
                                 <i class="fas fa-pen"></i>
                             </a>
                             <button type="button" class="contract-icon-btn delete-btn" data-delete-id="{{ contract.ma_hd }}" data-end-date="{{ contract.ngay_kt }}" title="Xóa">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            <div class="contract-search-empty" id="contract-search-empty">
+                <i class="fas fa-search"></i>
+                <h3>Không tìm thấy hợp đồng phù hợp</h3>
+                <p>Vui lòng kiểm tra lại từ khóa tìm kiếm hoặc tên nhân viên.</p>
+            </div>
         </div>
     </section>
 
@@ -99,13 +114,12 @@
 {% include 'partials/popup_confirm_delete.html' with delete_popup_title='XÁC NHẬN XÓA' delete_popup_message_1='Bạn có chắc chắn muốn xóa hợp đồng này?' %}
 <div class="contract-delete-alert-overlay" id="contract-delete-alert">
     <div class="contract-delete-alert-card">
-        <button type="button" class="contract-delete-alert-close" id="contract-delete-alert-close" aria-label="Đóng thông báo">&times;</button>
         <div class="contract-delete-alert-icon">!</div>
-        <h3>THÔNG BÁO</h3>
-        <p>Không thể xóa hợp đồng đang có hiệu lực</p>
+        <h3 class="contract-delete-alert-title">THÔNG BÁO</h3>
+        <p class="contract-delete-alert-message">Không thể xóa hợp đồng đang có hiệu lực</p>
+        <button type="button" class="contract-delete-alert-btn" id="contract-delete-alert-close">Đóng</button>
     </div>
 </div>
-
 <div class="contract-delete-success-toast" id="contract-delete-success-toast">
     <div class="contract-delete-success-text">Đã xóa hợp đồng lao động thành công</div>
     <div class="contract-delete-success-icon">&#10003;</div>
@@ -113,5 +127,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'contracts/js/contract_list.js' %}?v=20260401c"></script>
+    <script src="{% static 'contracts/js/contract_list.js' %}?v=20260414v"></script>
 {% endblock %}

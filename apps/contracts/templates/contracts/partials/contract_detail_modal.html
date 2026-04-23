@@ -1,15 +1,20 @@
 <div class="contract-detail-overlay" id="contract-detail-popup">
-    <div class="contract-detail-modal">
-        <div class="contract-top-header" style="background: #174d17; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center;">
+    <div class="contract-detail-modal" style="position: relative;">
+        <div class="contract-top-header" style="background: #174d17; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-radius: 12px 12px 0 0;">
             <div class="top-title" style="font-size: 18px; font-weight: bold; text-transform: uppercase;">Chi tiết hợp đồng lao động</div>
-            <button type="button" id="contract-detail-close-btn" style="background: transparent; border: none; color: white; font-size: 28px; cursor: pointer;">&times;</button>
+            <div class="header-actions" style="display: flex; gap: 10px; align-items: center;">
+                <button class="btn-print" type="button" onclick="window.print()" style="padding: 8px 16px; border: none; background: #28a745; color: white; font-weight: bold; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                    <i class="fas fa-print"></i>
+                    In (Xuất)
+                </button>
+                <button type="button" id="contract-detail-close-btn" style="background: #ff4d4d; color: white; border: none; width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" title="Thoát">
+                    <i class="fas fa-times" style="font-size: 18px;"></i>
+                </button>
+            </div>
         </div>
 
-        <div class="contract-tool-bar" style="background: white; padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee;">
-            <div class="tool-left">
-                <button class="btn-print" type="button" onclick="window.print()" style="padding: 8px 18px; border: 1px solid #174d17; background: #fff; color: #174d17; font-weight: bold; cursor: pointer; border-radius: 4px;">In hợp đồng</button>
-                <span class="contract-code" style="margin-left: 15px;">Mã HD: <strong id="detail-contract-id">...</strong></span>
-            </div>
+        <div class="contract-tool-bar" style="background: #f8f9fa; padding: 10px 25px; display: flex; align-items: center; border-bottom: 1px solid #ddd;">
+            <span class="contract-code">Mã HD: <strong id="detail-contract-id">...</strong></span>
         </div>
 
         <div class="contract-paper" style="background: white; width: min(800px, 92%); margin: 30px auto; padding: 60px 70px; font-family: 'Times New Roman', Times, serif; color: #000; line-height: 1.15; box-shadow: 0 0 20px rgba(0,0,0,0.1);">
@@ -32,45 +37,45 @@
 
                     <div class="party-info" style="margin-bottom: 15px;">
                         <strong style="display: block; font-weight: bold !important; text-transform: uppercase; margin-bottom: 10px;"><b>BÊN A: NGƯỜI SỬ DỤNG LAO ĐỘNG</b></strong>
-                        <div class="info-row-clean">
-                            <span class="label-bold">Đại diện:</span>
-                            <span id="detail-nguoi-dai-dien" class="value-text"></span>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Đại diện:</span>
+                            <span id="detail-nguoi-dai-dien" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
                         </div>
-                        <div class="info-row-clean">
-                            <span class="label-bold">Chức vụ:</span>
-                            <span id="detail-chuc-vu-dai-dien" class="value-text"></span>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Chức vụ:</span>
+                            <span id="detail-chuc-vu-dai-dien" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
                         </div>
-                        <div class="info-row-clean">
-                            <span class="label-bold">Điện thoại:</span>
-                            <span id="detail-phone-ben-a" class="value-text"></span>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Điện thoại:</span>
+                            <span id="detail-phone-ben-a" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
                         </div>
                     </div>
 
                     <div class="party-info">
                         <strong style="display: block; font-weight: bold !important; text-transform: uppercase; margin-bottom: 10px;"><b>BÊN B: NGƯỜI LAO ĐỘNG</b></strong>
-                        <div class="info-row-clean">
-                            <span class="label-bold">Ông/Bà:</span>
-                            <span id="detail-ten-nv" class="value-text"></span>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Ông/Bà:</span>
+                            <span id="detail-ten-nv" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
                         </div>
-                        <div class="info-row-clean">
-                            <span class="label-bold">Mã nhân viên:</span>
-                            <span id="detail-ma-nv" class="value-text"></span>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Mã nhân viên:</span>
+                            <span id="detail-ma-nv" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
                         </div>
-                        <div class="info-row-clean">
-                            <span class="label-bold">Số CCCD:</span>
-                            <span id="detail-cccd" class="value-text"></span>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Số CCCD:</span>
+                            <span id="detail-cccd" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
                         </div>
-                        <div class="info-row-clean">
-                            <span class="label-bold">Ngày sinh:</span>
-                            <span id="detail-ngay-sinh" class="value-text"></span>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Ngày sinh:</span>
+                            <span id="detail-ngay-sinh" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
                         </div>
-                        <div class="info-row-clean">
-                            <span class="label-bold">Số điện thoại:</span>
-                            <span id="detail-phone-ben-b" class="value-text"></span>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Số điện thoại:</span>
+                            <span id="detail-phone-ben-b" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
                         </div>
-                        <div class="info-row-clean">
-                            <span class="label-bold">Địa chỉ thường trú:</span>
-                            <span id="detail-dia-chi" class="value-text"></span>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Địa chỉ thường trú:</span>
+                            <span id="detail-dia-chi" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
                         </div>
                     </div>
                 </div>
@@ -84,7 +89,7 @@
                 <div class="contract-section" style="margin-bottom: 24px;">
                     <h3 style="font-size: 15px; font-weight: bold !important; text-transform: uppercase; margin-bottom: 12px;"><b>ĐIỀU 3: VỊ TRÍ, ĐỊA ĐIỂM VÀ TRÁCH NHIỆM</b></h3>
                     <p>1. Chức vụ chuyên môn: <b id="detail-chuc-vu-nv">...</b>.</p>
-                    <p>2. Địa điểm làm việc: <b id="detail-dia-diem-lv">...</b>.</p>
+                    <p>2. Địa điểm làm việc: <b id="detail-dia-diem-lv" style="font-weight: normal;">...</b>.</p>
                     <p>3. Trách nhiệm công việc:</p>
                     <div style="padding-left: 20px;">
                         <p>+ Tuân thủ quy định về đồng phục, diện mạo và thái độ phục vụ chuyên nghiệp tại quán.</p>
@@ -129,9 +134,9 @@
 
                 <div class="contract-section" style="margin-bottom: 24px;">
                     <h3 style="font-size: 15px; font-weight: bold !important; text-transform: uppercase; margin-bottom: 12px;"><b>ĐIỀU 8: GHI CHÚ VÀ ĐIỀU KHOẢN THI HÀNH</b></h3>
-                    <div class="info-row-clean">
-                        <span class="label-bold">Ghi chú:</span>
-                        <span id="detail-ghi-chu" class="value-text"></span>
+                    <div style="display: flex; align-items: baseline; margin-bottom: 8px;">
+                        <span style="white-space: nowrap; font-weight: bold;">Ghi chú:</span>
+                        <span id="detail-ghi-chu" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
                     </div>
                     <p>Hợp đồng được lập thành 02 bản, mỗi bên giữ 01 bản để thực hiện.</p>
                 </div>

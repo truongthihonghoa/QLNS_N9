@@ -1,99 +1,24 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Quản lý Chi nhánh - {{ block.super }}{% endblock %}
+{% block title %}Quản lý Chi nhánh{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'branches/css/branch_list.css' %}">
-    <style>
-        /* Màu cho hàng trong bảng */
-        .branch-table tr.branch-inactive {
-            background-color: #f8d7da !important;
-            color: #721c24;
-        }
-
-        /* Căn chỉnh cột Hành động */
-        .branch-actions {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px; /* Khoảng cách giữa các vòng tròn */
-            padding: 10px !important;
-        }
-
-        .branch-actions button {
-            width: 34px; /* Kích thước vòng tròn */
-            height: 34px;
-            border-radius: 50%; /* Bo tròn hoàn toàn */
-            border: 1px solid #e0e0e0; /* Viền xám nhạt */
-            background-color: #ffffff !important; /* Nền trắng như yêu cầu */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .branch-actions button:hover {
-            background-color: #f5f5f5 !important; /* Xám cực nhạt khi hover */
-            border-color: #bdbdbd;
-            transform: translateY(-2px);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-        }
-
-        .branch-actions img {
-            width: 18px; /* Kích thước icon bên trong */
-            height: 18px;
-            object-fit: contain;
-        }
-
-        /* Style cho select trạng thái */
-        #edit-branch-status {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            outline: none;
-        }
-
-        .status-select-active {
-            background-color: #d4edda !important;
-            color: #155724 !important;
-            border-color: #c3e6cb !important;
-        }
-
-        .status-select-inactive {
-            background-color: #f8d7da !important;
-            color: #721c24 !important;
-            border-color: #f5c6cb !important;
-        }
-
-        select#edit-branch-status option {
-            background-color: white;
-            color: #333;
-            font-weight: normal;
-        }
-
-        select#edit-branch-status option.status-active { color: #155724; background-color: #d4edda; }
-        select#edit-branch-status option.status-inactive { color: #721c24; background-color: #f8d7da; }
-    </style>
+<link rel="stylesheet" href="{% static 'branches/css/branch_list.css' %}">
 {% endblock %}
 
 {% block content %}
+<div class="container">
     <div class="toolbar">
-        <div class="search-box">
-            <input type="text" id="search-input" placeholder="Nhập tên chi nhánh...">
-            <button type="button" id="btn-search" class="btn-search">Tìm kiếm</button>
-        </div>
-        <button type="button" id="btn-create-branch" class="btn-primary">+ Thêm</button>
+        <form method="get" class="search-box">
+            <input type="text" name="q" value="{{ keyword }}" placeholder="Nhập tên chi nhánh">
+        </form>
+        <button type="submit" class="btn-search">Tìm kiếm</button>
+        <a href="{% url 'branches:branch_create' %}" class="btn-primary">+ Thêm</a>
     </div>
 
     <div class="branch-table-card">
-        <table class="branch-table" id="branch-table">
+        <table class="branch-table">
             <thead>
                 <tr>
                     <th>STT</th>
@@ -101,488 +26,74 @@
                     <th>Tên chi nhánh</th>
                     <th>Địa chỉ</th>
                     <th>Số điện thoại</th>
-                    <th>Quản lý CN</th>
+                    <th>Tên quản lý CN</th>
+                    <th>Trạng thái</th>
                     <th>Hành động</th>
                 </tr>
             </thead>
+
             <tbody>
-                <tr id="branch-row-1">
-                    <td>1</td>
-                    <td class="search-id">CN03</td>
-                    <td class="search-name">Chi nhánh Hải Châu</td>
-                    <td class="search-address">123 Nguyễn Văn Linh, Hải Châu, Đà Nẵng</td>
-                    <td>0966983691</td>
-                    <td class="search-manager">Nguyễn Văn A</td>
+                {% for branch in branches %}
+                <tr class="{% if branch.trang_thai == 'inactive' %}branch-inactive{% endif %}">
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ branch.ma_chi_nhanh }}</td>
+                    <td>{{ branch.ten_chi_nhanh }}</td>
+                    <td>{{ branch.dia_chi }}</td>
+                    <td>{{ branch.sdt }}</td>
+                    <td>
+                        {% if branch.ma_nv_ql %}
+                            {{ branch.ma_nv_ql.ho_ten }}
+                        {% else %}
+                            Chưa có
+                        {% endif %}
+                    </td>
+                    <td>{{ branch.get_trang_thai_display }}</td>
+
                     <td class="branch-actions">
-                        <button type="button" class="btn-view" data-branch-id="1" title="Xem">
-                            <img src="{% static 'images/search_icon.png' %}" alt="Chi tiết">
-                        </button>
-                        <button type="button" class="btn-edit" data-branch-id="1" title="Sửa">
-                            <img src="{% static 'images/edit_icon.png' %}" alt="Sửa">
-                        </button>
+                        <a href="{% url 'branches:branch_detail' branch.ma_chi_nhanh %}" class="btn-action-ge btn-view-ge" title="Xem chi tiết">
+                            <i class="fas fa-eye"></i>
+                        </a>
+
+                        <a href="{% url 'branches:branch_update' branch.ma_chi_nhanh %}" class="btn-action-ge btn-edit-ge" title="Chỉnh sửa">
+                            <i class="fas fa-pen"></i>
+                        </a>
                     </td>
                 </tr>
-                <tr id="branch-row-2">
-                    <td>2</td>
-                    <td class="search-id">CN01</td>
-                    <td class="search-name">Chi nhánh Thanh Khê</td>
-                    <td class="search-address">456 Lê Đình Lý, Thanh Khê, Đà Nẵng</td>
-                    <td>0912345678</td>
-                    <td class="search-manager">Trần Thị B</td>
-                    <td class="branch-actions">
-                        <button type="button" class="btn-view" data-branch-id="2" title="Xem">
-                            <img src="{% static 'images/search_icon.png' %}" alt="Chi tiết">
-                        </button>
-                        <button type="button" class="btn-edit" data-branch-id="2" title="Sửa">
-                            <img src="{% static 'images/edit_icon.png' %}" alt="Sửa">
-                        </button>
+
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align:center;">
+                        Không có chi nhánh nào
                     </td>
                 </tr>
-                <tr id="branch-row-3">
-                    <td>3</td>
-                    <td class="search-id">CN02</td>
-                    <td class="search-name">Chi nhánh Liên Chiểu</td>
-                    <td class="search-address">789 Võ Văn Kiệt, Liên Chiểu, Đà Nẵng</td>
-                    <td>0987654321</td>
-                    <td class="search-manager">Lê Văn C</td>
-                    <td class="branch-actions">
-                        <button type="button" class="btn-view" data-branch-id="3" title="Xem">
-                            <img src="{% static 'images/search_icon.png' %}" alt="Chi tiết">
-                        </button>
-                        <button type="button" class="btn-edit" data-branch-id="3" title="Sửa">
-                            <img src="{% static 'images/edit_icon.png' %}" alt="Sửa">
-                        </button>
-                    </td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
-        <div id="no-results" style="display: none; text-align: center; padding: 30px; font-weight: 600; color: #888; font-size: 18px;">
-            Không tìm thấy chi nhánh nào khớp với từ khóa.
-        </div>
     </div>
-
-    <div class="branch-modal-overlay" id="view-branch-modal" style="display: none;">
-        <div class="branch-modal branch-view-modal">
-            <div class="branch-modal-header">
-                <h2>Xem chi nhánh</h2>
-                <button type="button" class="branch-modal-close modal-cancel-btn" data-modal="view-branch-modal">&times;</button>
-            </div>
-            <div class="branch-modal-body">
-                <div class="branch-info">
-                    <div class="info-row">
-                        <label>Tên chi nhánh:</label>
-                        <span id="view-branch-name"></span>
-                    </div>
-                    <div class="info-row">
-                        <label>Địa chỉ:</label>
-                        <span id="view-branch-address"></span>
-                    </div>
-                    <div class="info-row">
-                        <label>Số điện thoại:</label>
-                        <span id="view-branch-phone"></span>
-                    </div>
-                    <div class="info-row">
-                        <label>Quản lý:</label>
-                        <span id="view-branch-manager"></span>
-                    </div>
-                    <div class="info-row">
-                        <label>Trạng thái:</label>
-                        <span id="view-branch-status"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="branch-modal-footer">
-                <button type="button" class="btn-secondary modal-cancel-btn" data-modal="view-branch-modal">Đóng</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="branch-modal-overlay" id="edit-branch-modal" style="display: none;">
-        <div class="branch-modal branch-edit-modal">
-            <div class="branch-modal-header">
-                <h2>Sửa chi nhánh</h2>
-                <button type="button" class="branch-modal-close modal-cancel-btn" data-modal="edit-branch-modal">&times;</button>
-            </div>
-            <div class="branch-modal-body">
-                <form id="edit-branch-form">
-                    <div class="form-group">
-                        <label for="edit-branch-name">Tên chi nhánh:</label>
-                        <input type="text" id="edit-branch-name" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-branch-address">Địa chỉ:</label>
-                        <input type="text" id="edit-branch-address" name="address" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-branch-phone">Số điện thoại:</label>
-                        <input type="tel" id="edit-branch-phone" name="phone" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-branch-manager">Quản lý:</label>
-                        <select id="edit-branch-manager" name="manager" required>
-                            <option value="Nguyễn Văn A">Nguyễn Văn A</option>
-                            <option value="Trần Thị B">Trần Thị B</option>
-                            <option value="Lê Văn C">Lê Văn C</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-branch-status">Trạng thái:</label>
-                        <select id="edit-branch-status" name="status" required>
-                            <option value="active" class="status-active">Đang hoạt động</option>
-                            <option value="inactive" class="status-inactive">Ngưng hoạt động</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="branch-modal-footer">
-                <button type="button" class="btn-secondary" id="edit-cancel-trigger">Hủy</button>
-                <button type="submit" form="edit-branch-form" class="btn-primary">Lưu</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="branch-modal-overlay" id="delete-confirm-modal" style="display: none;">
-        <div class="branch-modal branch-delete-modal">
-            <div class="branch-modal-header">
-                <h2>Ngưng hoạt động chi nhánh</h2>
-                <button type="button" class="branch-modal-close modal-cancel-btn" data-modal="delete-confirm-modal">&times;</button>
-            </div>
-            <div class="branch-modal-body">
-                <p>Bạn có chắc chắn muốn ngưng hoạt động chi nhánh này không?</p>
-                <p><strong id="delete-branch-name"></strong></p>
-            </div>
-            <div class="branch-modal-footer">
-                <button type="button" class="btn-secondary" id="delete-cancel-btn">Hủy</button>
-                <button type="button" id="confirm-delete-btn" class="btn-danger">Ngưng hoạt động</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="branch-modal-overlay" id="create-branch-modal" style="display: none;">
-        <div class="branch-modal branch-create-modal">
-            <div class="branch-modal-header">
-                <h2>Thêm chi nhánh</h2>
-                <button type="button" class="branch-modal-close modal-cancel-btn" data-modal="create-branch-modal">&times;</button>
-            </div>
-            <div class="branch-modal-body">
-                <p class="branch-form-note">Vui lòng nhập thông tin chi nhánh</p>
-                <form id="create-branch-form">
-                    <div class="form-group">
-                        <label for="create-branch-name">Tên chi nhánh <strong>*</strong></label>
-                        <input type="text" id="create-branch-name" name="name" placeholder="Nhập tên chi nhánh" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="create-branch-address">Địa chỉ <strong>*</strong></label>
-                        <input type="text" id="create-branch-address" name="address" placeholder="Nhập địa chỉ chi nhánh" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="create-branch-phone">Số điện thoại <strong>*</strong></label>
-                        <input type="tel" id="create-branch-phone" name="phone" placeholder="Nhập số điện thoại" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="create-branch-manager">Quản lý CN <strong>*</strong></label>
-                        <select id="create-branch-manager" name="manager" required>
-                            <option value="">Chọn quản lý chi nhánh</option>
-                            <option value="Nguyễn Văn A">Nguyễn Văn A</option>
-                            <option value="Trần Thị B">Trần Thị B</option>
-                            <option value="Lê Văn C">Lê Văn C</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="branch-modal-footer">
-                <button type="button" class="btn-secondary" id="create-cancel-trigger">Hủy</button>
-                <button type="submit" form="create-branch-form" class="btn-primary">Lưu</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="confirm-popup-overlay branch-confirm-cancel-overlay" id="create-confirm-cancel-popup">
-        <div class="branch-confirm-cancel-box">
-            <div class="branch-confirm-cancel-header">
-                <h3>Xác nhận hủy</h3>
-                <button type="button" class="branch-confirm-cancel-close" id="create-confirm-cancel-close-btn">&times;</button>
-            </div>
-            <div class="branch-confirm-cancel-body">
-                <div class="branch-confirm-cancel-icon">!</div>
-                <p class="branch-confirm-cancel-message">Bạn có thông tin chưa lưu, xác nhận hủy?</p>
-            </div>
-            <div class="branch-confirm-cancel-footer">
-                <button type="button" class="branch-confirm-cancel-btn branch-confirm-cancel-no" id="create-confirm-no-btn">Không</button>
-                <button type="button" class="branch-confirm-cancel-btn branch-confirm-cancel-yes" id="create-confirm-yes-btn">Đồng ý</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="confirm-popup-overlay branch-confirm-cancel-overlay" id="confirm-cancel-popup">
-        <div class="branch-confirm-cancel-box">
-            <div class="branch-confirm-cancel-header">
-                <h3>Xác nhận hủy</h3>
-                <button type="button" class="branch-confirm-cancel-close" id="confirm-cancel-close-btn">&times;</button>
-            </div>
-            <div class="branch-confirm-cancel-body">
-                <div class="branch-confirm-cancel-icon">!</div>
-                <p class="branch-confirm-cancel-message">Bạn có thông tin chưa lưu, xác nhận hủy?</p>
-            </div>
-            <div class="branch-confirm-cancel-footer">
-                <button type="button" class="branch-confirm-cancel-btn branch-confirm-cancel-no" id="confirm-no-btn">Không</button>
-                <button type="button" class="branch-confirm-cancel-btn branch-confirm-cancel-yes" id="confirm-yes-btn">Đồng ý</button>
-            </div>
-        </div>
-    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
+{% if messages %}
+{% for message in messages %}
+{{ message|stringformat:"s"|json_script:"branch-toast-msg" }}
+{% endfor %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const createBranchModal = document.getElementById('create-branch-modal');
-    const createCancelTrigger = document.getElementById('create-cancel-trigger');
-    const createConfirmCancelPopup = document.getElementById('create-confirm-cancel-popup');
-    const createConfirmNoBtn = document.getElementById('create-confirm-no-btn');
-    const createConfirmYesBtn = document.getElementById('create-confirm-yes-btn');
-    const createConfirmCancelCloseBtn = document.getElementById('create-confirm-cancel-close-btn');
-
-    const editBranchModal = document.getElementById('edit-branch-modal');
-    const editCancelTrigger = document.getElementById('edit-cancel-trigger');
-    const confirmCancelPopup = document.getElementById('confirm-cancel-popup');
-    const confirmNoBtn = document.getElementById('confirm-no-btn');
-    const confirmYesBtn = document.getElementById('confirm-yes-btn');
-    const confirmCancelCloseBtn = document.getElementById('confirm-cancel-close-btn');
-
-    const deleteConfirmModal = document.getElementById('delete-confirm-modal');
-    const deleteCancelBtn = document.getElementById('delete-cancel-btn');
-
+document.addEventListener('DOMContentLoaded', function () {
+    const msgEl = document.getElementById('branch-toast-msg');
     const toast = document.getElementById('toast-notification');
-    const toastContent = toast.querySelector('.toast-content');
+    if (!msgEl || !toast) return;
 
-    function showToast(message) {
-        if (message) {
-            toastContent.textContent = message;
-        }
-        toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3000);
-    }
+    let msg = '';
+    try { msg = JSON.parse(msgEl.textContent || '""'); } catch (e) { msg = ''; }
+    if (!msg) return;
 
-    // Dữ liệu mẫu ban đầu
-    const branches = {
-        1: { name: 'Chi nhánh Hải Châu', address: '123 Nguyễn Văn Linh, Hải Châu, Đà Nẵng', phone: '0966983691', manager: 'Nguyễn Văn A', status: 'active' },
-        2: { name: 'Chi nhánh Thanh Khê', address: '456 Lê Đình Lý, Thanh Khê, Đà Nẵng', phone: '0912345678', manager: 'Trần Thị B', status: 'active' },
-        3: { name: 'Chi nhánh Liên Chiểu', address: '789 Võ Văn Kiệt, Liên Chiểu, Đà Nẵng', phone: '0987654321', manager: 'Lê Văn C', status: 'active' }
-    };
+    const toastMsg = document.getElementById("toast-message");
+    if (toastMsg) toastMsg.textContent = msg;
 
-    // Hàm loại bỏ dấu tiếng Việt để tìm kiếm gần đúng
-    function removeVietnameseTones(str) {
-        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
-        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
-        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
-        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
-        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
-        str = str.replace(/ỳ|ý|ỵ|ỷ|ĩ/g, "y");
-        str = str.replace(/đ/g, "d");
-        str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
-        str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
-        str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
-        str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
-        str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
-        str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ĩ/g, "Y");
-        str = str.replace(/Đ/g, "D");
-        str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, "");
-        str = str.replace(/\u02C6|\u0306|\u031B/g, "");
-        str = str.replace(/ + /g, " ");
-        str = str.trim();
-        return str;
-    }
-
-    // --- CHỨC NĂNG TÌM KIẾM ---
-    const searchInput = document.getElementById('search-input');
-    const btnSearch = document.getElementById('btn-search');
-    const tableRows = document.querySelectorAll('#branch-table tbody tr');
-    const noResults = document.getElementById('no-results');
-
-    function performSearch() {
-        const searchTerm = removeVietnameseTones(searchInput.value.toLowerCase().trim());
-        let hasVisibleRows = false;
-
-        tableRows.forEach(row => {
-            const name = removeVietnameseTones(row.querySelector('.search-name').textContent.toLowerCase());
-            const address = removeVietnameseTones(row.querySelector('.search-address').textContent.toLowerCase());
-            const manager = removeVietnameseTones(row.querySelector('.search-manager').textContent.toLowerCase());
-
-            if (name.includes(searchTerm) || address.includes(searchTerm) || manager.includes(searchTerm)) {
-                row.style.display = '';
-                hasVisibleRows = true;
-            } else {
-                row.style.display = 'none';
-            }
-        });
-
-        noResults.style.display = hasVisibleRows ? 'none' : 'block';
-    }
-
-    btnSearch.addEventListener('click', performSearch);
-    searchInput.addEventListener('input', performSearch); // Live search
-    searchInput.addEventListener('keyup', function(e) {
-        if (e.key === 'Enter') {
-            performSearch();
-        }
-    });
-    // -------------------------
-
-    // Hàm cập nhật màu sắc của select trạng thái
-    function updateStatusSelectColor(selectElement) {
-        if (selectElement.value === 'active') {
-            selectElement.classList.add('status-select-active');
-            selectElement.classList.remove('status-select-inactive');
-        } else {
-            selectElement.classList.add('status-select-inactive');
-            selectElement.classList.remove('status-select-active');
-        }
-    }
-
-    const statusSelect = document.getElementById('edit-branch-status');
-    statusSelect.addEventListener('change', function() {
-        if (this.value === 'inactive') {
-            const branchId = document.getElementById('edit-branch-form').dataset.currentBranchId;
-            const branch = branches[branchId];
-            document.getElementById('delete-branch-name').textContent = branch.name;
-            document.getElementById('confirm-delete-btn').dataset.deleteId = branchId;
-            document.getElementById('confirm-delete-btn').dataset.source = 'edit-form';
-            deleteConfirmModal.style.display = 'flex';
-        }
-        updateStatusSelectColor(this);
-    });
-
-    deleteCancelBtn.addEventListener('click', function() {
-        const confirmBtn = document.getElementById('confirm-delete-btn');
-        if (confirmBtn.dataset.source === 'edit-form') {
-            const statusSelect = document.getElementById('edit-branch-status');
-            statusSelect.value = 'active'; // Hoàn tác về active
-            updateStatusSelectColor(statusSelect);
-        }
-        deleteConfirmModal.style.display = 'none';
-    });
-
-    document.querySelectorAll('.btn-view').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const branch = branches[this.dataset.branchId];
-            document.getElementById('view-branch-name').textContent = branch.name;
-            document.getElementById('view-branch-address').textContent = branch.address;
-            document.getElementById('view-branch-phone').textContent = branch.phone;
-            document.getElementById('view-branch-manager').textContent = branch.manager;
-
-            const statusText = branch.status === 'active' ? 'Đang hoạt động' : 'Ngưng hoạt động';
-            const statusEl = document.getElementById('view-branch-status');
-            statusEl.textContent = statusText;
-            statusEl.style.color = branch.status === 'active' ? '#28a745' : '#dc3545';
-            statusEl.style.fontWeight = 'bold';
-
-            document.getElementById('view-branch-modal').style.display = 'flex';
-        });
-    });
-
-    document.querySelectorAll('.btn-edit').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const branchId = this.dataset.branchId;
-            const branch = branches[branchId];
-
-            document.getElementById('edit-branch-name').value = branch.name;
-            document.getElementById('edit-branch-address').value = branch.address;
-            document.getElementById('edit-branch-phone').value = branch.phone;
-            document.getElementById('edit-branch-manager').value = branch.manager;
-
-            const statusSelect = document.getElementById('edit-branch-status');
-            statusSelect.value = branch.status;
-            updateStatusSelectColor(statusSelect);
-
-            document.getElementById('edit-branch-form').dataset.currentBranchId = branchId;
-            editBranchModal.style.display = 'flex';
-        });
-    });
-
-    document.querySelectorAll('.modal-cancel-btn, .branch-modal-close').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const modalId = this.dataset.modal || this.closest('.branch-modal-overlay').id;
-            document.getElementById(modalId).style.display = 'none';
-        });
-    });
-
-    editCancelTrigger?.addEventListener('click', function() {
-        confirmCancelPopup.style.display = 'flex';
-    });
-
-    confirmNoBtn?.addEventListener('click', function() {
-        confirmCancelPopup.style.display = 'none';
-    });
-
-    confirmCancelCloseBtn?.addEventListener('click', function() {
-        confirmCancelPopup.style.display = 'none';
-    });
-
-    confirmYesBtn?.addEventListener('click', function() {
-        confirmCancelPopup.style.display = 'none';
-        editBranchModal.style.display = 'none';
-    });
-
-    createConfirmCancelCloseBtn?.addEventListener('click', function() {
-        createConfirmCancelPopup.style.display = 'none';
-    });
-
-    document.getElementById('confirm-delete-btn').addEventListener('click', function() {
-        deleteConfirmModal.style.display = 'none';
-    });
-
-    document.getElementById('btn-create-branch').addEventListener('click', function() {
-        createBranchModal.style.display = 'flex';
-    });
-
-    createCancelTrigger?.addEventListener('click', function() {
-        createConfirmCancelPopup.style.display = 'flex';
-    });
-
-    createConfirmNoBtn?.addEventListener('click', function() {
-        createConfirmCancelPopup.style.display = 'none';
-    });
-
-    createConfirmYesBtn?.addEventListener('click', function() {
-        createConfirmCancelPopup.style.display = 'none';
-        createBranchModal.style.display = 'none';
-    });
-
-    document.getElementById('create-branch-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        createBranchModal.style.display = 'none';
-        this.reset();
-        showToast('Đã thêm chi nhánh mới thành công');
-    });
-
-    document.getElementById('edit-branch-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const branchId = this.dataset.currentBranchId;
-        const formData = new FormData(this);
-        const newStatus = formData.get('status');
-
-        if (branches[branchId]) {
-            branches[branchId].status = newStatus;
-            branches[branchId].name = formData.get('name');
-            branches[branchId].address = formData.get('address');
-            branches[branchId].phone = formData.get('phone');
-            branches[branchId].manager = formData.get('manager');
-        }
-
-        const row = document.getElementById(`branch-row-${branchId}`);
-        if (row) {
-            if (newStatus === 'inactive') {
-                row.classList.add('branch-inactive');
-            } else {
-                row.classList.remove('branch-inactive');
-            }
-        }
-
-        editBranchModal.style.display = 'none';
-        showToast('Cập nhật thông tin chi nhánh thành công');
-    });
+    toast.classList.add('show');
+    setTimeout(function () { toast.classList.remove('show'); }, 3000);
 });
 </script>
+{% endif %}
 {% endblock %}

@@ -2,6 +2,275 @@
    BÁO CÁO - Reports Styles (Đồng bộ với Payroll)
    ============================================ */
 
+    :root {
+        --ge-green-dark: #174D17;
+        --ge-green-light: #CDE0C9;
+        --border-color: #DADCE0;
+        --text-color: #333;
+    }
+
+    .report-management-container {
+        padding: 20px;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+/* --- ĐỒNG BỘ TOOLBAR GÉ CAFE --- */
+.report-toolbar {
+    display: flex;
+    margin-bottom: 30px;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Hàng chứa Search và Nút Tạo nằm chung 1 hàng */
+/* Container bọc toàn bộ toolbar hàng đầu tiên */
+.report-row {
+    display: flex;
+    justify-content: space-between; /* Đẩy thanh search và cụm nút về 2 đầu */
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+/* KHUNG SEARCH "VIÊN THUỐC" DÀI */
+.search-row {
+    flex: 1; /* 🔥 Quan trọng: Để thanh search chiếm hết không gian trống còn lại */
+    display: flex;
+    align-items: center;
+    background-color: #f0f0f0; /* Màu nền xám nhạt như mẫu */
+    border-radius: 12px;
+    height: 52px;
+    padding: 0 25px;
+    border: none;
+    box-sizing: border-box;
+}
+
+/* Ô input nhập liệu bên trong */
+.search-row input[type="text"] {
+    flex: 1;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    font-size: 20px;
+    font-family: 'Montserrat', sans-serif;
+    color: #555;
+}
+
+/* Cụm nút bên phải (Tìm kiếm, Tạo báo cáo/Tính lương) */
+.button-group {
+    display: flex;
+    gap: 15px; /* Khoảng cách giữa các nút xanh */
+    align-items: center;
+}
+
+.btn-search-ge,
+.btn-create-report {
+    height: 48px !important; /* Cao bằng thanh search cho đồng bộ */
+    padding: 0 30px !important;
+    background-color: #2E7D32 !important; /* Xanh lá GÉ */
+    color: white !important;
+    border-radius: 12px !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    border: none !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.btn-search-ge:hover,
+.btn-create-report:hover {
+    background-color: #1b5e20 !important;
+}
+/* --- TĂNG KÍCH THƯỚC BẢNG --- */
+.ge-main-table th {
+    padding: 20px 15px;
+    font-size: 20px; /* Chữ tiêu đề to */
+    font-weight: 700;
+}
+
+.ge-main-table td {
+    padding: 18px 15px; /* Hàng cao và thoáng hơn */
+    font-size: 19px; /* Chữ nội dung to rõ */
+}
+
+/* Dropdown chi nhánh cũng cho to lên luôn */
+.dropdown-ge {
+    height: 55px;
+    border-radius: 10px;
+    font-size: 18px;
+    padding: 0 20px;
+    min-width: 300px;
+}
+
+    /* Table */
+    .ge-table-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow-x: auto; /* Giữ cuộn ngang nếu bảng quá rộng */
+        width: 100%;
+        position: relative;
+    }
+
+    /* Tùy chỉnh thanh cuộn ngang cho bảng chính */
+    .ge-table-card::-webkit-scrollbar {
+        height: 8px;
+    }
+    .ge-table-card::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 10px;
+    }
+
+    .ge-main-table {
+        width: 100%;
+        min-width: 1100px;
+        border-collapse: collapse; /* Quay lại collapse nếu không dùng sticky header nội bộ */
+        table-layout: fixed;
+    }
+
+    .ge-main-table th, .ge-main-table td {
+        padding: 12px 15px; /* Giảm padding từ 20px xuống 12px */
+        text-align: left;
+        font-size: 15px;    /* Giảm font size từ 18px xuống 15px */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border-bottom: 1px solid #eee;
+    }
+
+    /* Định nghĩa độ rộng cố định cho từng cột bảng chính */
+    .ge-main-table th:nth-child(1), .ge-main-table td:nth-child(1) { width: 50px; text-align: center; }
+    .ge-main-table th:nth-child(2), .ge-main-table td:nth-child(2) { width: 120px; }
+    .ge-main-table th:nth-child(3), .ge-main-table td:nth-child(3) { width: auto; }
+    .ge-main-table th:nth-child(4), .ge-main-table td:nth-child(4) { width: 130px; }
+    .ge-main-table th:nth-child(5), .ge-main-table td:nth-child(5) { width: 140px; }
+    .ge-main-table th:nth-child(6), .ge-main-table td:nth-child(6) { width: 150px; }
+
+    .ge-main-table th {
+        background-color: var(--ge-green-dark);
+        color: white;
+        font-weight: 600;
+        border-bottom: 2px solid #143d14;
+        font-size: 18px;
+    }
+
+    .ge-main-table td {
+        color: var(--text-color);
+        font-size: 18px;
+    }
+
+    .ge-main-table tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    /* --- ĐỒNG BỘ CÁC NÚT ICON TRÒN GÉ CAFE --- */
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-action-ge {
+        background: white !important;
+        width: 38px !important;
+        height: 38px !important;
+        border-radius: 50% !important;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease !important;
+        font-size: 18px !important;
+        text-decoration: none !important;
+        box-sizing: border-box !important;
+    }
+
+    .btn-action-ge i {
+        font-size: 16px; /* Kích thước icon bên trong */
+        transition: color 0.3s ease;
+    }
+
+    /* Nút Xem - Màu Xanh Lá Đậm */
+    /* Nút Xem - Viền đen mảnh, icon xanh dương */
+    .btn-view-ge {
+        color: #17A2D8 !important;
+        border: 1px solid #333333 !important; /* Viền đen mảnh mặc định */
+        background-color: white !important;
+        transition: all 0.3s ease;
+    }
+
+    .btn-view-ge i {
+        color: #17A2D8 !important; /* Màu icon xanh dương */
+    }
+
+    /* Khi Hover: Nền xanh, viền xanh, icon trắng */
+    .btn-view-ge:hover {
+        background-color: #17A2D8 !important;
+        border-color: #17A2D8 !important; /* Viền chuyển sang xanh cho đồng bộ nền */
+        transform: translateY(-2px);
+    }
+
+    .btn-view-ge:hover i {
+        color: white !important; /* Icon chuyển sang trắng để nổi bật trên nền xanh */
+    }
+    .btn-view-ge:hover i { color: white !important; }
+
+    /* Nút Sửa - Màu Vàng Cam */
+    .btn-edit-ge {
+    border: 1px solid #333333 !important;}
+    .btn-edit-ge i { color: #333333 !important; }
+    .btn-edit-ge:hover {
+        background-color: #333333 !important;
+        transform: translateY(-2px);
+    }
+    .btn-edit-ge:hover i { color: white !important; }
+
+    /* Nút Excel - Màu Xanh Excel */
+    .btn-excel-ge { color: #1E7145 !important; border: 1px solid #333333 !important; }
+    .btn-excel-ge:hover { background-color: #1E7145 !important; }
+    .btn-excel-ge:hover i { color: white !important; }
+    /* Search bar */
+    .search-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .search-input-ge {
+        height: 52px;
+        padding: 0 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 18px;
+        outline: none;
+        min-width: 280px;
+        flex:1;
+    }
+
+    .btn-search-ge {
+        height: 48px;
+        padding: 0 20px;
+        background-color: var(--ge-green-dark);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.2s ease;
+    }
+
+    .btn-search-ge:hover {
+        background-color: #1B5E20;
+    }
 /* Force header white */
 .header {
     background-color: #ffffff !important;
@@ -348,23 +617,43 @@
 .popup-overlay {
     display: none;
     position: fixed;
-    top: 0;
+    top: 158px; /* Bắt đầu sau Header (88px) + Navbar (70px) */
     left: 0;
     width: 100%;
-    height: 100%;
+    height: calc(100vh - 158px);
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    z-index: 998; /* Thấp hơn navbar (999) một chút để navbar luôn đè lên */
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Căn lề trên để dễ kiểm soát vị trí */
+    padding-top: 30px;
 }
 
 .popup-content {
     background: white;
     border-radius: 8px;
     box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.20);
-    max-width: 90%;
-    max-height: 90%;
-    overflow: auto;
+    width: 1000px;
+    max-width: 95vw;
+    max-height: calc(100vh - 220px); /* Giới hạn độ cao để không vượt quá màn hình */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Form row cụ thể cho popup để đảm bảo nằm ngang */
+.popup-body .form-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.popup-body .form-row .container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .confirm-popup {
@@ -416,6 +705,8 @@
 
 .popup-body {
     padding: 24px;
+    flex: 1;
+    overflow-y: auto;
 }
 
 .popup-footer,
@@ -799,7 +1090,7 @@
         position: static;
         margin-bottom: 20px;
     }
-    
+
     .table .header .row,
     .row_01,
     .row_02,
@@ -814,7 +1105,7 @@
     .form-row {
         flex-direction: column;
     }
-    
+
     .table .header .row,
     .row_01,
     .row_02,
@@ -824,7 +1115,7 @@
         display: flex;
         flex-wrap: wrap;
     }
-    
+
     .popup-content {
         width: 95%;
     }

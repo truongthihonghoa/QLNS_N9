@@ -1,10 +1,20 @@
 {% load static %}
 <div class="confirm-popup-overlay" id="confirm-cancel-popup">
-    <div class="confirm-popup-box">
-        <img class="mdi-light-alert" src="{% static 'images/confirm_icon.png' %}" alt="Confirm Icon" />
-        <div class="heading"><div class="text-wrapper">XÁC NHẬN HỦY</div></div>
-        <p class="div">Bạn có thông tin chưa lưu, xác nhận hủy?</p>
-        <button class="button-no" id="confirm-no-btn"><div class="text-wrapper-2">Không</div></button>
-        <button class="button-yes" id="confirm-yes-btn"><div class="text-wrapper-3">Đồng ý</div></button>
+    <div class="cf-popup-box">
+        <div class="cf-popup-icon">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="30" cy="30" r="29" stroke="#F4511E" stroke-width="2"/>
+                <rect x="28.5" y="15" width="3" height="22" rx="1.5" fill="#F4511E"/>
+                <circle cx="30" cy="45" r="2.5" fill="#F4511E"/>
+            </svg>
+        </div>
+        <div class="cf-popup-header">
+            <h2 class="cf-popup-title">{{ confirm_cancel_title|default:"XÁC NHẬN HỦY" }}</h2>
+        </div>
+        <p class="cf-popup-message">{{ confirm_cancel_message|default:"Bạn có chắc chắn muốn hủy tạo hợp đồng này?"|safe }}</p>
+        <div class="cf-popup-actions">
+            <button class="button-no" id="confirm-no-btn">Không</button>
+            <button class="button-yes" id="confirm-yes-btn">Đồng ý</button>
+        </div>
     </div>
 </div>

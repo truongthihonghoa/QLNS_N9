@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quản lý tài khoản nhân viên - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'accounts/css/employee_list.css' %}">
+    <link rel="stylesheet" href="{% static 'payroll/css/payroll_list.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="account-page">
+    <!-- Cấu trúc giống Bảng Lương: Row 1 (Input + Search + Thêm), Row 2 (Chi nhánh) -->
+    <form method="get" action="." class="top-control-bar" style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 25px;">
+        <!-- Hàng 1: Tìm kiếm và các nút chính -->
+        <div class="toolbar-row-top">
+            <div class="control-left">
+                <div class="search-wrapper">
+                    <input type="text" name="q" class="search-input-ge" placeholder="Tìm kiếm nhân viên..." value="{{ request.GET.q|default:'' }}">
+                </div>
+                <button type="submit" class="btn-search-ge">Tìm kiếm</button>
+            </div>
+            <div class="control-right">
+                <button type="button" class="btn-create-request" data-open-modal="add-account-modal">+ Thêm</button>
+                </div>
+        </div>
+
+        <!-- Hàng 2: Chi nhánh (giống Bảng Lương, bỏ Tháng và Năm) -->
+        <div class="toolbar-row" style="display: flex; justify-content: flex-start; align-items: center; width: 100%; gap: 20px;">
+            <div class="dropdown-wrapper">
+                <select class="branch-dropdown-ge" name="branch" onchange="this.form.submit()"
+                        style="background: white; font-size: 18px; padding: 10px 15px; border-radius: 6px; border: 1px solid #DADCE0; min-width: 200px; cursor: pointer;">
+                    {% for branch in branches %}
+                        <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>{{ branch.ten_chi_nhanh }}</option>
+                    {% empty %}
+                        <option value="" selected>Chưa có chi nhánh đang hoạt động</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </form>
+
+    <div class="account-table-card">
+        <table class="account-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Họ tên</th>
+                    <th>Tên đăng nhập</th>
+                    <th>Quyền</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="account-table-body">
+                {% for row in account_rows %}
+                <tr>
+                    <td>{{ row.stt }}</td>
+                    <td>{{ row.ho_ten }}</td>
+                    <td>{{ row.ten_dang_nhap }}</td>
+                    <td>{{ row.quyen }}</td>
+                    <td><span class="account-status is-{{ row.trang_thai_key }}">{{ row.trang_thai }}</span></td>
+                    <td>
+                        <div class="account-actions">
+                            <button
+                                type="button"
+                                class="account-icon-btn js-edit-account"
+                                data-open-modal="edit-account-modal"
+                                data-full-name="{{ row.ho_ten }}"
+                                data-username="{{ row.ten_dang_nhap }}"
+                                data-role="{{ row.quyen }}">
+                              <i class="fas fa-pen"></i>
+                            </button>
+                            <button
+                                type="button"
+                                class="account-icon-btn js-deactivate-account"
+                                data-full-name="{{ row.ho_ten }}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div class="account-modal-overlay" id="add-account-modal">
+    <div class="account-modal">
+        <div class="account-modal-header">
+            <h2>Thêm tài khoản nhân viên</h2>
+            <button type="button" class="account-modal-close" data-close-modal="add-account-modal">&times;</button>
+        </div>
+        <p class="account-note">* Lưu ý: Mọi thông tin bắt buộc không được để trống.</p>
+        <div class="account-form-grid">
+            <label>
+                <span>Tên đăng nhập <strong>*</strong></span>
+                <input id="add-username" type="text" placeholder="Nhập tên đăng nhập">
+            </label>
+            <label>
+                <span>Mật khẩu <strong>*</strong></span>
+                <input id="add-password" type="password" placeholder="Nhập mật khẩu">
+            </label>
+            <label>
+                <span>Quyền người dùng <strong>*</strong></span>
+                <select id="add-role">
+                    <option value="">Chọn quyền</option>
+                    <option value="Nhân viên">Nhân viên</option>
+                    <option value="Quản lý">Quản lý</option>
+                </select>
+            </label>
+        </div>
+        <div class="account-modal-footer">
+            <button type="button" class="account-btn account-btn-light js-open-cancel" data-close-modal="add-account-modal">Hủy</button>
+            <button type="button" class="account-btn account-btn-primary" id="add-account-save-btn">Lưu</button>
+        </div>
+    </div>
+</div>
+
+<div class="account-modal-overlay" id="edit-account-modal">
+    <div class="account-modal">
+        <div class="account-modal-header">
+            <h2>Chỉnh sửa tài khoản nhân viên</h2>
+            <button type="button" class="account-modal-close" data-close-modal="edit-account-modal">&times;</button>
+        </div>
+        <p class="account-note">* Lưu ý: Mọi thông tin bắt buộc không được để trống.</p>
+        <div class="account-form-grid">
+            <label>
+                <span>Tên đăng nhập <strong>*</strong></span>
+                <input id="edit-username" type="text" value="">
+            </label>
+            <label>
+                <span>Mật khẩu <strong>*</strong></span>
+                <input id="edit-password" type="password" value="**********">
+            </label>
+            <label>
+                <span>Quyền người dùng <strong>*</strong></span>
+                <select id="edit-role">
+                    <option value="Nhân viên">Nhân viên</option>
+                    <option value="Quản lý">Quản lý</option>
+                </select>
+            </label>
+        </div>
+        <div class="account-modal-footer">
+            <button type="button" class="account-btn account-btn-light js-open-cancel" data-close-modal="edit-account-modal">Hủy</button>
+            <button type="button" class="account-btn account-btn-primary" id="edit-account-save-btn">Lưu</button>
+        </div>
+    </div>
+</div>
+
+{% include 'partials/popup_confirm_cancel.html' %}
+{% include 'partials/popup_confirm_delete.html' with delete_popup_title='XÁC NHẬN NGỪNG HOẠT ĐỘNG' delete_popup_message_1='Bạn có chắc chắn muốn ngừng hoạt động tài khoản này?' delete_popup_message_2_before='Tài khoản sẽ được cập nhật sang trạng thái' delete_popup_highlight='"Ngừng hoạt động".' %}
+{% include 'partials/popup_success.html' %}
+{% include 'partials/popup_error.html' %}
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'accounts/js/employee_list.js' %}"></script>
+{% endblock %}

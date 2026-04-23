@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}GE CAFE HRM{% endblock %}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/globals.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}?v=2026-04-08-1">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
@@ -27,8 +29,10 @@
                 <div class="user-dropdown">
                     <img class="user-avatar" src="{% static 'images/user_avatar.png' %}" alt="User Avatar" />
                     <div class="user-dropdown-content">
-                        <a href="#" id="logout-link">Đăng xuất</a>
-                    </div>
+                        <form action="{% url 'accounts:logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Đăng xuất</button></form>
+                        </div>
                 </div>
 
                 <div class="notification-bell" id="notification-bell">
@@ -62,15 +66,24 @@
         </header>
 
         <nav class="navigation-bar">
-            <a href="{% url 'dashboard' %}" class="nav-item">Tổng quan</a>
-            <a href="{% url 'account_admin_list' %}" class="nav-item">Tài khoản</a>
+            {% if request.user.is_superuser or request.user.is_staff %}
+                <a href="{% url 'dashboard' %}" class="nav-item">Tổng quan</a>
+            {% endif %}
+            <a href="{% url 'accounts:account_admin_list' %}" class="nav-item">Tài khoản</a>
             <a href="{% url 'branches:branch_admin' %}" class="nav-item">Chi nhánh</a>
             <a href="{% url 'employee_list' %}" class="nav-item">Nhân Viên</a>
             <a href="{% url 'contract_list' %}" class="nav-item">Hợp Đồng</a>
             <a href="{% url 'schedule_list' %}" class="nav-item">Lịch Làm Việc</a>
-            <a href="{% url 'request_list' %}" class="nav-item">Yêu Cầu</a>
-            <a href="{% url 'payroll_list' %}" class="nav-item">Bảng Lương</a>
-            <a href="{% url 'reports:report_list' %}" class="nav-item">Báo Cáo</a>
+            <a href="{% url 'request_list' %}" class="nav-item">Đề Nghị</a>
+            {% if request.user.is_staff or request.user.is_superuser %}
+                <a href="{% url 'payroll_list' %}" class="nav-item">Bảng Lương</a>
+            {% else %}
+                <a href="{% url 'my_salary' %}" class="nav-item">Lương của tôi</a>
+            {% endif %}
+            <a href="{% url 'attendance_list' %}" class="nav-item">Chấm công</a>
+            {% if request.user.is_superuser or request.user.is_staff %}
+                <a href="{% url 'reports:report_list' %}" class="nav-item">Báo Cáo</a>
+            {% endif %}
         </nav>
 
         <main class="main-content">

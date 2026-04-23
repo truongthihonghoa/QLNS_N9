@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chi tiết chi nhánh - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'branches/css/branch_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- POPUP -->
+<div class="branch-detail-popup-overlay" id="branchDetailPopup">
+    <div class="branch-detail-popup-box">
+
+        <!-- HEADER -->
+        <div class="branch-detail-popup-header">
+            Thông tin chi tiết
+        </div>
+
+        <!-- BODY -->
+        <div class="branch-detail-popup-body">
+
+            <div class="detail-row">
+                <span class="label">Mã chi nhánh</span>
+                <span class="value">{{ branch.ma_chi_nhanh }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label">Tên chi nhánh</span>
+                <span class="value">{{ branch.ten_chi_nhanh }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label">Địa chỉ</span>
+                <span class="value">{{ branch.dia_chi }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label">Số điện thoại</span>
+                <span class="value">{{ branch.sdt }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label">Tên quản lý</span>
+                <span class="value">
+                    {% if branch.ma_nv_ql %}
+                        {{ branch.ma_nv_ql.ho_ten }}
+                    {% else %}
+                        Chưa có
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label">Trạng thái</span>
+                <span class="value">{{ branch.get_trang_thai_display }}</span>
+            </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="branch-detail-popup-footer">
+            {% if request.user.is_superuser or request.user.is_staff %}
+                <a href="{% url 'branches:branch_list' %}" class="close-btn">Đóng</a>
+            {% else %}
+                <a href="{% url 'dashboard' %}" class="close-btn">Đóng</a>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

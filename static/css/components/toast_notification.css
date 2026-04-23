@@ -1,47 +1,52 @@
+/* Toast Notification Styling - Bottom Right */
 .toast-notification {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #d4edda; /* Pastel green */
-    color: #333333; /* Dark grey/black */
-    padding: 16px 24px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-width: 300px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 9999;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    pointer-events: none;
-    font-family: 'Montserrat-Bold', sans-serif;
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    background-color: #ffffff !important;
+    border-radius: 50px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+    padding: 12px 28px !important;
+    z-index: 10005 !important;
+    transform: translateX(150%) !important;
+    opacity: 0 !important;
+    visibility: hidden;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    border: 1px solid #e0e0e0 !important;
 }
 
 .toast-notification.show {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
+    transform: translateX(0) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .toast-content {
-    font-size: 16px;
-    font-weight: 700;
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+}
+
+.toast-message {
+    color: #1a1a1a !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    font-family: "Montserrat", sans-serif !important;
+    white-space: nowrap !important;
 }
 
 .toast-icon {
-    margin-left: 20px;
-    width: 28px;
-    height: 28px;
-    background-color: #28a745;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #0f6b20 !important;
+    font-size: 20px !important;
 }
 
-.toast-icon i {
-    font-size: 16px;
+/* Animations slide in from right */
+@keyframes slideIn {
+    from { transform: translateX(150%); }
+    to { transform: translateX(0); }
 }

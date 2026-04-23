@@ -1,84 +1,44 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
-import json # Import thư viện json
-
-def _sample_requests():
-    return [
-        {
-            'ma_dk': 'DK000001',
-            'ma_nv': 'NV001',
-            'ten_nv': 'Nguyễn Văn An',
-            'loai_yc': 'Nghỉ phép',
-            'ngay_dk': '26/12/2026',
-            'trang_thai': 'Chờ duyệt',
-            'trang_thai_key': 'pending',
-            'chi_tiet_json': json.dumps([ # Sử dụng json.dumps
-                ['Mã nhân viên', 'NV001'],
-                ['Loại yêu cầu', 'Nghỉ phép'],
-                ['Ngày bắt đầu', '26/12/2026'],
-                ['Ngày kết thúc', '27/12/2026'],
-                ['Lý do', 'Đi khám sức khỏe'],
-                ['Ngày đăng ký', '25/12/2026'],
-            ])
-        },
-        {
-            'ma_dk': 'DK000002',
-            'ma_nv': 'NV002',
-            'ten_nv': 'Nguyễn Thanh Anh',
-            'loai_yc': 'Nghỉ phép',
-            'ngay_dk': '26/02/2025',
-            'trang_thai': 'Chờ duyệt',
-            'trang_thai_key': 'pending',
-            'chi_tiet_json': json.dumps([ # Sử dụng json.dumps
-                ['Mã nhân viên', 'NV002'],
-                ['Loại yêu cầu', 'Nghỉ phép'],
-                ['Ngày bắt đầu', '26/02/2025'],
-                ['Ngày kết thúc', '27/12/2025'],
-                ['Lý do', 'Giải quyết việc gia đình'],
-                ['Ngày đăng ký', '25/02/2025'],
-            ])
-        },
-        {
-            'ma_dk': 'DK000003',
-            'ma_nv': 'NV003',
-            'ten_nv': 'Nguyễn Văn Anh',
-            'loai_yc': 'Nghỉ phép',
-            'ngay_dk': '26/03/2025',
-            'trang_thai': 'Chờ duyệt',
-            'trang_thai_key': 'pending',
-            'chi_tiet_json': json.dumps([ # Sử dụng json.dumps
-                ['Mã nhân viên', 'NV003'],
-                ['Loại yêu cầu', 'Nghỉ phép'],
-                ['Ngày bắt đầu', '26/03/2025'],
-                ['Ngày kết thúc', '26/03/2025'],
-                ['Lý do', 'Nghỉ cá nhân'],
-                ['Ngày đăng ký', '25/03/2025'],
-            ])
-        },
-        {
-            'ma_dk': 'DK000006',
-            'ma_nv': 'NV006',
-            'ten_nv': 'Trần Minh Quân',
-            'loai_yc': 'Ca làm',
-            'ngay_dk': '02/06/2025',
-            'trang_thai': 'Chờ duyệt',
-            'trang_thai_key': 'pending',
-            'chi_tiet_json': json.dumps([ # Sử dụng json.dumps
-                ['Mã nhân viên', 'NV006'],
-                ['Loại yêu cầu', 'Ca làm việc'],
-                ['Ngày làm', '02/06/2025'],
-                ['Giờ bắt đầu', '13:00'],
-                ['Giờ kết thúc', '21:00'],
-                ['Ngày đăng ký', '01/06/2025'],
-            ])
-        }
-    ]
+from .models import YeuCau
+import json
 
 def request_approval_view(request):
+    # Lay tat ca cac yeu cau tu database
+    yeu_cau_list = YeuCau.objects.select_related('ma_nv').all().order_by('-ma_yc')
+    
+    requests_data = []
+    for yc in yeu_cau_list:
+        # Chuan bi du lieu chi tiet de hien thi trong popup - Sua thanh Loai de nghi
+        loai_hien_thi = yc.loai_yeu_cau
+        if loai_hien_thi == 'Đăng ký ca làm':
+            loai_hien_thi = 'Ca làm'
+            
+        details = [
+            ['Mã nhân viên', yc.ma_nv.ma_nv],
+            ['Tên nhân viên', yc.ma_nv.ho_ten],
+            ['Loại đề nghị', loai_hien_thi],
+            ['Ngày bắt đầu', yc.ngay_bd.strftime('%d/%m/%Y') if yc.ngay_bd else ''],
+            ['Ngày kết thúc', yc.ngay_kt.strftime('%d/%m/%Y') if yc.ngay_kt else ''],
+            ['Lý do', yc.ly_do],
+            ['Trạng thái', yc.trang_thai],
+        ]
+        
+        requests_data.append({
+            'ma_dk': yc.ma_yc,
+            'ma_nv': yc.ma_nv.ma_nv,
+            'ten_nv': yc.ma_nv.ho_ten,
+            'loai_yc': loai_hien_thi, # Dung gia tri da rut gon
+            'ngay_dk': yc.ngay_bd.strftime('%d/%m/%Y') if yc.ngay_bd else '',
+            'trang_thai': yc.trang_thai,
+            'trang_thai_key': 'pending' if yc.trang_thai == 'Chờ duyệt' else 'approved' if yc.trang_thai == 'Đã duyệt' else 'rejected',
+            'chi_tiet_json': json.dumps(details)
+        })
+
     return render(request, 'requests/request_approval.html', {
-        'requests_data': _sample_requests(),
-        'types': ['Nghỉ phép', 'Ca làm'],
+        'requests_data': requests_data,
+        'types': ['Nghỉ phép', 'Ca làm'], # Sua tai day
     })
 
 def request_list_view(request):
@@ -88,7 +48,19 @@ def request_review_list_view(request):
     return redirect('request_approval')
 
 def approve_request(request, ma_dk):
-    return JsonResponse({'success': True})
+    try:
+        yc = YeuCau.objects.get(ma_yc=ma_dk)
+        yc.trang_thai = 'Đã duyệt'
+        yc.save()
+        return JsonResponse({'success': True})
+    except YeuCau.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Không tìm thấy yêu cầu'})
 
 def reject_request(request, ma_dk):
-    return JsonResponse({'success': True})
+    try:
+        yc = YeuCau.objects.get(ma_yc=ma_dk)
+        yc.trang_thai = 'Từ chối'
+        yc.save()
+        return JsonResponse({'success': True})
+    except YeuCau.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Không tìm thấy yêu cầu'})

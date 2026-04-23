@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'payroll/css/payroll_form.css' %}">
+<link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="payroll-form-container">
+    <div class="payroll-form-card">
+
+        <div class="inner-header">
+            <div class="back-btn-container">
+                <a href="{% url 'payroll_list' %}" class="back-link">
+                    <i class="fas fa-arrow-left"></i>QUAY LẠI DANH SÁCH
+                </a>
+            </div>
+
+            <div class="page-title-row">
+                <h1 class="page-title">TÍNH LƯƠNG</h1>
+                <p class="payroll-subtext">
+                    Chi nhánh: <strong>{{ branch }}</strong> |
+                    Kỳ lương: <strong>{{ month }}/{{ year }}</strong>
+                </p>
+
+                {% if warnings %}
+                <div class="payroll-warning-box">
+                    {% for w in warnings %}
+                        <div class="warning-item">{{ w }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="branch" value="{{ branch }}">
+            <input type="hidden" name="month" value="{{ month }}">
+            <input type="hidden" name="year" value="{{ year }}">
+
+            <div class="payroll-employee-list">
+                {% for emp in employees %}
+                <div class="payroll-employee-card"
+                     data-ma-nv="{{ emp.ma_nv }}"
+                     data-hours="{{ emp.sogio }}"
+                     data-hourly="{{ emp.luong_gio }}"
+                     data-base="{{ emp.luong_co_ban }}">
+
+                    <input type="hidden" name="base_salary_{{ emp.ma_nv }}" value="{{ emp.luong_co_ban }}">
+                    <input type="hidden" name="hourly_rate_{{ emp.ma_nv }}" value="{{ emp.luong_gio }}">
+                    <input type="hidden" name="hours_{{ emp.ma_nv }}" value="{{ emp.sogio }}">
+
+                    <div class="emp-card-header">
+                        <span class="emp-id">Mã nhân viên: <strong>{{ emp.ma_nv }}</strong></span>
+                    </div>
+
+                    <div class="emp-card-body">
+                        <div class="form-group">
+                            <label>Họ và tên nhân viên</label>
+                            <input type="text" readonly value="{{ emp.ho_ten }}" class="emp-name-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Số giờ làm việc</label>
+                            <input type="text" readonly value="{{ emp.sogio }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Mức lương theo giờ</label>
+                            <div class="input-group-currency">
+                                <input type="text" readonly value="{{ emp.luong_gio }}">
+                                <span class="currency-unit">VND</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Lương cơ bản</label>
+                            <div class="input-group-currency">
+                                <input type="text" readonly value="{{ emp.luong_co_ban }}">
+                                <span class="currency-unit">VND</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Thưởng</label>
+                            <div class="input-group-currency">
+                                <input type="number" class="bonus-input" name="bonus_{{ emp.ma_nv }}" placeholder="0">
+                                <span class="currency-unit">VND</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phạt</label>
+                            <div class="input-group-currency">
+                                <input type="number" class="penalty-input" name="penalty_{{ emp.ma_nv }}" placeholder="0">
+                                <span class="currency-unit">VND</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width total-salary-group">
+                            <label>TỔNG LƯƠNG</label>
+                            <div class="input-group-currency">
+                                <input type="text" readonly class="total-salary-input" value="{{ emp.tong_luong|default:0 }}">
+                                <span class="currency-unit">VND</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="cancel-btn" onclick="openCancelConfirmPopup()">HỦY</button>
+                <button type="submit" class="save-btn">LƯU</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% include 'partials/popup_confirm_cancel.html' %}
+
+<script>
+    window.PAYROLL_SAVE_URL = "{% url 'payroll_save' %}";
+    window.PAYROLL_LIST_URL = "{% url 'payroll_list' %}";
+
+    function openCancelConfirmPopup() {
+        const popup = document.getElementById('confirm-cancel-popup');
+        if (popup) popup.style.display = 'flex';
+    }
+
+    function closeCancelConfirmPopup() {
+        const popup = document.getElementById('confirm-cancel-popup');
+        if (popup) popup.style.display = 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const yesBtn = document.getElementById('confirm-yes-btn');
+        const noBtn = document.getElementById('confirm-no-btn');
+
+        if (yesBtn) yesBtn.addEventListener('click', () => window.location.href = window.PAYROLL_LIST_URL);
+        if (noBtn) noBtn.addEventListener('click', closeCancelConfirmPopup);
+
+        const popup = document.getElementById('confirm-cancel-popup');
+        if (popup) {
+            popup.addEventListener('click', (e) => {
+                if (e.target === popup) closeCancelConfirmPopup();
+            });
+        }
+    });
+</script>
+<script src="{% static 'payroll/js/payroll_add.js' %}?v=3.4"></script>
+{% endblock %}
