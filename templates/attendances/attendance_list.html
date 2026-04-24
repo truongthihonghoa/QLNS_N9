@@ -245,10 +245,16 @@
     {% if is_manager %}
         <!-- MANAGER VIEW -->
         <div class="manager-view">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
                 <h1 style="color: #174D17; margin: 0;">Quản lý Chấm công</h1>
-                <form method="GET" action="{% url 'attendances:attendance_list' %}">
-                    <select name="branch" class="dropdown-ge" onchange="this.form.submit()" style="height: 44px; padding: 0 15px; border-radius: 8px; border: 1px solid #ddd;">
+                <form method="GET" action="{% url 'attendances:attendance_list' %}" style="display: flex; gap: 15px; align-items: center;">
+                    <div style="position: relative;">
+                        <input type="text" name="search" placeholder="Tìm tên nhân viên..." value="{{ search_query|default:'' }}" 
+                               style="height: 44px; padding: 0 15px 0 40px; border-radius: 8px; border: 1px solid #ddd; width: 250px; font-family: 'Montserrat', sans-serif;">
+                        <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+                    </div>
+                    
+                    <select name="branch" class="dropdown-ge" onchange="this.form.submit()" style="height: 44px; padding: 0 15px; border-radius: 8px; border: 1px solid #ddd; font-family: 'Montserrat', sans-serif;">
                         <option value="">-- Tất cả chi nhánh --</option>
                         {% for branch in branches %}
                             <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>
@@ -256,8 +262,20 @@
                             </option>
                         {% endfor %}
                     </select>
+                    
+                    <button type="submit" class="btn-search-ge" style="height: 44px; padding: 0 25px; border-radius: 8px; border: none; background: #174D17; color: white; font-weight: 700; cursor: pointer; transition: all 0.3s; font-family: 'Montserrat', sans-serif;">
+                        Tìm kiếm
+                    </button>
                 </form>
             </div>
+            
+            <style>
+                .btn-search-ge:hover {
+                    background: #0F3D0F !important;
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                }
+            </style>
 
             <table class="ge-main-table" style="width: 100%; border-collapse: collapse;">
                 <thead>

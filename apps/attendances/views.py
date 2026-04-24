@@ -13,10 +13,15 @@ def attendance_list_view(request):
     if user.is_superuser or user.is_staff:
         # MANAGER VIEW
         branch_id = request.GET.get('branch', 'CN01')  # Default Hai Chau (CN01)
+        search_query = request.GET.get('search', '')
+        
         attendances = ChamCong.objects.all().order_by('-ngay_lam')
 
         if branch_id:
             attendances = attendances.filter(ma_nv__ma_chi_nhanh=branch_id)
+            
+        if search_query:
+            attendances = attendances.filter(ma_nv__ho_ten__icontains=search_query)
 
         branches = ChiNhanh.objects.all()
 
@@ -25,6 +30,7 @@ def attendance_list_view(request):
             'attendances': attendances,
             'branches': branches,
             'selected_branch': branch_id,
+            'search_query': search_query,
         }
     else:
         # EMPLOYEE VIEW
