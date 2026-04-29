@@ -11,16 +11,124 @@ from apps.employees.models import NhanVien
 
 
 def report_list_view(request):
+    from django.utils import timezone
+    from datetime import datetime
     from apps.branches.models import ChiNhanh
-    branch_id = request.GET.get('branch', 'CN01')
+    from apps.employees.models import NhanVien
+    from apps.attendances.models import ChamCong
+    from apps.requests.models import YeuCau
+    from django.db.models import Sum, Count, Q
+
+    # Get current date for defaults
+    now = timezone.now()
+    default_month = now.strftime('%m/%Y')
+
+    # Get filters from request
+    branch_id = request.GET.get('branch', '')
     q = request.GET.get('q', '')
+    month_year = request.GET.get('month', default_month)
+    position = request.GET.get('position', '')
+
+    # Check if 'view' was pressed (any filter present)
+    is_view_pressed = 'branch' in request.GET or 'month' in request.GET or 'q' in request.GET or 'position' in request.GET
+
+    # Initial employee queryset
+    employees = NhanVien.objects.all()
+    if branch_id:
+        employees = employees.filter(ma_chi_nhanh_id=branch_id)
+    if q:
+        employees = employees.filter(ho_ten__icontains=q)
+    if position:
+        employees = employees.filter(chuc_vu=position)
+
+    # Parse month/year
+    try:
+        m, y = map(int, month_year.split('/'))
+    except ValueError:
+        m, y = now.month, now.year
+
+    # Attendance records for the period
+    attendances = ChamCong.objects.filter(ma_nv__in=employees, ngay_lam__month=m, ngay_lam__year=y)
+
+    # For Dashboard (Superuser or Staff)
+    if request.user.is_superuser or request.user.is_staff:
+        # 1. Summary Stats
+        total_employees = employees.count()
+        total_hours = attendances.aggregate(total=Sum('so_gio_lam'))['total'] or 0
+
+        # Approved leave requests (YeuCau) - User refers to this as "lịch làm việc"
+        leave_reqs = YeuCau.objects.filter(ma_nv__in=employees, trang_thai='Đã duyệt')
+        # Filter leave by month
+        leave_reqs = leave_reqs.filter(Q(ngay_bd__month=m, ngay_bd__year=y) | Q(ngay_kt__month=m, ngay_kt__year=y))
+
+        paid_leave = leave_reqs.filter(loai_yeu_cau='Nghỉ phép').count()
+        unpaid_leave = leave_reqs.filter(loai_yeu_cau='Nghỉ không phép').count()
+
+        # 2. Hours by Position (Chart 1) - Aggregate from ChamCong
+        positions_list = [choice[0] for choice in NhanVien.CHUC_VU_CHOICES]
+        chart_hours_by_pos = []
+        for pos in positions_list:
+            pos_hours = attendances.filter(ma_nv__chuc_vu=pos).aggregate(total=Sum('so_gio_lam'))['total'] or 0
+            chart_hours_by_pos.append({'label': pos, 'value': float(pos_hours)})
+
+        # 3. Leave Status (Chart 2)
+        chart_leave_status = [
+            {'label': 'Nghỉ phép', 'value': paid_leave, 'color': '#C4A484'},
+            {'label': 'Không phép', 'value': unpaid_leave, 'color': '#E53935'}
+        ]
+
+        # 4. Attendance Table Detail
+        attendance_details = []
+        for emp in employees:
+            emp_attendances = attendances.filter(ma_nv=emp)
+            emp_hours = emp_attendances.aggregate(total=Sum('so_gio_lam'))['total'] or 0
+
+            emp_leave_reqs = leave_reqs.filter(ma_nv=emp)
+            emp_paid = emp_leave_reqs.filter(loai_yeu_cau='Nghỉ phép').count()
+            emp_unpaid = emp_leave_reqs.filter(loai_yeu_cau='Nghỉ không phép').count()
+
+            # Show employee if they have data or if it's a fresh search
+            if emp_hours > 0 or emp_paid > 0 or emp_unpaid > 0 or is_view_pressed:
+                attendance_details.append({
+                    'ma_nv': emp.ma_nv,
+                    'ho_ten': emp.ho_ten,
+                    'chuc_vu': emp.chuc_vu,
+                    'tong_gio': float(emp_hours),
+                    'nghi_phep': emp_paid,
+                    'khong_phep': emp_unpaid
+                })
+
+        branches = ChiNhanh.objects.all()
+        return render(request, 'reports/report_list.html', {
+            'show_dashboard': True,
+            'is_owner': request.user.is_superuser,
+            'is_staff': request.user.is_staff,
+            'branches': branches,
+            'positions': positions_list,
+            'selected_branch': branch_id,
+            'selected_month': month_year,
+            'selected_position': position,
+            'q': q,
+            'stats': {
+                'total_employees': total_employees,
+                'total_hours': float(total_hours),
+                'paid_leave': paid_leave,
+                'unpaid_leave': unpaid_leave
+            },
+            'chart_hours_by_pos': json.dumps(chart_hours_by_pos),
+            'chart_leave_status': json.dumps(chart_leave_status),
+            'attendance_details': attendance_details
+        })
+
+    # For Managers (Existing view)
     baocaos = BaoCao.objects.all().order_by('-ma_bc')
     if branch_id:
         baocaos = baocaos.filter(ma_chi_nhanh=branch_id)
     if q:
         baocaos = baocaos.filter(ma_bc__icontains=q)
-    branches = ChiNhanh.objects.all()
+
     return render(request, 'reports/report_list.html', {
+        'show_dashboard': False,
         'baocaos': baocaos,
         'branches': branches,
         'selected_branch': branch_id,

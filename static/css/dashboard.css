@@ -165,3 +165,91 @@
     background-color: #ffeaea;
     color: #ff4d4f;
 }
+
+/* Recent Activities Table */
+.recent-activities {
+    background-color: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.recent-activities-header {
+    margin-bottom: 0;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 20px;
+}
+
+.recent-activities-title {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700;
+    color: #cf4949; /* Matching other card titles */
+    font-size: 20px;
+    margin: 0;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.activities-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.activities-table th,
+.activities-table td {
+    padding: 22px 14px;
+    text-align: center;
+    font: 500 18px "Montserrat", sans-serif;
+    color: #1a1a1a;
+    vertical-align: middle;
+    border: none;
+}
+
+.activities-table th {
+    background-color: rgba(23, 77, 23, 0.84);
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700;
+    color: #fff;
+    font-size: 20px;
+    white-space: nowrap;
+}
+
+.activities-table tbody tr:nth-child(odd) {
+    background-color: #ebe7e4;
+}
+
+.activities-table tbody tr:nth-child(even) {
+    background-color: rgba(243, 240, 238, 0.93);
+}
+
+.activities-table tbody tr:hover {
+    background-color: #d1d5db;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: "Roboto-Medium", Helvetica, sans-serif;
+    font-weight: 500;
+    display: inline-block;
+    text-align: center;
+}
+
+.status-success {
+    background-color: #e6f7eb;
+    color: #30b952;
+}
+
+.status-warning {
+    background-color: #fff8e6;
+    color: #f5a623;
+}
+
+.status-danger {
+    background-color: #ffeaea;
+    color: #ff4d4f;
+}

@@ -1,20 +1,204 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.utils import timezone
+from django.db.models import Sum
 from .models import ChamCong
 from apps.branches.models import ChiNhanh
+from apps.schedules.models import LichLamViec
+from apps.employees.models import NhanVien
+import datetime
 
 
 def attendance_list_view(request):
-    branch_id = request.GET.get('branch', 'CN01')  # Mac dinh Hai Chau (CN01)
-    attendances = ChamCong.objects.all().order_by('-ngay_lam')
+    user = request.user
+    if user.is_superuser or user.is_staff:
+        # MANAGER VIEW
+        branch_id = request.GET.get('branch', 'CN01')  # Default Hai Chau (CN01)
+        search_query = request.GET.get('search', '')
 
-    if branch_id:
-        attendances = attendances.filter(ma_nv__ma_chi_nhanh=branch_id)
+        attendances = ChamCong.objects.all().order_by('-ngay_lam')
 
-    branches = ChiNhanh.objects.all()
+        if branch_id:
+            attendances = attendances.filter(ma_nv__ma_chi_nhanh=branch_id)
 
-    context = {
-        'attendances': attendances,
-        'branches': branches,
-        'selected_branch': branch_id,
-    }
+        if search_query:
+            attendances = attendances.filter(ma_nv__ho_ten__icontains=search_query)
+
+        branches = ChiNhanh.objects.all()
+
+        context = {
+            'is_manager': True,
+            'attendances': attendances,
+            'branches': branches,
+            'selected_branch': branch_id,
+            'search_query': search_query,
+        }
+    else:
+        # EMPLOYEE VIEW
+        try:
+            employee = user.taikhoan.ma_nv
+        except Exception:
+            return render(request, 'error.html', {'message': 'Tài khoản chưa được liên kết với nhân viên.'})
+
+        now = timezone.now()
+        today = now.date()
+
+        # Find today's shift
+        current_shift_record = LichLamViec.objects.filter(ma_nv=employee, ngay_lam=today).first()
+
+        shift_colleagues = []
+        if current_shift_record:
+            # Get everyone in the same shift at the same branch
+            shift_colleagues_records = LichLamViec.objects.filter(
+                ngay_lam=today,
+                ca_lam=current_shift_record.ca_lam,
+                ma_chi_nhanh=current_shift_record.ma_chi_nhanh
+            ).select_related('ma_nv')
+
+            for rec in shift_colleagues_records:
+                # Get check-in status for this colleague and shift
+                ca_code = get_ca_code(rec.ca_lam)
+
+                # Check if ChamCong exists
+                cc = ChamCong.objects.filter(ma_nv=rec.ma_nv, ngay_lam=today, ca_lam=ca_code).first()
+
+                shift_colleagues.append({
+                    'ma_nv': rec.ma_nv.ma_nv,
+                    'ho_ten': rec.ma_nv.ho_ten,
+                    'chuc_vu': rec.ma_nv.chuc_vu,
+                    'gio_vao': cc.gio_vao if cc else None,
+                    'gio_ra': cc.gio_ra if cc else None,
+                    'trang_thai': cc.trang_thai if cc else 'Chưa vào',
+                    'ghi_chu': cc.ghi_chu if cc else '-',
+                    'is_self': rec.ma_nv == employee
+                })
+
+        # Monthly total hours
+        month_start = today.replace(day=1)
+        total_hours_month = ChamCong.objects.filter(
+            ma_nv=employee,
+            ngay_lam__gte=month_start,
+            ngay_lam__lte=today
+        ).aggregate(total=Sum('so_gio_lam'))['total'] or 0
+
+        # Personal history
+        history = ChamCong.objects.filter(ma_nv=employee).order_by('-ngay_lam')[:10]
+
+        context = {
+            'is_manager': False,
+            'employee': employee,
+            'current_shift': current_shift_record,
+            'shift_colleagues': shift_colleagues,
+            'total_hours_month': total_hours_month,
+            'history': history,
+            'today': today,
+        }
+
     return render(request, 'attendances/attendance_list.html', context)
+
+
+def get_ca_code(ca_str):
+    mapping = {
+        '06:00 - 12:00': 'SANG',
+        '12:00 - 17:00': 'CHIEU',
+        '17:00 - 22:00': 'TOI'
+    }
+    return mapping.get(ca_str, 'SANG')
+
+
+def check_in_out_view(request):
+    if request.method == 'POST':
+        user = request.user
+        action = request.POST.get('action')  # 'check_in' or 'check_out'
+        ma_nv = request.POST.get('ma_nv')
+
+        # Security: only allow users to check in for themselves
+        if not user.is_superuser and not user.is_staff:
+            try:
+                if user.taikhoan.ma_nv.ma_nv != ma_nv:
+                    return redirect('attendances:attendance_list')
+            except Exception:
+                return redirect('attendances:attendance_list')
+
+        employee = NhanVien.objects.get(ma_nv=ma_nv)
+        now = timezone.now()
+        today = now.date()
+        current_time = now.time()
+
+        # Find current shift record to know which ca_lam to use
+        current_shift_record = LichLamViec.objects.filter(ma_nv=employee, ngay_lam=today).first()
+        if not current_shift_record:
+            return redirect('attendances:attendance_list')
+
+        ca_lam_str = current_shift_record.ca_lam
+        ca_code = get_ca_code(ca_lam_str)
+
+        if action == 'check_in':
+            # Create or update ChamCong record
+            cc, created = ChamCong.objects.get_or_create(
+                ma_nv=employee,
+                ngay_lam=today,
+                ca_lam=ca_code,
+                defaults={'ma_cc': f"CC_{ma_nv}_{today.strftime('%Y%m%d')}_{ca_code}"}
+            )
+            if not cc.gio_vao:
+                cc.gio_vao = current_time
+                cc.trang_thai = 'Đang làm'
+
+                # Check late/on-time
+                try:
+                    shift_start_str = ca_lam_str.split(' - ')[0]
+                    shift_start_time = datetime.datetime.strptime(shift_start_str, '%H:%M').time()
+
+                    start_dt = datetime.datetime.combine(today, shift_start_time)
+                    current_dt = datetime.datetime.combine(today, current_time)
+
+                    if current_dt > start_dt:
+                        diff = current_dt - start_dt
+                        minutes_late = int(diff.total_seconds() / 60)
+                        cc.ghi_chu = f"Đi muộn {minutes_late} phút"
+                    else:
+                        cc.ghi_chu = "Đúng giờ"
+                except Exception:
+                    cc.ghi_chu = "Đúng giờ"
+
+                cc.save()
+
+        elif action == 'check_out':
+            cc = ChamCong.objects.filter(ma_nv=employee, ngay_lam=today, ca_lam=ca_code).first()
+            if cc and cc.gio_vao and not cc.gio_ra:
+                cc.gio_ra = current_time
+                cc.trang_thai = 'Hoàn thành'
+
+                # Calculate so_gio_lam
+                start_cc = datetime.datetime.combine(today, cc.gio_vao)
+                end_cc = datetime.datetime.combine(today, current_time)
+                duration = end_cc - start_cc
+                cc.so_gio_lam = round(duration.total_seconds() / 3600, 2)
+
+                # Check early/overtime leave
+                try:
+                    shift_end_str = ca_lam_str.split(' - ')[1]
+                    shift_end_time = datetime.datetime.strptime(shift_end_str, '%H:%M').time()
+
+                    end_shift_dt = datetime.datetime.combine(today, shift_end_time)
+
+                    if end_cc < end_shift_dt:
+                        diff = end_shift_dt - end_cc
+                        minutes_early = int(diff.total_seconds() / 60)
+                        if cc.ghi_chu and cc.ghi_chu != "Đúng giờ":
+                            cc.ghi_chu += f", Về sớm {minutes_early} phút"
+                        else:
+                            cc.ghi_chu = f"Về sớm {minutes_early} phút"
+                    elif end_cc > end_shift_dt:
+                        diff = end_cc - end_shift_dt
+                        minutes_ot = int(diff.total_seconds() / 60)
+                        if cc.ghi_chu and cc.ghi_chu != "Đúng giờ":
+                            cc.ghi_chu += f", Tăng ca {minutes_ot} phút"
+                        else:
+                            cc.ghi_chu = f"Tăng ca {minutes_ot} phút"
+                except Exception:
+                    pass
+
+                cc.save()
+
+    return redirect('attendances:attendance_list')

@@ -177,7 +177,8 @@
     .modal-box {
         background: #fff;
         border-radius: 20px;
-        width: min(400px, 100%);
+        width: 95%;
+        max-width: 450px;
         box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
         display: flex;
         flex-direction: column;
@@ -276,6 +277,7 @@
 
 {% block content %}
 <div class="request-approval-page">
+    {% if is_admin %}
     <div class="toolbar">
         <div class="search-filter-group">
             <div class="search-box">
@@ -291,12 +293,20 @@
             </select>
         </div>
     </div>
+    {% endif %}
 
-    <div class="status-tabs">
-        <div class="status-tab active" data-status="all">Tất cả</div>
-        <div class="status-tab" data-status="pending">Đang chờ duyệt</div>
-        <div class="status-tab" data-status="approved">Đã duyệt</div>
-        <div class="status-tab" data-status="rejected">Từ chối</div>
+    <div class="status-tabs" style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; gap: 10px;">
+            <div class="status-tab active" data-status="all">Tất cả</div>
+            <div class="status-tab" data-status="pending">Đang chờ duyệt</div>
+            <div class="status-tab" data-status="approved">Đã duyệt</div>
+            <div class="status-tab" data-status="rejected">Từ chối</div>
+        </div>
+        {% if not is_admin %}
+        <button type="button" class="status-tab active" style="background-color: rgba(23, 77, 23, 0.87); border: none; height: auto; margin-bottom: 0;" onclick="openSubmitModal()">
+            <i class="fas fa-plus" style="margin-right: 8px;"></i> Đăng ký đề nghị
+        </button>
+        {% endif %}
     </div>
 
     <div class="request-table-card">
@@ -346,23 +356,33 @@
 </div>
 
 <div id="requestDetailModal" class="modal-overlay">
-    <div class="modal-box">
+    <div class="modal-box" style="max-width: 700px; width: 95%;">
+        <div class="modal-header" style="background: rgba(23, 77, 23, 0.87); padding: 18px 24px; color: white; display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="font-size: 20px; font-weight: 700; margin: 0;">CHI TIẾT ĐỀ NGHỊ</h2>
+            <button type="button" onclick="closeModal('requestDetailModal')" style="background:none; border:none; font-size:24px; cursor:pointer; color: white;">&times;</button>
+        </div>
         <div class="modal-body">
             <div class="profile-header">
-                <i class="fas fa-user-circle profile-icon"></i>
+                <i class="fas fa-user-circle profile-icon" style="color: rgba(23, 77, 23, 0.87);"></i>
                 <h2 class="profile-name" id="modal-nv-name"></h2>
                 <p class="profile-id-sub" id="modal-nv-id-display"></p>
             </div>
-            <div class="detail-list" id="modal-fields-list"></div>
+            <div class="detail-list" id="modal-fields-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"></div>
         </div>
-        <div class="modal-footer-actions" id="modal-actions">
-            <button type="button" class="btn-modal-action btn-modal-approve" id="modal-btn-approve">
+        {% if is_admin %}
+        <div class="modal-footer-actions" id="modal-actions" style="padding: 0 24px 24px;">
+            <button type="button" class="btn-modal-action btn-modal-approve" id="modal-btn-approve" style="background-color: rgba(23, 77, 23, 0.87);">
                 ✔ Duyệt
             </button>
             <button type="button" class="btn-modal-action btn-modal-reject" id="modal-btn-reject">
                 ✖ Từ chối
             </button>
         </div>
+        {% else %}
+        <div style="padding: 0 24px 24px;">
+            <button type="button" class="btn-modal-action" style="background:#f1f1f1; color:#5c6c7b; width:100%;" onclick="closeModal('requestDetailModal')">Đóng</button>
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -386,7 +406,88 @@
 {% include 'partials/popup_error.html' %}
 {% include 'partials/toast_notification.html' %}
 
+<!-- Modal Đăng ký Đề nghị (Cho nhân viên) -->
+<div id="submitRequestModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 1200px; width: 95%;">
+        <div class="modal-header" style="background: rgba(23, 77, 23, 0.87); padding: 18px 24px; color: white; display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="font-size: 20px; font-weight: 700; margin: 0;">ĐĂNG KÝ ĐỀ NGHỊ</h2>
+            <button type="button" onclick="closeModal('submitRequestModal')" style="background:none; border:none; font-size:24px; cursor:pointer; color: white;">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 30px;">
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #174d17; font-size: 16px;">Loại đề nghị</label>
+                <select id="req_loai" class="filter-select" style="width: 100%; min-width: auto; height: 48px;">
+                    <option value="Nghỉ phép">Nghỉ phép</option>
+                    <option value="Đăng ký ca làm">Đăng ký ca làm</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                <div style="flex: 1;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #174d17; font-size: 16px;">Ngày bắt đầu</label>
+                    <input type="date" id="req_ngay_bd" class="filter-select" style="width: 100%; min-width: auto; padding: 0 15px; height: 48px;">
+                </div>
+                <div style="flex: 1;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #174d17; font-size: 16px;">Ngày kết thúc</label>
+                    <input type="date" id="req_ngay_kt" class="filter-select" style="width: 100%; min-width: auto; padding: 0 15px; height: 48px;">
+                </div>
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #174d17; font-size: 16px;">Lý do / Nội dung</label>
+                <textarea id="req_ly_do" style="width: 100%; min-height: 150px; padding: 15px; border-radius: 10px; border: 1px solid #dadce0; outline: none; font-family: Montserrat; font-size: 16px; line-height: 1.5;" placeholder="Nhập lý do chi tiết hoặc nội dung đề nghị của bạn..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer-actions" style="padding: 0 30px 30px; gap: 15px;">
+            <button type="button" class="btn-modal-action" style="background:#f1f1f1; color:#5c6c7b; height: 50px; font-size: 16px;" onclick="closeModal('submitRequestModal')">Hủy</button>
+            <button type="button" class="btn-modal-action" style="background: rgba(23, 77, 23, 0.87); color: white; height: 50px; font-size: 16px;" onclick="submitRequest()">Gửi đề nghị</button>
+        </div>
+    </div>
+</div>
+
 <script>
+    function openSubmitModal() {
+        document.getElementById('submitRequestModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function submitRequest() {
+        const loai = document.getElementById('req_loai').value;
+        const ngay_bd = document.getElementById('req_ngay_bd').value;
+        const ngay_kt = document.getElementById('req_ngay_kt').value;
+        const ly_do = document.getElementById('req_ly_do').value;
+
+        if (!ngay_bd || !ly_do) {
+            alert('Vui lòng nhập đầy đủ Ngày bắt đầu và Lý do!');
+            return;
+        }
+
+        const data = {
+            loai_yeu_cau: loai,
+            ngay_bd: ngay_bd,
+            ngay_kt: ngay_kt,
+            ly_do: ly_do
+        };
+
+        fetch("{% url 'api_submit_request' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message);
+                closeModal('submitRequestModal');
+            } else {
+                showError('Lỗi', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('Lỗi', 'Có lỗi xảy ra khi gửi đề nghị!');
+        });
+    }
     let currentRequestId = '';
     let currentStatusFilter = 'all';
 
@@ -451,7 +552,9 @@
         }
 
         const actionsDiv = document.getElementById('modal-actions');
-        actionsDiv.style.display = (statusKey === 'pending') ? 'flex' : 'none';
+        if (actionsDiv) {
+            actionsDiv.style.display = (statusKey === 'pending') ? 'flex' : 'none';
+        }
 
         document.getElementById('requestDetailModal').style.display = 'flex';
         document.body.style.overflow = 'hidden';

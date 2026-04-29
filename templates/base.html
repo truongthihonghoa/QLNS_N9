@@ -74,9 +74,7 @@
         </header>
 
         <nav class="navigation-bar">
-            {% if request.user.is_superuser or request.user.is_staff %}
-                <a href="{% url 'dashboard' %}" class="nav-item">Tổng quan</a>
-            {% endif %}
+            <a href="{% url 'dashboard' %}" class="nav-item">Tổng quan</a>
             <a href="{% url 'accounts:account_admin_list' %}" class="nav-item">Tài khoản</a>
             <a href="{% url 'branches:branch_admin' %}" class="nav-item">Chi nhánh</a>
             <a href="{% url 'employee_list' %}" class="nav-item">Nhân Viên</a>

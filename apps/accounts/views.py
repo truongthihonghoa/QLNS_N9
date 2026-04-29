@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -6,150 +7,60 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
-from django.db import transaction
-from django.db.models import Q
-from django.core.exceptions import PermissionDenied
 from .forms import LoginForm, ChangePasswordForm
-
-# Giá trị GET `branch` = xem tất cả chi nhánh (khớp với option trong template)
-BRANCH_FILTER_ALL = '__all__'
-
-
-def _resolve_selected_branch(request, branches_qs):
-    """
-    Lấy mã chi nhánh từ GET (hợp lệ và active), hoặc BRANCH_FILTER_ALL để không lọc theo chi nhánh,
-    không có GET hợp lệ thì mặc định chi nhánh active đầu tiên.
-    """
-    branch_from_get = (request.GET.get('branch') or '').strip()
-    if branch_from_get == BRANCH_FILTER_ALL:
-        return BRANCH_FILTER_ALL
-    if branch_from_get and branches_qs.filter(ma_chi_nhanh=branch_from_get).exists():
-        return branch_from_get
-    first = branches_qs.first()
-    return first.ma_chi_nhanh if first else None
-
-
-def _branch_scope_filters_qs(selected_branch):
-    """True nếu cần lọc queryset theo một chi nhánh cụ thể."""
-    return bool(selected_branch and selected_branch != BRANCH_FILTER_ALL)
-
-
-def _account_rows():
-    return [
-        {
-            'stt': 1,
-            'ho_ten': 'Nguyễn Văn An',
-            'ten_dang_nhap': 'NGUYENVANAN',
-            'quyen': 'Nhân viên',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-        {
-            'stt': 2,
-            'ho_ten': 'Lê Thị Hồng Châu',
-            'ten_dang_nhap': 'LETHIHONGCHAU',
-            'quyen': 'Nhân viên',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-        {
-            'stt': 3,
-            'ho_ten': 'Trần Tuấn Anh',
-            'ten_dang_nhap': 'TRANTUANANH',
-            'quyen': 'Nhân viên',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-        {
-            'stt': 4,
-            'ho_ten': 'Trình Phúc Lâm',
-            'ten_dang_nhap': 'TRINHPHUCLAM',
-            'quyen': 'Nhân viên',
-            'trang_thai': 'Ngừng hoạt động',
-            'trang_thai_key': 'inactive',
-        },
-        {
-            'stt': 5,
-            'ho_ten': 'Nguyễn Thị Anh',
-            'ten_dang_nhap': 'NGUYENTHIANH',
-            'quyen': 'Quản lý',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-    ]
-
-
-def _admin_accounts():
-    """Return only admin accounts - separate management list"""
-    return [
-        {
-            'stt': 1,
-            'ho_ten': 'Lê Minh Tuấn',
-            'ten_dang_nhap': 'LEMINHTUAN',
-            'quyen': 'Admin',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-        {
-            'stt': 2,
-            'ho_ten': 'Trần Thị Mai',
-            'ten_dang_nhap': 'TRANTHIMAI',
-            'quyen': 'Admin',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-        {
-            'stt': 3,
-            'ho_ten': 'Nguyễn Thị Anh',
-            'ten_dang_nhap': 'NGUYENTHIANH',
-            'quyen': 'Quản lý',
-            'trang_thai': 'Đang hoạt động',
-            'trang_thai_key': 'active',
-        },
-    ]
+from ..attendances.models import ChamCong
+from ..employees.models import NhanVien
+from ..payroll.models import Luong
+from ..requests.models import YeuCau
 
 
 def login_view(request):
-    """
-    Handle user login with form validation and authentication.
-    """
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-
     form = LoginForm()
 
     if request.method == 'POST':
         form = LoginForm(request.POST)
+
         if form.is_valid():
             user = form.cleaned_data['user']
-            login(request, user)
-            messages.success(request, 'Đăng nhập thành công')
 
-            # Identify role and redirect (same destination for now, but structure supports role-based)
-            if user.is_superuser or user.is_staff:
-                return redirect('dashboard')
+            # ❗ check active
+            if not user.is_active:
+                messages.error(request, 'Tài khoản đã bị khóa!')
+                return render(request, 'accounts/login.html', {'form': form})
+
+            login(request, user)
+
+            messages.success(request, 'Đăng nhập thành công 🎉')
+
+            # ✅ set role
+            if user.is_superuser:
+                role = 'Chủ'
+            elif user.is_staff:
+                role = 'Quản lý'
             else:
-                return redirect('dashboard')
+                role = 'Nhân viên'
+
+            request.session['role'] = role
+
+            return redirect('dashboard')
+
         else:
-            # Handle specific errors
-            for field, errors in form.errors.items():
-                if field == '__all__':
-                    # System error case
-                    messages.error(request, 'Đăng nhập thất bại, vui lòng thử lại sau')
-                elif field == 'username':
-                    messages.error(request, 'Tên đăng nhập không hợp lệ')
-                elif field == 'password':
-                    messages.error(request, 'Mật khẩu không hợp lệ')
+            # ❌ xử lý lỗi chi tiết
+            if '__all__' in form.errors:
+                messages.error(request, 'Sai tài khoản hoặc mật khẩu!')
+
+            if 'username' in form.errors:
+                messages.error(request, 'Tên đăng nhập không được để trống!')
+
+            if 'password' in form.errors:
+                messages.error(request, 'Mật khẩu không được để trống!')
 
     return render(request, 'accounts/login.html', {'form': form})
 
 
-# @login_required(login_url='/accounts/login/') # Kept commented out for easy frontend testing
+@login_required(login_url='/accounts/login/') # Kept commented out for easy frontend testing
 def dashboard_view(request):
-    from apps.employees.models import NhanVien
-    from apps.requests.models import YeuCau
-    from apps.attendances.models import ChamCong
-    from apps.payroll.models import Luong
+
     from django.db.models import Sum
     from datetime import date
 
@@ -216,85 +127,41 @@ def dashboard_view(request):
 
     return render(request, 'accounts/dashboard.html', context)
 
-
 def account_employee_list_view(request):
-    if not (request.user.is_staff or request.user.is_superuser):
-        raise PermissionDenied("Bạn không có quyền truy cập chức năng này.")
-
     from apps.branches.models import ChiNhanh
-
     branches = ChiNhanh.objects.filter(trang_thai='active').order_by('ma_chi_nhanh')
-    selected_branch = _resolve_selected_branch(request, branches)
-    search_term = (request.GET.get('q') or '').strip()
-
-    # Tài khoản nhân viên: không phải admin hệ thống / quản lý (staff)
-    all_users = User.objects.filter(is_superuser=False, is_staff=False).select_related(
-        'taikhoan__ma_nv'
-    )
-
-    if _branch_scope_filters_qs(selected_branch):
-        all_users = all_users.filter(taikhoan__ma_nv__ma_chi_nhanh_id=selected_branch)
-
-    if search_term:
-        all_users = all_users.filter(
-            Q(username__icontains=search_term)
-            | Q(taikhoan__ma_nv__ho_ten__icontains=search_term)
-        )
-
-    account_rows = []
-    for idx, user in enumerate(all_users, 1):
-        try:
-            nv = user.taikhoan.ma_nv
-        except Exception:
-            nv = None
-
-        quyen = 'Nhân viên'
-        trang_thai = 'Đang hoạt động' if user.is_active else 'Ngừng hoạt động'
-        trang_thai_key = 'active' if user.is_active else 'inactive'
-        ho_ten = nv.ho_ten if nv else (user.get_full_name() or user.username)
-
-        account_rows.append({
-            'stt': idx,
-            'ho_ten': ho_ten,
-            'ten_dang_nhap': user.username,
-            'quyen': quyen,
-            'trang_thai': trang_thai,
-            'trang_thai_key': trang_thai_key,
-        })
-
+    selected_branch = request.GET.get('branch') or (branches.first().ma_chi_nhanh if branches.exists() else None)
     return render(
         request,
         'accounts/employee_list.html',
         {
-            'account_rows': account_rows,
+            'account_rows': _employee_accounts(),
             'branches': branches,
             'selected_branch': selected_branch,
-            'branch_all': BRANCH_FILTER_ALL,
         },
     )
 
-
+@login_required(login_url='/accounts/login/')
 def account_admin_list_view(request):
-    if not (request.user.is_staff or request.user.is_superuser):
-        raise PermissionDenied("Bạn không có quyền truy cập chức năng này.")
-
     from apps.branches.models import ChiNhanh
+    from django.contrib.auth.models import User
 
     branches = ChiNhanh.objects.filter(trang_thai='active').order_by('ma_chi_nhanh')
-    selected_branch = _resolve_selected_branch(request, branches)
+    selected_branch = request.GET.get('branch') or (branches.first().ma_chi_nhanh if branches.exists() else None)
 
-    # Get search term
     search_term = request.GET.get('q', '').strip()
 
-    # Query all accounts from database (not just admin accounts)
-    # Changed to query all users to show all accounts
-    all_users = User.objects.all().select_related('taikhoan__ma_nv')
+    # 🔥 PHÂN QUYỀN TẠI ĐÂY
+    if request.user.is_superuser or request.user.is_staff:
+        # Admin / Chủ → xem tất cả
+        all_users = User.objects.all().select_related('taikhoan__ma_nv')
+    else:
+        # Nhân viên → chỉ xem chính mình
+        all_users = User.objects.filter(id=request.user.id).select_related('taikhoan__ma_nv')
 
-    if _branch_scope_filters_qs(selected_branch):
-        all_users = all_users.filter(taikhoan__ma_nv__ma_chi_nhanh_id=selected_branch)
-
-    # Apply search filter if search term is provided
+    # 🔍 SEARCH (sau khi đã phân quyền)
     if search_term:
+        from django.db.models import Q
         all_users = all_users.filter(
             Q(username__icontains=search_term) |
             Q(taikhoan__ma_nv__ho_ten__icontains=search_term)
@@ -302,31 +169,26 @@ def account_admin_list_view(request):
 
     account_rows = []
     for idx, user in enumerate(all_users, 1):
-        # Get TaiKhoan if exists
         try:
             tai_khoan = user.taikhoan
             nv = tai_khoan.ma_nv
         except:
-            tai_khoan = None
             nv = None
 
-        # Get role name
+        # 🎯 ROLE
         if user.is_superuser:
-            quyen = 'Admin'
+            quyen = 'Chủ'
         elif user.is_staff:
             quyen = 'Quản lý'
         else:
             quyen = 'Nhân viên'
 
-        # Get status
+        # 🎯 TRẠNG THÁI
         trang_thai = 'Đang hoạt động' if user.is_active else 'Ngừng hoạt động'
         trang_thai_key = 'active' if user.is_active else 'inactive'
 
-        # Get full name
-        if nv:
-            ho_ten = nv.ho_ten
-        else:
-            ho_ten = user.get_full_name() or user.username
+        # 🎯 TÊN
+        ho_ten = nv.ho_ten if nv else user.username
 
         account_rows.append({
             'stt': idx,
@@ -344,109 +206,98 @@ def account_admin_list_view(request):
             'account_rows': account_rows,
             'branches': branches,
             'selected_branch': selected_branch,
-            'branch_all': BRANCH_FILTER_ALL,
         },
     )
-
-
-@require_http_methods(["GET"])
-def api_employee_name_search(request):
-    """Gợi ý nhân viên theo họ tên (khớp gần đúng, icontains)."""
-    if not (request.user.is_staff or request.user.is_superuser):
-        raise PermissionDenied()
-
-    from apps.employees.models import NhanVien
-
-    q = (request.GET.get("q") or "").strip()
-    if len(q) < 1:
-        return JsonResponse({"results": []})
-
-    qs = (
-        NhanVien.objects.filter(ho_ten__icontains=q)
-        .order_by("ho_ten")
-        .values("ma_nv", "ho_ten")[:20]
-    )
-    return JsonResponse({"results": list(qs)})
-
-
-@require_http_methods(["GET"])
-def api_employee_has_account(request):
-    """Kiểm tra nhân viên đã có bản ghi TaiKhoan hay chưa."""
-    if not (request.user.is_staff or request.user.is_superuser):
-        raise PermissionDenied()
-
-    from apps.accounts.models import TaiKhoan
-    from apps.employees.models import NhanVien
-
-    ma_nv = (request.GET.get("ma_nv") or "").strip()
-    if not ma_nv:
-        return JsonResponse({"has_account": False, "ho_ten": "", "error": "missing_ma_nv"})
-
-    nv = NhanVien.objects.filter(pk=ma_nv).first()
-    if not nv:
-        return JsonResponse({"has_account": False, "ho_ten": "", "error": "not_found"})
-
-    has_account = TaiKhoan.objects.filter(ma_nv=nv).exists()
-    return JsonResponse({"has_account": has_account, "ho_ten": nv.ho_ten})
-
 
 @csrf_exempt
 @require_http_methods(["POST"])
 def add_admin_account(request):
-    """Thêm tài khoản, bắt buộc liên kết nhân viên (ma_nv) chưa có TaiKhoan."""
-    if not (request.user.is_staff or request.user.is_superuser):
-        return JsonResponse({'success': False, 'message': 'Bạn không có quyền thao tác.'}, status=403)
+    if not (request.user.is_superuser or request.user.is_staff):
+        return JsonResponse({
+            'success': False,
+            'message': 'Bạn không có quyền!'
+        }, status=403)
 
     try:
         from apps.accounts.models import TaiKhoan
         from apps.employees.models import NhanVien
 
-        username = (request.POST.get("username") or "").strip()
-        password = request.POST.get("password")
-        role = (request.POST.get("role") or "").strip()
-        ma_nv = (request.POST.get("ma_nv") or "").strip()
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        role = request.POST.get('role')
 
-        if not all([username, password, role, ma_nv]):
-            return JsonResponse(
-                {
-                    "success": False,
-                    "message": "Vui lòng chọn nhân viên và điền đầy đủ thông tin bắt buộc.",
-                }
-            )
+        if not all([username, password, role]):
+            return JsonResponse({
+                'success': False,
+                'message': 'Vui lòng điền đầy đủ thông tin bắt buộc.'
+            })
 
-        nv = NhanVien.objects.filter(pk=ma_nv).first()
-        if not nv:
-            return JsonResponse({"success": False, "message": "Không tìm thấy nhân viên."})
-
-        if TaiKhoan.objects.filter(ma_nv=nv).exists():
-            return JsonResponse({"success": False, "message": "Nhân viên này đã có tài khoản."})
-
+        # Check if username already exists
         if User.objects.filter(username=username).exists():
-            return JsonResponse({"success": False, "message": "Tên đăng nhập đã tồn tại."})
+            return JsonResponse({
+                'success': False,
+                'message': 'Tên đăng nhập đã tồn tại.'
+            })
 
-        with transaction.atomic():
-            user = User.objects.create_user(username=username, password=password)
-            if role == "Admin":
-                user.is_superuser = True
-                user.is_staff = True
-            elif role == "Quản lý":
-                user.is_staff = True
-            user.save()
-            TaiKhoan.objects.create(user=user, ma_nv=nv)
+        # Create user
+        user = User.objects.create_user(
+            username=username,
+            password=password
+        )
 
-        return JsonResponse({"success": True, "message": "Thêm tài khoản thành công!"})
+        # Set role
+        if role == 'Admin':
+            user.is_superuser = True
+            user.is_staff = True
+        elif role == 'Quản lý':
+            user.is_staff = True
+        user.save()
+
+        # For admin accounts, we need to handle ma_nv differently
+        # Since admin accounts might not have corresponding employees,
+        # we'll create a dummy employee or handle this case
+        try:
+            # Try to find an existing employee or create a dummy one
+            dummy_employee = NhanVien.objects.filter(ho_ten=username).first()
+            if not dummy_employee:
+                # Create a dummy employee for admin account
+                dummy_employee = NhanVien.objects.create(
+                    ho_ten=username,
+                    email=f"{username}@admin.com",
+                    so_dien_thoai="0000000000",
+                    trang_thai='active'
+                )
+
+            # Create TaiKhoan with employee
+            tai_khoan = TaiKhoan.objects.create(
+                user=user,
+                ma_nv=dummy_employee
+            )
+        except Exception as emp_error:
+            # If employee creation fails, we'll skip TaiKhoan creation for now
+            # This is a temporary solution - in production, you should handle this properly
+            print(f"Warning: Could not create TaiKhoan for admin {username}: {str(emp_error)}")
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Thêm tài khoản thành công!'
+        })
 
     except Exception as e:
-        return JsonResponse({"success": False, "message": f"Đã xảy ra lỗi: {str(e)}"})
+        return JsonResponse({
+            'success': False,
+            'message': f'Đã xảy ra lỗi: {str(e)}'
+        })
 
 
 @csrf_exempt
 @require_http_methods(["POST"])
 def edit_admin_account(request):
-    """Chỉnh sửa tài khoản admin"""
-    if not (request.user.is_staff or request.user.is_superuser):
-        return JsonResponse({'success': False, 'message': 'Bạn không có quyền thao tác.'}, status=403)
-
+    if not (request.user.is_superuser or request.user.is_staff):
+        return JsonResponse({
+            'success': False,
+            'message': 'Bạn không có quyền!'
+        }, status=403)
     try:
         from apps.accounts.models import TaiKhoan
 
@@ -521,10 +372,11 @@ def edit_admin_account(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def delete_admin_account(request):
-    """Xóa tài khoản admin"""
-    if not (request.user.is_staff or request.user.is_superuser):
-        return JsonResponse({'success': False, 'message': 'Bạn không có quyền thao tác.'}, status=403)
-
+    if not (request.user.is_superuser or request.user.is_staff):
+        return JsonResponse({
+            'success': False,
+            'message': 'Bạn không có quyền!'
+        }, status=403)
     try:
         from apps.accounts.models import TaiKhoan
 
@@ -569,10 +421,11 @@ def delete_admin_account(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def get_admin_password(request):
-    """Lấy mật khẩu thật của tài khoản admin"""
-    if not (request.user.is_staff or request.user.is_superuser):
-        return JsonResponse({'success': False, 'message': 'Bạn không có quyền thao tác.'}, status=403)
-
+    if not (request.user.is_superuser or request.user.is_staff):
+        return JsonResponse({
+            'success': False,
+            'message': 'Bạn không có quyền!'
+        }, status=403)
     try:
         username = request.GET.get('username')
 
@@ -608,16 +461,11 @@ def get_admin_password(request):
 
 @login_required(login_url='/accounts/login/')
 def logout_view(request):
-    """
-    Handle user logout with confirmation.
-    """
-    if request.method == 'POST':
-        logout(request)
-        messages.success(request, 'Đã đăng xuất thành công')
-        return redirect('login')
+    logout(request)
+    request.session.flush()
 
-    # For GET requests, redirect to dashboard (logout should be POST)
-    return redirect('dashboard')
+    return redirect('accounts:login')
+
 
 
 @login_required(login_url='/accounts/login/')
@@ -658,3 +506,5 @@ def change_password_view(request):
         'success': False,
         'message': 'Hệ thống lỗi, không thể thay đổi mật khẩu'
     }, status=500)
+
+
