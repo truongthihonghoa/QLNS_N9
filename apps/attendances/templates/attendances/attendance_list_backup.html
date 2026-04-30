@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Chấm Công - GÉ CAFE HRM{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    /* 1. Reset & Base Style */
+    body {
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+        background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        background-size: cover;
+        background-attachment: fixed;
+        color: white;
+    }
+
+    /* 2. Full Screen Container */
+    .attendance-container {
+        max-width: 100% !important;
+        width: 100%;
+        margin: 0;
+        padding: 30px 40px; /* Khoảng cách đệm chuẩn 2 bên */
+        box-sizing: border-box;
+    }
+
+    /* --- HEADER SECTION (Dành cho nhân viên) --- */
+    .attendance-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 30px;
+    }
+    .greeting-box h1 { font-size: 32px; font-weight: 700; margin: 0; }
+    .greeting-box p { font-size: 16px; margin: 5px 0 0 0; opacity: 0.9; }
+    .clock-box { text-align: right; }
+    .real-time-clock { font-size: 52px; font-weight: 800; line-height: 1; color: #fff; }
+    .real-time-date { font-size: 16px; opacity: 0.8; margin-top: 8px; }
+
+    /* --- MANAGER VIEW (Glassmorphism Style) --- */
+    .manager-view {
+        background: transparent;
+        width: 100%;
+        margin-top: 0px;
+    }
+
+    /* Vùng chứa tìm kiếm mờ ảo */
+    .search-filter-section {
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 25px;
+    }
+
+    .search-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .input-search-ge {
+        flex: 1;
+        height: 48px;
+        border-radius: 10px;
+        border: none;
+        padding: 0 20px;
+        font-family: 'Montserrat';
+        font-size: 18px;
+        background: #ffffff;
+        color: #333;
+    }
+
+    .btn-search-ge {
+        height: 48px;
+        font-size: 18px;
+        padding: 0 35px;
+        border-radius: 10px;
+        border: none;
+        background: #174D17;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-search-ge:hover {
+        background: #1e631e;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .filter-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .dropdown-ge {
+        height: 48px;
+        border-radius: 8px;
+        border: none;
+        padding: 0 15px;
+        font-family: 'Montserrat';
+        font-size: 18px;
+        cursor: pointer;
+        background: white;
+        color: #333;
+        min-width: 160px;
+    }
+
+    /* --- TABLE STYLE (FULL WIDTH & ROUNDED) --- */
+    .table-responsive-ge {
+        border-radius: 15px;
+        overflow: hidden; /* Cực quan trọng để bo góc */
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        width: 100%;
+    }
+
+    .ge-main-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: #333;
+    }
+
+    .ge-main-table thead tr {
+        background: #174D17 !important; /* Màu xanh Gé Cafe */
+    }
+
+    .ge-main-table th {
+        color: white;
+        padding: 22px 15px;
+        font-weight: 700;
+        font-size: 18px;
+        text-align: center;
+        border: none;
+    }
+
+    .ge-main-table td {
+        padding: 18px 15px;
+        border-bottom: 1px solid #eee;
+        text-align: center;
+        font-size: 18px;
+    }
+
+    .ge-main-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .ge-main-table tbody tr:nth-child(even) {
+        background: #f9f9f9;
+    }
+
+    .ge-main-table tbody tr:hover {
+        background: #f1f1f1;
+    }
+
+    /* Status & Action */
+    .status-approved { color: #2e7d32; font-weight: 700; }
+    .status-pending { color: #e67e22; font-weight: 700; }
+
+    .btn-detail-link {
+        background: #2e7d32;
+        color: white;
+        padding: 8px 18px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-block;
+        transition: 0.2s;
+    }
+    .btn-detail-link:hover { background: #1b5e20; }
+
+    /* --- EMPLOYEE CARD STYLE --- */
+    .ge-card {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        color: #333;
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+    .card-header-title {
+        padding: 20px 30px;
+        border-bottom: 1px solid #eee;
+        margin: 0;
+        color: #174D17;
+        font-size: 20px;
+        font-weight: 700;
+    }
+    .shift-table { width: 100%; border-collapse: collapse; }
+    .shift-table th { text-align: left; padding: 15px 30px; font-size: 13px; color: #666; text-transform: uppercase; background: #f8f9fa; }
+    .shift-table td { padding: 15px 30px; border-bottom: 1px solid #eee; }
+    .self-row { background: #f0f7f0 !important; border-left: 5px solid #174D17; }
+
+    .btn-check { padding: 10px 25px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; }
+    .btn-check-in { background: #174D17; color: white; }
+    .btn-check-out { background: #5D4037; color: white; }
+
+    .summary-card {
+        background: #174D17; color: white; padding: 30px; border-radius: 20px;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .hours-val { font-size: 48px; font-weight: 800; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="attendance-container">
+    {% if is_manager %}
+        <!-- GIAO DIỆN QUẢN LÝ (MANAGER) -->
+        <div class="manager-view">
+            <div class="search-filter-section">
+                <form method="GET" action="{% url 'attendances:attendance_list' %}">
+                    <div class="search-row">
+                        <input type="text" name="search" class="input-search-ge"
+                               placeholder="Tìm kiếm tên nhân viên..." value="{{ search_query|default:'' }}">
+                        <button type="submit" class="btn-search-ge">Tìm kiếm</button>
+                    </div>
+
+                    <div class="filter-row">
+                        <select name="branch" class="dropdown-ge" onchange="this.form.submit()">
+                            <option value="">Tất cả chi nhánh</option>
+                            {% for branch in branches %}
+                                <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>
+                                    {{ branch.ten_chi_nhanh }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                        <select name="month" class="dropdown-ge" onchange="this.form.submit()">
+                            <option value="">Tất cả tháng</option>
+                            {% for i in "123456789"|make_list %}
+                                <option value="{{ forloop.counter }}" {% if selected_month == forloop.counter|stringformat:"i" %}selected{% endif %}>Tháng 0{{ forloop.counter }}</option>
+                            {% endfor %}
+                            <option value="10" {% if selected_month == "10" %}selected{% endif %}>Tháng 10</option>
+                            <option value="11" {% if selected_month == "11" %}selected{% endif %}>Tháng 11</option>
+                            <option value="12" {% if selected_month == "12" %}selected{% endif %}>Tháng 12</option>
+                        </select>
+
+                        <select name="year" class="dropdown-ge" onchange="this.form.submit()">
+                            <option value="2026" {% if selected_year == "2026" %}selected{% endif %}>2026</option>
+                            <option value="2025" {% if selected_year == "2025" %}selected{% endif %}>2025</option>
+                            <option value="2024" {% if selected_year == "2024" %}selected{% endif %}>2024</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-responsive-ge">
+                <table class="ge-main-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; padding-left: 35px;">Nhân Viên</th>
+                            <th>Ngày Làm</th>
+                            <th>Giờ Vào</th>
+                            <th>Giờ Ra</th>
+                            <th>Số Giờ</th>
+                            <th>Trạng Thái</th>
+                            <th>Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for attendance in attendances %}
+                        <tr>
+                            <td style="text-align: left; padding-left: 35px; font-weight: 700;">{{ attendance.ma_nv.ho_ten }}</td>
+                            <td>{{ attendance.ngay_lam|date:"d/m/Y" }}</td>
+                            <td>{{ attendance.gio_vao|time:"H:i"|default:"--" }}</td>
+                            <td>{{ attendance.gio_ra|time:"H:i"|default:"--" }}</td>
+                            <td><strong>{{ attendance.so_gio_lam }}h</strong></td>
+                            <td>
+                                {% if attendance.trang_thai == "Hoàn thành" %}
+                                    <span class="status-approved">Đã duyệt</span>
+                                {% else %}
+                                    <span class="status-pending">Đang làm</span>
+                                {% endif %}
+                            </td>
+                            <td><a href="#" class="btn-detail-link">Xem chi tiết</a></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" style="padding: 40px; color: #999;">Không có dữ liệu hiển thị.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <!-- GIAO DIỆN NHÂN VIÊN (EMPLOYEE) -->
+        <div class="attendance-header">
+            <div class="greeting-box">
+                <h1>Chào, {{ employee.ho_ten }}!</h1>
+                <p>Vị trí: {{ employee.chuc_vu }} | {{ employee.ma_chi_nhanh.ten_chi_nhanh }}</p>
+            </div>
+            <div class="clock-box">
+                <div id="clock" class="real-time-clock">00:00:00</div>
+                <div id="date" class="real-time-date">Đang tải...</div>
+            </div>
+        </div>
+
+        <div class="ge-card">
+            <h2 class="card-header-title">Nhân viên trong ca</h2>
+            <table class="shift-table">
+                <thead>
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>Giờ vào</th>
+                        <th>Giờ ra</th>
+                        <th>Trạng thái</th>
+                        <th style="text-align: right;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for colleague in shift_colleagues %}
+                    <tr class="{% if colleague.is_self %}self-row{% endif %}">
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 35px; height: 35px; border-radius: 50%; background: #5D4037; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700;">{{ colleague.ho_ten.0 }}</div>
+                                <span style="font-weight: 700;">{{ colleague.ho_ten }}</span>
+                            </div>
+                        </td>
+                        <td>{{ colleague.gio_vao|time:"H:i"|default:"--" }}</td>
+                        <td>{{ colleague.gio_ra|time:"H:i"|default:"--" }}</td>
+                        <td>
+                            {% if colleague.gio_ra %}<span style="color: #1976d2; font-weight: 600;">Hoàn thành</span>
+                            {% elif colleague.gio_vao %}<span style="color: #2e7d32; font-weight: 600;">Đang làm</span>
+                            {% else %}<span style="color: #999;">Vắng</span>{% endif %}
+                        </td>
+                        <td style="text-align: right;">
+                            {% if colleague.is_self %}
+                                <form method="POST" action="{% url 'attendances:check_in_out' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="ma_nv" value="{{ colleague.ma_nv }}">
+                                    {% if not colleague.gio_vao %}
+                                        <button type="submit" name="action" value="check_in" class="btn-check btn-check-in">Check in</button>
+                                    {% elif not colleague.gio_ra %}
+                                        <button type="submit" name="action" value="check_out" class="btn-check btn-check-out">Check out</button>
+                                    {% else %}
+                                        <span style="font-weight: 700; color: #2e7d32;">Đã hoàn thành ca</span>
+                                    {% endif %}
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-info">
+                <h3 style="margin:0; font-size: 14px; text-transform: uppercase; opacity: 0.8;">Tổng giờ làm tháng này</h3>
+                <div class="hours-val">{{ total_hours_month }} Giờ</div>
+            </div>
+            <i class="fas fa-clock" style="font-size: 50px; opacity: 0.3;"></i>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        const clock = document.getElementById('clock');
+        const date = document.getElementById('date');
+        if(clock) clock.textContent = now.toLocaleTimeString('vi-VN', { hour12: false });
+        if(date) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            date.textContent = now.toLocaleDateString('vi-VN', options);
+        }
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+</script>
+{% endblock %}

@@ -8,39 +8,215 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>Chấm công</h1>
-    <table class="attendance-table">
-        <thead>
-            <tr>
-                <th>Mã CC</th>
-                <th>Nhân viên</th>
-                <th>Ngày làm</th>
-                <th>Giờ vào</th>
-                <th>Giờ ra</th>
-                <th>Số giờ làm</th>
-                <th>Trạng thái</th>
-                <th>Ghi chú</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for attendance in attendances %}
-            <tr>
-                <td>{{ attendance.ma_cc }}</td>
-                <td>{{ attendance.ma_nv.ho_ten }}</td>
-                <td>{{ attendance.ngay_lam|date:'d/m/Y' }}</td>
-                <td>{% if attendance.gio_vao %}{{ attendance.gio_vao|time:'H:i' }}{% else %}-{% endif %}</td>
-                <td>{% if attendance.gio_ra %}{{ attendance.gio_ra|time:'H:i' }}{% else %}-{% endif %}</td>
-                <td>{{ attendance.so_gio_lam }}</td>
-                <td>{{ attendance.get_trang_thai_display }}</td>
-                <td>{{ attendance.ghi_chu|default:'-' }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="8" style="text-align:center;">Không có dữ liệu chấm công</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="request-management-container">
+
+    <form method="get" action="." class="top-control-bar">
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" name="search" placeholder="Tìm tên nhân viên..." value="{{ search_query|default:'' }}">
+            </div>
+
+            <div class="dropdown-wrapper">
+                <select name="branch" onchange="this.form.submit()"
+                        style="background: white; font-size: 16px; padding: 10px 15px; border-radius: 6px; border: 1px solid #DADCE0; min-width: 200px; cursor: pointer;">
+                    <option value="">Tất cả chi nhánh</option>
+                    {% for branch in branches %}
+                        <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>{{ branch.ten_chi_nhanh }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="dropdown-wrapper">
+                <select name="month" onchange="this.form.submit()"
+                        style="background: white; font-size: 16px; padding: 10px 15px; border-radius: 6px; border: 1px solid #DADCE0; min-width: 120px; cursor: pointer;">
+                    <option value="">-- Tháng --</option>
+                    {% for i in "x"|rjust:"12"|make_list %}
+                        {% with month_val=forloop.counter|stringformat:"02d" %}
+                            <option value="{{ month_val }}" {% if request.GET.month == month_val %}selected{% endif %}>
+                                Tháng {{ month_val }}
+                            </option>
+                        {% endwith %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="dropdown-wrapper">
+                <select name="year" onchange="this.form.submit()"
+                        style="background: white; font-size: 16px; padding: 10px 15px; border-radius: 6px; border: 1px solid #DADCE0; min-width: 120px; cursor: pointer;">
+                    <option value="">-- Năm --</option>
+                    {% for i in "x"|rjust:"7"|make_list %}
+                        {% with y=forloop.counter|add:2023 %}
+                            <option value="{{ y }}" {% if request.GET.year == y|stringformat:"i" %}selected{% endif %}>
+                                {{ y }}
+                            </option>
+                        {% endwith %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="toolbar-actions">
+                <button type="submit" class="btn-search">Tìm kiếm</button>
+                <button type="button" class="btn-primary">+ Thêm</button>
+            </div>
+        </div>
+    </form>
+
+    {% if is_manager %}
+    <!-- MANAGER VIEW -->
+    <div class="manager-view">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
+            <h1 style="color: #174D17; margin: 0;">Chấm công</h1>
+        </div>
+
+        <div class="attendance-table-card">
+            <table class="attendance-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Mã CC</th>
+                        <th>Nhân viên</th>
+                        <th>Ngày làm</th>
+                        <th>Giờ vào</th>
+                        <th>Giờ ra</th>
+                        <th>Số giờ làm</th>
+                        <th>Trạng thái</th>
+                        <th>Ghi chú</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attendance in attendances %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ attendance.ma_cc }}</td>
+                        <td>{{ attendance.ma_nv.ho_ten }}</td>
+                        <td>{{ attendance.ngay_lam|date:'d/m/Y' }}</td>
+                        <td>{% if attendance.gio_vao %}{{ attendance.gio_vao|time:'H:i' }}{% else %}-{% endif %}</td>
+                        <td>{% if attendance.gio_ra %}{{ attendance.gio_ra|time:'H:i' }}{% else %}-{% endif %}</td>
+                        <td>{{ attendance.so_gio_lam }}</td>
+                        <td>{{ attendance.get_trang_thai_display }}</td>
+                        <td>{{ attendance.ghi_chu|default:'-' }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-edit-ge" onclick="editAttendance('{{ attendance.ma_cc }}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-delete-ge" onclick="deleteAttendance('{{ attendance.ma_cc }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10" style="text-align:center;">Không có dữ liệu chấm công</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% else %}
+    <!-- EMPLOYEE VIEW -->
+    <div class="employee-view">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
+            <h1 style="color: #174D17; margin: 0;">Chấm công của tôi</h1>
+            <div style="color: #666; font-size: 16px;">
+                <strong>{{ employee.ho_ten }}</strong> - {{ employee.chuc_vu }}
+            </div>
+        </div>
+
+        <!-- Check-in/Check-out Section -->
+        <div class="check-in-section">
+            <div class="attendance-table-card">
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>Nhân viên</th>
+                            <th>Ca làm</th>
+                            <th>Giờ vào</th>
+                            <th>Giờ ra</th>
+                            <th>Số giờ</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for colleague in shift_colleagues %}
+                        <tr {% if colleague.is_self %}style="background-color: #e8f5e9;"{% endif %}>
+                            <td>{{ colleague.ho_ten }}{% if colleague.is_self %} <strong>(Bạn)</strong>{% endif %}</td>
+                            <td>{{ colleague.chuc_vu }}</td>
+                            <td>{% if colleague.gio_vao %}{{ colleague.gio_vao|time:'H:i' }}{% else %}-{% endif %}</td>
+                            <td>{% if colleague.gio_ra %}{{ colleague.gio_ra|time:'H:i' }}{% else %}-{% endif %}</td>
+                            <td>{{ colleague.trang_thai }}</td>
+                            <td>{{ colleague.ghi_chu }}</td>
+                            <td>
+                                {% if colleague.is_self %}
+                                    <form method="post" action="{% url 'attendances:check_in_out' %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="ma_nv" value="{{ colleague.ma_nv }}">
+                                        {% if colleague.gio_vao and not colleague.gio_ra %}
+                                            <button type="submit" name="action" value="check_out" class="btn-check-out">Check-out</button>
+                                        {% elif not colleague.gio_vao %}
+                                            <button type="submit" name="action" value="check_in" class="btn-check-in">Check-in</button>
+                                        {% else %}
+                                            <span class="status-done">Đã xong</span>
+                                        {% endif %}
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" style="text-align:center;">Không có ca làm việc hôm nay</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div class="history-section">
+            <h3 style="color: #174D17; margin: 30px 0 15px 0;">Lịch sử chấm công</h3>
+            <div class="attendance-table-card">
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>Ngày làm</th>
+                            <th>Giờ vào</th>
+                            <th>Giờ ra</th>
+                            <th>Số giờ làm</th>
+                            <th>Trạng thái</th>
+                            <th>Ghi chú</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for attendance in history %}
+                        <tr>
+                            <td>{{ attendance.ngay_lam|date:'d/m/Y' }}</td>
+                            <td>{% if attendance.gio_vao %}{{ attendance.gio_vao|time:'H:i' }}{% else %}-{% endif %}</td>
+                            <td>{% if attendance.gio_ra %}{{ attendance.gio_ra|time:'H:i' }}{% else %}-{% endif %}</td>
+                            <td>{{ attendance.so_gio_lam }}</td>
+                            <td>{{ attendance.trang_thai }}</td>
+                            <td>{{ attendance.ghi_chu|default:'-' }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align:center;">Chưa có lịch sử chấm công</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Monthly Summary -->
+        <div class="summary-section">
+            <div style="background: #f1f8f1; padding: 20px; border-radius: 10px; margin-top: 30px;">
+                <h4 style="color: #174D17; margin: 0 0 10px 0;">Tổng giờ làm tháng {{ today|date:'m/Y' }}</h4>
+                <p style="font-size: 24px; font-weight: bold; color: #174D17; margin: 0;">{{ total_hours_month|floatformat:1 }} giờ</p>
+            </div>
+        </div>
+    </div>
+{% endif %}
 </div>
 {% endblock %}

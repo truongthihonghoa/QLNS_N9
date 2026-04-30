@@ -175,6 +175,10 @@ body {
     white-space: nowrap;
 }
 
+.nav-item.active {
+    background-color: rgba(46, 107, 46, 0.9);
+    border-bottom: 3px solid #ffffff;
+}
 .nav-item:hover {
     background-color: rgba(46, 107, 46, 0.9);
 }

@@ -9,25 +9,21 @@
 
 /* Container chính bao phủ toàn màn hình */
 .schedule-form-page {
-    min-height: 100vh;
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 40px 20px;
-    background-size: cover;
-    background-position: center;
+    flex-direction: column;
+    gap: 22px;
 }
 
 /* Card trắng bao quanh nội dung */
 .schedule-card {
-    background: var(--bg-overlay);
+    background: transparent;
     width: 100%;
     max-width: 900px;
     border-radius: 24px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-    padding: 40px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: none;
+    padding: 0;
+    backdrop-filter: none;
+    border: none;
 }
 
 /* Nút quay lại */
@@ -36,7 +32,8 @@
     align-items: center;
     gap: 8px;
     padding: 8px 16px;
-    border-radius: 50px;
+    height: 48px;
+    border-radius: 10px;
     background: #f3f4f6;
     color: var(--cafe-light-brown);
     font-weight: 600;
@@ -90,10 +87,10 @@ h2.main-title {
 
 .field-group input,
 .field-group select {
-    height: 52px;
+    height: 48px;
     padding: 0 16px;
     border: 2px solid var(--border-gray);
-    border-radius: 12px;
+    border-radius: 10px;
     font-family: 'Montserrat', sans-serif;
     font-size: 15px;
     outline: none;
@@ -179,8 +176,8 @@ h2.main-title {
 
 .btn-cancel-ghost {
     min-width: 140px;
-    height: 50px;
-    border-radius: 12px;
+    height: 48px;
+    border-radius: 10px;
     background: #f3f4f6;
     color: #4b5563;
     font-weight: 700;
@@ -193,8 +190,8 @@ h2.main-title {
 
 .btn-save-solid {
     min-width: 180px;
-    height: 50px;
-    border-radius: 12px;
+    height: 48px;
+    border-radius: 10px;
     background: var(--ge-green);
     color: white;
     font-weight: 700;

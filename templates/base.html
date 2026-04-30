@@ -80,7 +80,7 @@
             {% else %}
                 <a href="{% url 'my_salary' %}" class="nav-item">Lương của tôi</a>
             {% endif %}
-            <a href="{% url 'attendance_list' %}" class="nav-item">Chấm công</a>
+            <a href="{% url 'attendances:attendance_list' %}" class="nav-item">Chấm công</a>
             {% if request.user.is_superuser or request.user.is_staff %}
                 <a href="{% url 'reports:report_list' %}" class="nav-item">Báo Cáo</a>
             {% endif %}
