@@ -315,81 +315,91 @@
             </div>
         </div>
 
-        <div class="ge-card">
-            <div class="card-header">
-                <h2 class="card-title">Nhân viên trong ca: <span style="color: #666;">{{ current_shift.ca_lam|default:"Không có ca" }}</span></h2>
-                <div class="shift-badge">
-                    <i class="fas fa-users"></i> {{ shift_colleagues|length }} Nhân viên
+        {% if active_shifts_data %}
+            {% for shift_data in active_shifts_data %}
+            <div class="ge-card">
+                <div class="card-header">
+                    <h2 class="card-title">Nhân viên trong ca: <span style="color: #666;">{{ shift_data.shift_record.ca_lam|default:"Không có ca" }}</span></h2>
+                    <div class="shift-badge">
+                        <i class="fas fa-users"></i> {{ shift_data.colleagues|length }} Nhân viên
+                    </div>
+                </div>
+                
+                <table class="shift-table">
+                    <thead>
+                        <tr>
+                            <th class="col-stt">STT</th>
+                            <th class="col-name">Họ tên</th>
+                            <th class="col-time">Giờ vào</th>
+                            <th class="col-time">Giờ ra</th>
+                            <th class="col-note">Ghi chú</th>
+                            <th class="col-action">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for colleague in shift_data.colleagues %}
+                        <tr class="{% if colleague.is_self %}self-row{% endif %}">
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                <div class="employee-row-info">
+                                    <div class="avatar-circle">{{ colleague.ho_ten.0 }}</div>
+                                    <div class="emp-name-stack">
+                                        <span class="emp-name">{{ colleague.ho_ten }}</span>
+                                        {% if colleague.is_self %}<span class="emp-tag">(Bạn)</span>{% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="time-val {% if colleague.gio_vao %}active{% endif %}">
+                                    {{ colleague.gio_vao|time:"H:i"|default:"Chưa vào" }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="time-val {% if colleague.gio_ra %}active{% endif %}">
+                                    {{ colleague.gio_ra|time:"H:i"|default:"--:--" }}
+                                </span>
+                            </td>
+                            <td>{{ colleague.ghi_chu }}</td>
+                            <td class="col-action">
+                                {% if colleague.is_self %}
+                                    <form method="POST" action="{% url 'attendances:check_in_out' %}" style="margin: 0;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="ma_nv" value="{{ colleague.ma_nv }}">
+                                        <input type="hidden" name="ca_lam" value="{{ shift_data.shift_record.ca_lam }}">
+                                        {% if not colleague.gio_vao %}
+                                            <button type="submit" name="action" value="check_in" class="btn-check btn-check-in">Check in</button>
+                                        {% elif not colleague.gio_ra %}
+                                            <button type="submit" name="action" value="check_out" class="btn-check btn-check-out">Check out</button>
+                                        {% else %}
+                                            <span class="status-badge status-donee">Hoàn thành</span>
+                                        {% endif %}
+                                    </form>
+                                {% else %}
+                                    {% if colleague.gio_ra %}
+                                        <span class="status-badge status-donee">Hoàn thành</span>
+                                    {% elif colleague.gio_vao %}
+                                        <span class="status-badge status-lamm">Đang làm</span>
+                                    {% else %}
+                                        <span class="status-badge status-vangg">Vắng</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="ge-card">
+                <div class="card-header">
+                    <h2 class="card-title">Chưa có ca làm việc nào đến giờ hiển thị</h2>
+                </div>
+                <div style="padding: 40px; text-align: center; color: #888;">
+                    Các ca làm việc trong ngày sẽ được tự động hiển thị trước 30 phút so với giờ bắt đầu ca.
                 </div>
             </div>
-            
-            <table class="shift-table">
-                <thead>
-                    <tr>
-                        <th class="col-stt">STT</th>
-                        <th class="col-name">Họ tên</th>
-                        <th class="col-time">Giờ vào</th>
-                        <th class="col-time">Giờ ra</th>
-                        <th class="col-note">Ghi chú</th>
-                        <th class="col-action">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for colleague in shift_colleagues %}
-                    <tr class="{% if colleague.is_self %}self-row{% endif %}">
-                        <td>{{ forloop.counter }}</td>
-                        <td>
-                            <div class="employee-row-info">
-                                <div class="avatar-circle">{{ colleague.ho_ten.0 }}</div>
-                                <div class="emp-name-stack">
-                                    <span class="emp-name">{{ colleague.ho_ten }}</span>
-                                    {% if colleague.is_self %}<span class="emp-tag">(Bạn)</span>{% endif %}
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="time-val {% if colleague.gio_vao %}active{% endif %}">
-                                {{ colleague.gio_vao|time:"H:i"|default:"Chưa vào" }}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="time-val {% if colleague.gio_ra %}active{% endif %}">
-                                {{ colleague.gio_ra|time:"H:i"|default:"--:--" }}
-                            </span>
-                        </td>
-                        <td>{{ colleague.ghi_chu }}</td>
-                        <td class="col-action">
-                            {% if colleague.is_self %}
-                                <form method="POST" action="{% url 'attendances:check_in_out' %}" style="margin: 0;">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="ma_nv" value="{{ colleague.ma_nv }}">
-                                    {% if not colleague.gio_vao %}
-                                        <button type="submit" name="action" value="check_in" class="btn-check btn-check-in">Check in</button>
-                                    {% elif not colleague.gio_ra %}
-                                        <button type="submit" name="action" value="check_out" class="btn-check btn-check-out">Check out</button>
-                                    {% else %}
-                                        <span class="status-badge status-donee">Hoàn thành</span>
-                                    {% endif %}
-                                </form>
-                            {% else %}
-                                {% if colleague.gio_ra %}
-                                    <span class="status-badge status-donee">Hoàn thành</span>
-                                {% elif colleague.gio_vao %}
-                                    <span class="status-badge status-lamm">Đang làm</span>
-                                {% else %}
-                                    <span class="status-badge status-vangg">Vắng</span>
-                                {% endif %}
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px; color: #888;">Không có ca làm việc hôm nay.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        {% endif %}
 
         <div class="summary-card">
             <div class="summary-info">

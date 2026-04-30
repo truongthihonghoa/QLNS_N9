@@ -8,8 +8,45 @@ from apps.employees.models import NhanVien
 import datetime
 
 
+def mark_absences_for_date_range(start_date, end_date):
+    now = timezone.now()
+    today = now.date()
+    current_time = now.time()
+    
+    shifts_in_range = LichLamViec.objects.filter(ngay_lam__gte=start_date, ngay_lam__lte=end_date)
+    for shift in shifts_in_range:
+        try:
+            shift_end_str = shift.ca_lam.split(' - ')[1]
+            shift_end_time = datetime.datetime.strptime(shift_end_str, '%H:%M').time()
+            
+            if shift.ngay_lam > today:
+                continue
+            if shift.ngay_lam == today and current_time <= shift_end_time:
+                continue
+                
+            ca_code = get_ca_code(shift.ca_lam)
+            cc_exists = ChamCong.objects.filter(ma_nv=shift.ma_nv, ngay_lam=shift.ngay_lam, ca_lam=ca_code).exists()
+            if not cc_exists:
+                ChamCong.objects.create(
+                    ma_cc=f"CC_{shift.ma_nv.ma_nv}_{shift.ngay_lam.strftime('%Y%m%d')}_{ca_code}",
+                    ma_nv=shift.ma_nv,
+                    ngay_lam=shift.ngay_lam,
+                    ca_lam=ca_code,
+                    trang_thai='Vắng',
+                    so_gio_lam=0,
+                    ghi_chu='Vắng mặt'
+                )
+        except Exception:
+            pass
+
+
 def attendance_list_view(request):
     user = request.user
+    
+    # Check for absences today
+    today = timezone.now().date()
+    mark_absences_for_date_range(today, today)
+    
     if user.is_superuser or user.is_staff:
         # MANAGER VIEW
         branch_id = request.GET.get('branch', 'CN01')  # Default Hai Chau (CN01)
@@ -42,35 +79,53 @@ def attendance_list_view(request):
         now = timezone.now()
         today = now.date()
         
-        # Find today's shift
-        current_shift_record = LichLamViec.objects.filter(ma_nv=employee, ngay_lam=today).first()
+        # Find today's shifts
+        all_shifts_today = LichLamViec.objects.filter(ma_nv=employee, ngay_lam=today)
         
-        shift_colleagues = []
-        if current_shift_record:
-            # Get everyone in the same shift at the same branch
-            shift_colleagues_records = LichLamViec.objects.filter(
-                ngay_lam=today,
-                ca_lam=current_shift_record.ca_lam,
-                ma_chi_nhanh=current_shift_record.ma_chi_nhanh
-            ).select_related('ma_nv')
-            
-            for rec in shift_colleagues_records:
-                # Get check-in status for this colleague and shift
-                ca_code = get_ca_code(rec.ca_lam)
+        active_shifts_data = []
+        current_time = now.time()
+        
+        for shift in all_shifts_today:
+            try:
+                shift_start_str = shift.ca_lam.split(' - ')[0]
+                shift_start_time = datetime.datetime.strptime(shift_start_str, '%H:%M').time()
                 
-                # Check if ChamCong exists
-                cc = ChamCong.objects.filter(ma_nv=rec.ma_nv, ngay_lam=today, ca_lam=ca_code).first()
+                start_dt = datetime.datetime.combine(today, shift_start_time)
+                current_dt = datetime.datetime.combine(today, current_time)
                 
-                shift_colleagues.append({
-                    'ma_nv': rec.ma_nv.ma_nv,
-                    'ho_ten': rec.ma_nv.ho_ten,
-                    'chuc_vu': rec.ma_nv.chuc_vu,
-                    'gio_vao': cc.gio_vao if cc else None,
-                    'gio_ra': cc.gio_ra if cc else None,
-                    'trang_thai': cc.trang_thai if cc else 'Chưa vào',
-                    'ghi_chu': cc.ghi_chu if cc else '-',
-                    'is_self': rec.ma_nv == employee
-                })
+                # Visible from 30 minutes before the shift starts
+                visible_from = start_dt - datetime.timedelta(minutes=30)
+                
+                if current_dt >= visible_from:
+                    # Get colleagues for THIS shift
+                    shift_colleagues_records = LichLamViec.objects.filter(
+                        ngay_lam=today,
+                        ca_lam=shift.ca_lam,
+                        ma_chi_nhanh=shift.ma_chi_nhanh
+                    ).select_related('ma_nv')
+                    
+                    shift_colleagues = []
+                    ca_code = get_ca_code(shift.ca_lam)
+                    
+                    for rec in shift_colleagues_records:
+                        cc = ChamCong.objects.filter(ma_nv=rec.ma_nv, ngay_lam=today, ca_lam=ca_code).first()
+                        shift_colleagues.append({
+                            'ma_nv': rec.ma_nv.ma_nv,
+                            'ho_ten': rec.ma_nv.ho_ten,
+                            'chuc_vu': rec.ma_nv.chuc_vu,
+                            'gio_vao': cc.gio_vao if cc else None,
+                            'gio_ra': cc.gio_ra if cc else None,
+                            'trang_thai': cc.trang_thai if cc else 'Chưa vào',
+                            'ghi_chu': cc.ghi_chu if cc else '-',
+                            'is_self': rec.ma_nv == employee
+                        })
+                    
+                    active_shifts_data.append({
+                        'shift_record': shift,
+                        'colleagues': shift_colleagues
+                    })
+            except Exception:
+                pass
 
         # Monthly total hours
         month_start = today.replace(day=1)
@@ -86,8 +141,7 @@ def attendance_list_view(request):
         context = {
             'is_manager': False,
             'employee': employee,
-            'current_shift': current_shift_record,
-            'shift_colleagues': shift_colleagues,
+            'active_shifts_data': active_shifts_data,
             'total_hours_month': total_hours_month,
             'history': history,
             'today': today,
@@ -124,12 +178,13 @@ def check_in_out_view(request):
         today = now.date()
         current_time = now.time()
         
-        # Find current shift record to know which ca_lam to use
-        current_shift_record = LichLamViec.objects.filter(ma_nv=employee, ngay_lam=today).first()
+        ca_lam_str = request.POST.get('ca_lam')
+        
+        # Verify the shift exists for this employee today
+        current_shift_record = LichLamViec.objects.filter(ma_nv=employee, ngay_lam=today, ca_lam=ca_lam_str).first()
         if not current_shift_record:
             return redirect('attendances:attendance_list')
             
-        ca_lam_str = current_shift_record.ca_lam
         ca_code = get_ca_code(ca_lam_str)
         
         if action == 'check_in':

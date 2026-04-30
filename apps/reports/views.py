@@ -151,6 +151,9 @@ def api_aggregate_data(request):
             start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
             end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
 
+            from apps.attendances.views import mark_absences_for_date_range
+            mark_absences_for_date_range(start_date, end_date)
+
             nhanviens = NhanVien.objects.all()
             if branch_id:
                 nhanviens = nhanviens.filter(ma_chi_nhanh=branch_id)
