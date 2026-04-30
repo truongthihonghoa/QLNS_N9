@@ -416,7 +416,7 @@
     </div>
 </div>
 
-{% include 'partials/popup_confirm_delete.html' %}
+{% include 'partials/popup_confirm_delete.html' with delete_popup_title="XÓA CA LÀM" delete_popup_message_1="Bạn có chắc chắn muốn xóa ca làm này?" %}
 {% include 'partials/popup_error.html' %}
 {% include 'partials/popup_success.html' %}
 {% endblock %}
@@ -453,14 +453,16 @@
     }
 
     function handleDelete() {
-        if (typeof openDeletePopup === 'function') {
-            openDeletePopup("{{ schedule.ma_llv }}");
-        } else {
-            // Fallback if popup partial not working as expected
-            if(confirm('Bạn có chắc chắn muốn xóa toàn bộ nhân viên khỏi ca làm này?')) {
-                window.location.href = "{% url 'schedule_delete' schedule.ma_llv %}";
-            }
+        const popup = document.getElementById('confirm-delete-popup');
+        if (popup) {
+            popup.style.display = 'flex';
+            document.getElementById('delete-popup-no-btn').onclick = () => popup.style.display = 'none';
+            document.getElementById('delete-popup-yes-btn').onclick = executeDelete;
         }
+    }
+
+    function executeDelete() {
+        window.location.href = "{% url 'schedule_delete' schedule.ma_llv %}";
     }
 
     // Initialize display on load

@@ -296,7 +296,7 @@
     </div>
 </div>
 
-{% include 'partials/popup_confirm_delete.html' %}
+{% include 'partials/popup_confirm_delete.html' with delete_popup_title="XÓA BẢNG LƯƠNG" delete_popup_message_1="Bạn có chắc chắn muốn xóa bảng lương này?" %}
 {% include 'partials/toast_notification.html' %}
 
 <script src="{% static 'payroll/js/payroll_list.js' %}?v=2026-04-11"></script>

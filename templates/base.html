@@ -17,7 +17,6 @@
 </head>
 <body>
     <div class="bg-overlay"></div>
-
     <div class="main-container">
         <header class="header">
             <div class="header-left">
@@ -28,39 +27,15 @@
                 <span class="welcome-message">Xin chào, GÉ CAFE</span>
                 <div class="user-dropdown">
                     <img class="user-avatar" src="{% static 'images/user_avatar.png' %}" alt="User Avatar" />
-                    <div class="user-dropdown-content">
-                        <form action="{% url 'accounts:logout' %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit">Đăng xuất</button></form>
-                        </div>
                 </div>
 
-                <div class="notification-bell" id="notification-bell">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge">3</span>
-                    <div class="notification-dropdown" id="notification-dropdown">
-                        <div class="notification-header">
-                            <h3>Notifications</h3>
-                            <a href="#" class="mark-as-read">Mark all as read</a>
-                        </div>
-                        <div class="notification-list">
-                            <div class="notification-item">
-                                <p class="title">Nhân viên A vừa check-in</p>
-                                <p class="description">Vị trí: Pha chế</p>
-                                <p class="time">15 minutes ago</p>
-                            </div>
-                            <div class="notification-item">
-                                <p class="title">Đơn hàng mới đã được tạo</p>
-                                <p class="description">Bởi: Quản lý B</p>
-                                <p class="time">1 hour ago</p>
-                            </div>
-                            <div class="notification-item">
-                                <p class="title">Ca làm sắp bắt đầu</p>
-                                <p class="description">Ca tối, 18:00 - 22:00</p>
-                                <p class="time">3 hours ago</p>
-                            </div>
-                        </div>
-                    </div>
+                <div class="logout-container">
+                    <form action="{% url 'accounts:logout' %}" method="post" id="logout-form" style="display:none;">
+                        {% csrf_token %}
+                    </form>
+                    <a href="javascript:void(0)" onclick="document.getElementById('logout-form').submit();" class="logout-icon" title="Đăng xuất">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
                 </div>
             </div>
         </header>

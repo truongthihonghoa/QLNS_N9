@@ -88,6 +88,30 @@ body {
     transform: scale(1.05);
 }
 
+/* Logout Icon Styles */
+.logout-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: rgba(23, 77, 23, 0.08);
+    color: #174d17;
+    font-size: 22px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1.5px solid rgba(23, 77, 23, 0.1);
+    margin-left: 5px;
+}
+
+.logout-icon:hover {
+    background-color: #174d17;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(23, 77, 23, 0.2);
+    border-color: transparent;
+}
+
 /* 4. User Dropdown Styles */
 .user-dropdown {
     position: relative;

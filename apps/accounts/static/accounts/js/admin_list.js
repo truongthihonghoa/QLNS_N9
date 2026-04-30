@@ -145,8 +145,65 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Get accounts data from Django template
-    const accounts = window.accountsData || {};
+    // Autocomplete logic for Add Account
+    const allEmployees = window.allEmployees || [];
+    const employeesWithAccount = window.employeesWithAccount || [];
+
+    const addEmpNameInput = document.getElementById('add-employee-name');
+    const addEmpIdInput = document.getElementById('add-employee-id');
+    const addSuggestionsList = document.getElementById('add-employee-suggestions');
+    const addErrorText = document.getElementById('add-account-exists-error');
+
+    if (addEmpNameInput) {
+        addEmpNameInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            addSuggestionsList.innerHTML = '';
+            addErrorText.style.display = 'none';
+            addEmpIdInput.value = '';
+
+            if (query.length < 1) {
+                addSuggestionsList.style.display = 'none';
+                return;
+            }
+
+            const matches = allEmployees.filter(emp =>
+                emp.ho_ten.toLowerCase().includes(query) ||
+                emp.ma_nv.toLowerCase().includes(query)
+            );
+
+            if (matches.length > 0) {
+                matches.forEach(emp => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerHTML = `
+                        <div class="emp-name-main">${emp.ho_ten}</div>
+                        <div class="emp-code-sub">Mã NV: ${emp.ma_nv}</div>
+                    `;
+                    div.addEventListener('click', function() {
+                        addEmpNameInput.value = emp.ho_ten;
+                        addEmpIdInput.value = emp.ma_nv;
+                        addSuggestionsList.style.display = 'none';
+
+                        // Check if already has account
+                        if (employeesWithAccount.includes(emp.ma_nv)) {
+                            addErrorText.style.display = 'block';
+                        }
+                    });
+                    addSuggestionsList.appendChild(div);
+                });
+                addSuggestionsList.style.display = 'block';
+            } else {
+                addSuggestionsList.style.display = 'none';
+            }
+        });
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!addEmpNameInput.contains(e.target) && !addSuggestionsList.contains(e.target)) {
+                addSuggestionsList.style.display = 'none';
+            }
+        });
+    }
 
     // Modal elements
     const modals = {
@@ -159,70 +216,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const addModalBtn = document.querySelector('[data-open-modal="add-account-modal"]');
     if (addModalBtn) {
         addModalBtn.addEventListener('click', function() {
-            console.log('Add modal button clicked');
-            const modal = document.getElementById('add-account-modal');
-            if (modal) {
-                modal.classList.add('is-visible');
-                console.log('Add modal opened');
-            } else {
-                console.error('Add modal not found');
+            if (modals.add) {
+                modals.add.classList.add('is-visible');
+                // Reset form
+                document.getElementById('add-account-form').reset();
+                addErrorText.style.display = 'none';
+                addSuggestionsList.style.display = 'none';
             }
         });
-    } else {
-        console.error('Add modal button not found');
     }
 
     // View Account
     document.querySelectorAll('.account-btn-view').forEach(btn => {
         btn.addEventListener('click', function() {
-            console.log('View button clicked');
-
-            // Get data from table row
-            const row = this.closest('tr');
-            const cells = row.querySelectorAll('td');
             const username = this.dataset.accountId;
-            const hoTen = cells[1].textContent.trim();
-            const quyen = cells[3].textContent.trim();
-            const trangThai = cells[4].querySelector('.account-status').textContent.trim();
+            const row = this.closest('tr');
+            const fullname = row.querySelector('td:nth-child(2)').textContent.trim();
+            const role = row.querySelector('td:nth-child(4)').textContent.trim();
 
-            console.log('Account data:', { username, hoTen, quyen, trangThai });
-
-            // Fill view form with real data
+            const viewEmpName = document.getElementById('view-employee-name');
             const viewUsername = document.getElementById('view-username');
-            const viewPassword = document.getElementById('view-password');
             const viewRole = document.getElementById('view-role');
 
-            if (viewUsername && viewPassword && viewRole) {
-                viewUsername.value = username;
-                viewRole.value = quyen;
+            if (viewEmpName) viewEmpName.value = fullname;
+            if (viewUsername) viewUsername.value = username;
+            if (viewRole) viewRole.value = role;
 
-                // Fetch password from backend
-                fetch(`/accounts/admin/password/?username=${username}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.password) {
-                            viewPassword.value = data.password;
-                        } else {
-                            // Password is hashed, cannot retrieve original
-                            viewPassword.value = 'Mật khẩu đã mã hóa (không thể hiển thị)';
-                            console.log(data.message);
-                        }
-
-                        if (modals.view) {
-                            modals.view.classList.add('is-visible');
-                            console.log('View modal opened with real data');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching password:', error);
-                        viewPassword.value = 'Lỗi khi tải mật khẩu';
-
-                        if (modals.view) {
-                            modals.view.classList.add('is-visible');
-                        }
-                    });
-            } else {
-                console.error('View form elements not found');
+            if (modals.view) {
+                modals.view.classList.add('is-visible');
             }
         });
     });
@@ -230,36 +251,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Edit Account
     document.querySelectorAll('.account-btn-edit').forEach(btn => {
         btn.addEventListener('click', function() {
-            console.log('Edit button clicked');
-
-            // Get data from table row
-            const row = this.closest('tr');
-            const cells = row.querySelectorAll('td');
             const username = this.dataset.accountId;
-            const hoTen = cells[1].textContent.trim();
-            const quyen = cells[3].textContent.trim();
-            const trangThai = cells[4].querySelector('.account-status').textContent.trim();
+            const row = this.closest('tr');
+            const fullname = row.querySelector('td:nth-child(2)').textContent.trim();
+            const role = row.querySelector('td:nth-child(4)').textContent.trim();
 
-            console.log('Account data:', { username, hoTen, quyen, trangThai });
-
-            // Fill edit form with real data
+            const editEmpName = document.getElementById('edit-employee-name');
             const editUsername = document.getElementById('edit-username');
-            const editPassword = document.getElementById('edit-password');
             const editRole = document.getElementById('edit-role');
 
-            if (editUsername && editPassword && editRole) {
-                editUsername.value = username;
-                editPassword.value = ''; // Don't pre-fill password for security
-                editRole.value = quyen;
+            if (editEmpName) editEmpName.value = fullname;
+            if (editUsername) editUsername.value = username;
+            if (editRole) editRole.value = role;
 
-                if (modals.edit) {
-                    modals.edit.classList.add('is-visible');
-                    console.log('Edit modal opened with real data');
-                } else {
-                    console.error('Edit modal not found');
-                }
-            } else {
-                console.error('Edit form elements not found');
+            if (modals.edit) {
+                modals.edit.classList.add('is-visible');
             }
         });
     });
@@ -301,14 +307,16 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const targetId = this.dataset.target;
             const input = document.getElementById(targetId);
-            const icon = this.querySelector('.eye-icon');
+            const icon = this.querySelector('i');
 
             if (input.type === 'password') {
                 input.type = 'text';
-                icon.src = icon.src.replace('eye_opened.png', 'eye_closed.png');
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
             } else {
                 input.type = 'password';
-                icon.src = icon.src.replace('eye_closed.png', 'eye_opened.png');
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             }
         });
     });

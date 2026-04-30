@@ -8,6 +8,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
 from .forms import LoginForm, ChangePasswordForm
+from django.utils import timezone
+from django.db.models import Sum
+from apps.employees.models import NhanVien
+from apps.requests.models import YeuCau
+from apps.attendances.models import ChamCong
+from apps.payroll.models import Luong
+from apps.schedules.models import LichLamViec
 
 
 
@@ -58,19 +65,89 @@ def login_view(request):
 @login_required(login_url='/accounts/login/') # Kept commented out for easy frontend testing
 def dashboard_view(request):
     role = request.session.get('role', 'Nhân viên')
-    return render(request, 'accounts/dashboard.html', {'role': role})
+    today = timezone.now().date()
+    current_month = today.month
+    current_year = today.year
+
+    # 1. Tổng nhân viên
+    total_employees = NhanVien.objects.count()
+
+    # 2. Yêu cầu chờ duyệt
+    pending_requests = YeuCau.objects.filter(trang_thai='Chờ duyệt')
+    pending_count = pending_requests.count()
+    leave_requests = pending_requests.filter(loai_yeu_cau__icontains='nghỉ').count()
+    shift_requests = pending_requests.exclude(loai_yeu_cau__icontains='nghỉ').count()
+
+    # 3. Chấm công
+    attendance_checked_in = ChamCong.objects.filter(ngay_lam=today, gio_vao__isnull=False).count()
+    attendance_total = LichLamViec.objects.filter(ngay_lam=today).count()
+    if attendance_total == 0:
+        attendance_total = total_employees if total_employees > 0 else 1
+
+    # 4. Tổng lương chi (Tháng hiện tại)
+    payroll_sum = Luong.objects.filter(thang=current_month, nam=current_year).aggregate(Sum('tong_luong'))['tong_luong__sum'] or 0
+    payroll_display = f"{payroll_sum:,.0f} VNĐ".replace(",", ".")
+
+    context = {
+        'role': role,
+        'total_employees': total_employees,
+        'pending_count': pending_count,
+        'leave_requests': leave_requests,
+        'shift_requests': shift_requests,
+        'attendance_checked_in': attendance_checked_in,
+        'attendance_total': attendance_total,
+        'payroll_display': payroll_display,
+    }
+
+    return render(request, 'accounts/dashboard.html', context)
 
 def account_employee_list_view(request):
     from apps.branches.models import ChiNhanh
+    from django.contrib.auth.models import User
+    from django.db.models import Q
+
     branches = ChiNhanh.objects.filter(trang_thai='active').order_by('ma_chi_nhanh')
     selected_branch = request.GET.get('branch') or (branches.first().ma_chi_nhanh if branches.exists() else None)
+    search_term = request.GET.get('q', '').strip()
+
+    # Lấy danh sách user là nhân viên (không phải staff/superuser)
+    users = User.objects.filter(is_superuser=False, is_staff=False).select_related('taikhoan__ma_nv')
+
+    # Lọc theo chi nhánh
+    if selected_branch:
+        users = users.filter(taikhoan__ma_nv__ma_chi_nhanh=selected_branch)
+
+    # Tìm kiếm
+    if search_term:
+        users = users.filter(
+            Q(username__icontains=search_term) |
+            Q(taikhoan__ma_nv__ho_ten__icontains=search_term)
+        )
+
+    account_rows = []
+    for idx, user in enumerate(users, 1):
+        try:
+            nv = user.taikhoan.ma_nv
+        except:
+            nv = None
+
+        account_rows.append({
+            'stt': idx,
+            'ho_ten': nv.ho_ten if nv else user.username,
+            'ten_dang_nhap': user.username,
+            'quyen': 'Nhân viên',
+            'trang_thai': 'Đang hoạt động' if user.is_active else 'Ngừng hoạt động',
+            'trang_thai_key': 'active' if user.is_active else 'inactive',
+        })
+
     return render(
         request,
         'accounts/employee_list.html',
         {
-            'account_rows': _employee_accounts(),
+            'account_rows': account_rows,
             'branches': branches,
             'selected_branch': selected_branch,
+            'search_term': search_term,
         },
     )
 
@@ -92,7 +169,10 @@ def account_admin_list_view(request):
         # Nhân viên → chỉ xem chính mình
         all_users = User.objects.filter(id=request.user.id).select_related('taikhoan__ma_nv')
 
-    # 🔍 SEARCH (sau khi đã phân quyền)
+    # 🔍 SEARCH & FILTER (sau khi đã phân quyền)
+    if selected_branch:
+        all_users = all_users.filter(taikhoan__ma_nv__ma_chi_nhanh=selected_branch)
+
     if search_term:
         from django.db.models import Q
         all_users = all_users.filter(

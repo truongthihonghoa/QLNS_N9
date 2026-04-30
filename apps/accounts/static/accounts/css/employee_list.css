@@ -169,15 +169,14 @@
     bottom: 0 !important;
     background: rgba(0, 0, 0, 0.55);
     display: none;
-    align-items: center !important;
+    align-items: flex-start !important; /* Thay đổi từ center sang flex-start */
     justify-content: center !important;
     z-index: 999999;
-    padding: 20px;
+    padding: 200px 20px 20px 20px !important; /* Đẩy xuống 200px từ đỉnh */
     overflow-y: auto;
     transform: none !important;
     margin: 0 !important;
     text-align: center;
-    margin-top: 40px;
 }
 
 .account-modal-overlay.is-visible {
@@ -190,7 +189,7 @@
     border-radius: 12px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     padding: 24px;
-    margin-top: 40px;
+    margin-top: 0 !important; /* Xóa margin-top cũ */
     position: relative !important;
     transform: none !important;
 
@@ -613,4 +612,177 @@
     .account-table {
         min-width: 920px;
     }
+}
+
+/* New Modal Styles for Add/Edit/View Account */
+.modal-title-main {
+    font-size: 22px;
+    font-weight: 800;
+    color: #174d17;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.back-link {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 6px 15px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.form-row-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.autocomplete-wrapper {
+    position: relative;
+}
+
+.suggestions-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+    display: none;
+}
+
+.suggestion-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+}
+
+.suggestion-item:hover {
+    background-color: #f9f9f9;
+}
+
+.emp-name-main {
+    font-weight: 600;
+    color: #333;
+    font-size: 15px;
+}
+
+.emp-code-sub {
+    font-size: 12px;
+    color: #777;
+    margin-top: 2px;
+}
+
+.error-text-small {
+    color: #d32f2f;
+    font-size: 13px;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+.eye-icon-fa {
+    color: #999;
+    font-size: 18px;
+}
+
+.form-group-new label {
+    color: #5d4037; /* Brownish color from image */
+    font-weight: 700 !important;
+}
+
+
+/* Updated Modal Styles to match user image accurate */
+.account-modal.account-modal-new {
+    width: 1050px !important;
+    max-width: 95vw;
+    padding: 30px 50px !important;
+    border-radius: 20px !important;
+}
+
+.account-form-new-grid {
+    display: grid !important;
+    grid-template-columns: 1.2fr 1fr 1fr 1.2fr !important;
+    gap: 20px !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin-top: 20px;
+}
+
+.form-group-new label {
+    color: #5d4037 !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    margin-bottom: 8px !important;
+}
+
+.btn-huy {
+    background-color: #e0e0e0 !important;
+    color: #333 !important;
+    height: 45px !important;
+    width: 140px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+}
+
+.btn-luu {
+    background-color: #174d17 !important;
+    color: white !important;
+    height: 45px !important;
+    width: 140px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+}
+
+.account-modal-footer-new {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 30px !important;
+    margin-top: 40px !important;
+}
+
+.back-link {
+    background-color: #e6f4ea !important;
+    color: #1e7e34 !important;
+    padding: 8px 20px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    cursor: pointer;
+    display: inline-block;
+}
+
+
+/* 3-Row Layout Styles */
+.account-form-new-vertical {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    width: 100% !important;
+    max-width: 500px !important; /* Adjust width to look like image */
+    margin: 0 auto;
+}
+
+.form-row-2col {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 20px !important;
+    width: 100% !important;
+}
+
+.account-modal.account-modal-new {
+    width: 650px !important; /* Narrower for vertical layout */
 }

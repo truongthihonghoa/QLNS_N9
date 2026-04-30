@@ -13,13 +13,13 @@
     <div class="statistic-card">
         <div class="card-header">
             <span class="card-title">TỔNG NHÂN VIÊN</span>
-            <img class="card-icon" src="{% static 'accounts/img/nhan_vien.png' %}" alt="Icon Nhân viên">
+            <i class="fas fa-users card-icon-font"></i>
         </div>
         <div class="card-body">
-            <span class="main-figure">12</span>
+            <span class="main-figure">{{ total_employees }}</span>
         </div>
         <div class="card-footer">
-            <span class="footer-change positive">+2</span>
+            <span class="footer-change positive">+0</span>
             <span class="footer-text">từ tháng trước</span>
         </div>
     </div>
@@ -28,15 +28,15 @@
     <div class="statistic-card">
         <div class="card-header">
             <span class="card-title" style="color: #279e45;">YÊU CẦU CHỜ DUYỆT</span>
-            <img class="card-icon" src="{% static 'accounts/img/yeu_cau.png' %}" alt="Icon Yêu cầu">
+            <i class="fas fa-clipboard-list card-icon-font" style="color: #279e45;"></i>
         </div>
         <div class="card-body">
-            <span class="main-figure">3</span>
+            <span class="main-figure">{{ pending_count }}</span>
         </div>
         <div class="card-footer">
-            <span class="footer-change negative">2</span>
+            <span class="footer-change negative">{{ leave_requests }}</span>
             <span class="footer-text negative">nghỉ phép</span>
-            <span class="footer-change neutral">1</span>
+            <span class="footer-change neutral">{{ shift_requests }}</span>
             <span class="footer-text neutral">đăng ký ca</span>
         </div>
     </div>
@@ -45,14 +45,14 @@
     <div class="statistic-card">
         <div class="card-header">
             <span class="card-title" style="color: #dec358;">CHẤM CÔNG</span>
-            <img class="card-icon" src="{% static 'accounts/img/cham_cong.png' %}" alt="Icon Chấm công">
+            <i class="fas fa-user-check card-icon-font" style="color: #dec358;"></i>
         </div>
         <div class="card-body">
-            <span class="main-figure">5/5</span>
+            <span class="main-figure">{{ attendance_checked_in }}/{{ attendance_total }}</span>
         </div>
         <div class="card-footer">
-            <span class="footer-change positive">100%</span>
-            <span class="footer-text">đã chấm công</span>
+            <span class="footer-change positive">{% widthratio attendance_checked_in attendance_total 100 %}%</span>
+            <span class="footer-text">đã chấm công hôm nay</span>
         </div>
     </div>
 
@@ -60,13 +60,13 @@
     <div class="statistic-card">
         <div class="card-header">
             <span class="card-title" style="color: #4b94d7;">TỔNG LƯƠNG CHI</span>
-            <img class="card-icon" src="{% static 'accounts/img/luong_chi.png' %}" alt="Icon Lương chi">
+            <i class="fas fa-euro-sign card-icon-font" style="color: #4b94d7;"></i>
         </div>
         <div class="card-body">
-            <span class="main-figure">21tr</span>
+            <span class="main-figure">{{ payroll_display }}</span>
         </div>
         <div class="card-footer">
-            <span class="footer-change positive">+1.6%</span>
+            <span class="footer-change positive">+0%</span>
             <span class="footer-text">so với tháng trước</span>
         </div>
     </div>
