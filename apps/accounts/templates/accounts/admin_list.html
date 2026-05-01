@@ -73,8 +73,8 @@
                             <button type="button" class="account-icon-btn account-btn-edit" title="Chỉnh sửa" data-account-id="{{ account.ten_dang_nhap }}">
                                 <i class="fas fa-pen"></i>
                             </button>
-                            <button type="button" class="account-icon-btn js-delete-account" title="Xóa" data-delete-id="{{ account.ten_dang_nhap }}" data-delete-name="{{ account.ho_ten }}" title="Xóa">
-                                <i class="fas fa-trash-alt"></i>
+                            <button type="button" class="account-icon-btn js-toggle-account" title="Ngưng/Kích hoạt" data-account-id="{{ account.ten_dang_nhap }}" data-account-name="{{ account.ho_ten }}">
+                                <i class="fas fa-user-slash"></i>
                             </button>
                         </div>
                     </td>
@@ -249,8 +249,8 @@
         </div>
     </div>
 </div>
-<!-- Include Common Delete Confirmation Popup -->
-{% include 'partials/popup_confirm_delete.html' with delete_popup_title="XÓA TÀI KHOẢN" delete_popup_message_1="Bạn có muốn xóa tài khoản này không?" %}
+<!-- Include Common Status Toggle Confirmation Popup -->
+{% include 'partials/popup_confirm_delete.html' with delete_popup_title="NGƯNG TÀI KHOẢN" delete_popup_message_1="Bạn có muốn ngưng hoạt động tài khoản này không?" %}
 {% endblock %}
 
 {% block extra_js %}

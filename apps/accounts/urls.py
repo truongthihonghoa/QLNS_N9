@@ -13,6 +13,6 @@ urlpatterns = [
     path('admin/', views.account_admin_list_view, name='account_admin_list'),
     path('admin/add/', views.add_admin_account, name='add_admin_account'),
     path('admin/edit/', views.edit_admin_account, name='edit_admin_account'),
-    path('admin/delete/', views.delete_admin_account, name='delete_admin_account'),
+    path('admin/toggle-status/', views.toggle_admin_account_status, name='toggle_admin_account_status'),
     path('admin/password/', views.get_admin_password, name='get_admin_password'),
 ]

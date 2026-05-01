@@ -384,15 +384,13 @@ def edit_admin_account(request):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-def delete_admin_account(request):
+def toggle_admin_account_status(request):
     if not (request.user.is_superuser or request.user.is_staff):
         return JsonResponse({
             'success': False,
             'message': 'Bạn không có quyền!'
         }, status=403)
     try:
-        from apps.accounts.models import TaiKhoan
-
         username = request.POST.get('username')
 
         if not username:
@@ -404,19 +402,15 @@ def delete_admin_account(request):
         # Get user
         user = User.objects.get(username=username)
 
-        # Check if user has TaiKhoan and delete it first
-        try:
-            tai_khoan = TaiKhoan.objects.get(user=user)
-            tai_khoan.delete()
-        except TaiKhoan.DoesNotExist:
-            pass  # TaiKhoan doesn't exist, continue with user deletion
+        # Toggle active status
+        user.is_active = not user.is_active
+        user.save()
 
-        # Delete user (this will cascade delete related records)
-        user.delete()
+        trang_thai = "kích hoạt lại" if user.is_active else "ngưng"
 
         return JsonResponse({
             'success': True,
-            'message': 'Xóa tài khoản thành công!'
+            'message': f'Đã {trang_thai} tài khoản thành công!'
         })
 
     except User.DoesNotExist:

@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Delete Account - Using Common Delete Confirmation Popup
     // MOVED TO TOP TO ENSURE EXECUTION
     const deletePopup = document.getElementById('confirm-delete-popup');
-    const deleteButtons = document.querySelectorAll('.js-delete-account');
+    const deleteButtons = document.querySelectorAll('.js-toggle-account');
     const deleteNoBtn = document.getElementById('delete-popup-no-btn');
     const deleteYesBtn = document.getElementById('delete-popup-yes-btn');
 
@@ -71,9 +71,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     deleteButtons.forEach((button) => {
         button.addEventListener('click', function() {
-            console.log('Delete button clicked, deleteId:', this.dataset.deleteId);
+            console.log('Toggle status button clicked, accountId:', this.dataset.accountId);
             if (deletePopup) {
-                deletePopup.dataset.deleteId = this.dataset.deleteId || '';
+                deletePopup.dataset.deleteId = this.dataset.accountId || '';
                 deletePopup.style.display = 'flex';
                 console.log('Popup shown with deleteId:', deletePopup.dataset.deleteId);
             } else {
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Sending delete request for username:', deleteId);
 
             try {
-                const response = await fetch('/accounts/admin/delete/', {
+                const response = await fetch('/accounts/admin/toggle-status/', {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -139,8 +139,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     showMessage('error', data.message);
                 }
             } catch (error) {
-                console.error('Error during delete:', error);
-                showMessage('error', 'Đã xảy ra lỗi khi xóa tài khoản.');
+                console.error('Error during status toggle:', error);
+                showMessage('error', 'Đã xảy ra lỗi khi cập nhật trạng thái tài khoản.');
             }
         });
     }
