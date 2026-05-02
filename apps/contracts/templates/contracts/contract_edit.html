@@ -6,7 +6,6 @@
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'contracts/css/contract_form.css' %}?v=20260414p">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}?v=20260414p">
-    <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}?v=20260414w">
 {% endblock %}
 
 {% block content %}
@@ -102,8 +101,12 @@
                 <div class="contract-field">
                     <label for="chuc_vu">Chức vụ <span class="required">*</span></label>
                     <select id="chuc_vu" name="chuc_vu" required>
-                        {% for position in positions %}
-                        <option value="{{ position }}" {% if contract.chuc_vu == position %}selected{% endif %}>{{ position }}</option>
+                        <option value="" selected disabled>Chọn chức vụ</option>
+                        {% for value, label in positions %}
+                            <option value="{{ value }}"
+                                {% if contracts.chuc_vu == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>

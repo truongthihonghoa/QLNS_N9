@@ -94,7 +94,9 @@
 
             <div class="toolbar-actions">
                 <button type="submit" class="btn-search">Tìm kiếm</button>
-                <button type="button" class="btn-primary" onclick="openSalaryModal()">Tính lương</button>
+                {% if request.user.is_superuser %}
+                    <button type="button" class="btn-primary" onclick="openSalaryModal()">Tính lương</button>
+                {% endif %}
             </div>
         </div>
 
@@ -159,8 +161,10 @@
                     <th>Thưởng</th>
                     <th>Phạt</th>
                     <th>Tổng lương</th>
-                    <th>Trạng thái</th>
-                    <th class="action-column">Hành động</th>
+                    {% if request.user.is_superuser %}
+                        <th>Trạng thái</th>
+                        <th class="action-column">Hành động</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -181,36 +185,38 @@
                     <td>{{ payroll.thuong }} VND</td>
                     <td>{{ payroll.phat }} VND</td>
                     <td><strong>{{ payroll.tong_luong }} VND</strong></td>
-                    <td>
-                        <div class="status-badge {{ payroll.trang_thai_key|default:'cho-duyet' }}">
-                            {% if payroll.trang_thai_key == 'da-duyet' %}
-                                <span class="send-state {% if payroll.da_gui %}is-sent{% else %}is-unsent{% endif %}">{% if payroll.da_gui %}Đã gửi{% else %}Chưa gửi{% endif %}</span>
-                            {% elif payroll.trang_thai_key == 'da-tu-choi' %}
-                                <i class="fas fa-times-circle" style="color: #dc3545; font-size: 18px;" title="Đã từ chối"></i>
-                            {% else %}
-                                <form method="post" action="{% url 'payroll_update_status' payroll.ma_luong %}" style="display:inline;" onsubmit="handlePayrollAction(event,this, 'approve'); return false;">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="status" value="da-duyet">
-                                    <button class="btn-status-action btn-approve-ge" type="submit" title="Duyệt">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                </form>
-                                <form method="post" action="{% url 'payroll_update_status' payroll.ma_luong %}" style="display:inline;" onsubmit="handlePayrollAction(event,this, 'reject'); return false;">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="status" value="da-tu-choi">
-                                    <button class="btn-status-action btn-reject-ge" type="submit" title="Từ chối">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </form>
-                            {% endif %}
-                        </div>
-                    </td>
-                    <td class="action-column">
-                        <div class="action-buttons">
-                                <a href="{% url 'payroll_edit' payroll.ma_luong %}" class="btn-action-ge btn-edit-ge" onclick="openEditPayrollModal(this)"><i class="fas fa-pen"></i></a>
-                                <button type="button" class="btn-action-ge btn-delete-ge" onclick="openDeletePayrollPopup(this)"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                    </td>
+                    {% if request.user.is_superuser %}
+                        <td>
+                            <div class="status-badge {{ payroll.trang_thai_key|default:'cho-duyet' }}">
+                                {% if payroll.trang_thai_key == 'da-duyet' %}
+                                    <span class="send-state {% if payroll.da_gui %}is-sent{% else %}is-unsent{% endif %}">{% if payroll.da_gui %}Đã gửi{% else %}Chưa gửi{% endif %}</span>
+                                {% elif payroll.trang_thai_key == 'da-tu-choi' %}
+                                    <i class="fas fa-times-circle" style="color: #dc3545; font-size: 18px;" title="Đã từ chối"></i>
+                                {% else %}
+                                    <form method="post" action="{% url 'payroll_update_status' payroll.ma_luong %}" style="display:inline;" onsubmit="handlePayrollAction(event,this, 'approve'); return false;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="status" value="da-duyet">
+                                        <button class="btn-status-action btn-approve-ge" type="submit" title="Duyệt">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                    <form method="post" action="{% url 'payroll_update_status' payroll.ma_luong %}" style="display:inline;" onsubmit="handlePayrollAction(event,this, 'reject'); return false;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="status" value="da-tu-choi">
+                                        <button class="btn-status-action btn-reject-ge" type="submit" title="Từ chối">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="action-column">
+                            <div class="action-buttons">
+                                    <a href="{% url 'payroll_edit' payroll.ma_luong %}" class="btn-action-ge btn-edit-ge" onclick="openEditPayrollModal(this)"><i class="fas fa-pen"></i></a>
+                                    <button type="button" class="btn-action-ge btn-delete-ge" onclick="openDeletePayrollPopup(this)"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </td>
+                    {% endif %}
                 </tr>
                 {% empty %}
                 <tr>
@@ -224,10 +230,10 @@
     <div id="export-approved-container" class="export-data-wrapper" style="display: none;">
         <div class="export-controls">
             <label style="display: inline-flex; align-items: center; gap: 12px; margin-right: 15px; font-weight: 700; font-size: 18px; cursor: pointer; user-select: none; font-family: 'Montserrat', sans-serif;">
-    <input type="checkbox" id="payroll-send-select-all"
-           style="width: 24px; height: 24px; cursor: pointer; accent-color: #174d17; margin: 0; vertical-align: middle;">
-    <span style="line-height: 1;">Chọn tất cả</span>
-</label>
+                <input type="checkbox" id="payroll-send-select-all"
+                       style="width: 24px; height: 24px; cursor: pointer; accent-color: #174d17; margin: 0; vertical-align: middle;">
+                <span style="line-height: 1;">Chọn tất cả</span>
+            </label>
             <button type="button" class="btn-export-final" id="payroll-send-btn" data-send-url="{% url 'payroll_send' %}">Gửi bảng lương</button>
             <select id="export-format-select" class="export-dropdown">
                 <option value="pdf">Xuất file PDF</option>

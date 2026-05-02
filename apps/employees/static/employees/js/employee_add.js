@@ -86,26 +86,18 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => console.error('Error fetching next employee ID:', error));
     }
 
-    function showErrorPopup(title, msg1, msg2) {
-        if (typeof window.showToast === 'function') {
-            window.showToast(msg1, 'error');
-        } else {
-            alert(msg1);
-        }
-    }
-
     if (saveBtn) {
         saveBtn.addEventListener('click', function(event) {
             if (!employeeForm.checkValidity()) {
                 event.preventDefault();
-                showErrorPopup('THÔNG BÁO LỖI', 'Xin vui lòng nhập đầy đủ thông tin!', '');
+                window.showToast('Xin vui lòng nhập đầy đủ thông tin!', 'error');
             }
         });
     }
 
     const autoShowInvalidInfo = document.getElementById('auto-show-invalid-info-popup');
     if (autoShowInvalidInfo) {
-        showErrorPopup('THÔNG BÁO LỖI', 'Thông tin không hợp lệ?', 'Xin vui lòng nhập lại thông tin chính xác!');
+        window.showToast('Thông tin không hợp lệ? Xin vui lòng nhập lại thông tin chính xác!', 'error');
     }
 
     bindAvatarUpload();

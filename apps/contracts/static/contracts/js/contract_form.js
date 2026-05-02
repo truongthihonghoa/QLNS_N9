@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Only run on add pages (not edit pages)
+    if (document.querySelector('.contract-edit-form')) {
+        return;
+    }
+    
     const contractForm = document.querySelector('.contract-form');
     const cancelBtn = document.querySelector('.contract-cancel-btn');
     const employeeNameInput = document.getElementById('ten_nv');

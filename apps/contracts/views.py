@@ -183,6 +183,7 @@ def contract_add_view(request):
     return render(request, "contracts/contract_add.html", {
         "next_ma_hd": get_next_ma_hd(),
         "employees": NhanVien.objects.all().order_by("-ma_nv"),
+        "positions": HopDongLaoDong.CHUC_VU_CHOICES,
         "branches": ChiNhanh.objects.all(),
         "contract_types": HopDongLaoDong.LOAI_HD_CHOICES,
     })
@@ -230,6 +231,12 @@ def contract_edit_view(request, contract_id):
         "contract": hd,
         "ct": ct,
         "branches": ChiNhanh.objects.all(),
+        "positions": HopDongLaoDong.CHUC_VU_CHOICES,
+        "luong_co_ban": ct.luong_co_ban if ct else 0,
+        "luong_theo_gio": ct.luong_theo_gio if ct else 0,
+        "so_gio_lam": ct.so_gio_lam if ct else 0,
+        "thuong": ct.che_do_thuong if ct else 0,
+        "ghi_chu": ct.ghi_chu if ct else "",
         "ngay_bd_iso": hd.ngay_bat_dau.strftime("%Y-%m-%d") if hd.ngay_bat_dau else "",
         "ngay_kt_iso": hd.ngay_ket_thuc.strftime("%Y-%m-%d") if hd.ngay_ket_thuc else "",
     })

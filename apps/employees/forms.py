@@ -37,6 +37,10 @@ class EmployeeBaseForm(forms.ModelForm):
             css_class = widget.attrs.get("class", "")
             widget.attrs["class"] = f"{css_class} form-control".strip()
 
+            # Add required attribute to required fields
+            if field.required and field_name not in ["ma_nv", "anh_dai_dien", "dia_chi"]:
+                widget.attrs["required"] = "required"
+
             if field_name == "gioi_tinh":
                 field.empty_label = "Chọn giới tính"
             elif field_name == "chuc_vu":

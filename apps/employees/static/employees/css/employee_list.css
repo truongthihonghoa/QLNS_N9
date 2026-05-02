@@ -470,8 +470,8 @@
 }
 .employee-grid-modern-row {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 450px));
-    gap: 18px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
     align-items: stretch;
     justify-content: flex-start;
 }
@@ -485,7 +485,7 @@
     padding: 12px 18px 12px 12px;
     min-height: 110px;
     width: 100%;
-    max-width: 450px;
+    max-width: none;
     margin: 0;
     cursor: pointer;
     border: 1px solid #e6e6e6;
@@ -603,36 +603,33 @@
     line-height: 1.35;
     text-align: center;
 }
-@media (max-width: 1200px) {
-    .employee-card-modern {
-        flex: 0 0 calc((100% - 72px) / 4);
-        max-width: calc((100% - 72px) / 4);
+/* 1. Khi màn hình nhỏ hơn 1100px: Chuyển sang 2 cột */
+@media (max-width: 1100px) {
+    .employee-grid-modern-row {
+        /* Chỉnh lại lưới thành 2 cột đều nhau */
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px;
     }
 }
-@media (max-width: 900px) {
-    .employee-grid-modern {
-        gap: 10px;
-    }
-    .employee-card-modern {
-        flex: 0 0 calc((100% - 30px) / 2);
-        max-width: calc((100% - 30px) / 2);
-    }
-}
-@media (max-width: 640px) {
-    .employee-card-modern {
-        flex: 0 0 100%;
-        max-width: 100%;
+
+/* 2. Khi màn hình nhỏ hơn 768px (Điện thoại): Chuyển sang 1 cột */
+@media (max-width: 768px) {
+    .employee-grid-modern-row {
+        /* Chỉnh lại lưới thành 1 cột duy nhất */
+        grid-template-columns: 1fr !important;
+        gap: 12px;
     }
 
+    .employee-card-modern-row {
+        /* Bỏ giới hạn chiều rộng để thẻ dãn hết màn hình điện thoại */
+        max-width: 100% !important;
+        padding: 10px;
+    }
+
+    /* Điều chỉnh lại thông báo thành công cho mobile */
     .employee-success-toast {
         width: calc(100vw - 24px) !important;
         bottom: 16px !important;
         right: 12px !important;
-        padding: 16px 18px !important;
-        gap: 12px !important;
-    }
-
-    .employee-success-toast-message {
-        font-size: 15px;
     }
 }

@@ -37,14 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function showErrorPopup(title, msg1, msg2) {
-        if (typeof window.showToast === 'function') {
-            window.showToast(msg1, 'error');
-        } else {
-            alert(msg1);
-        }
-    }
-
+    
     const confirmCancelPopup = document.getElementById('confirm-cancel-popup');
     const confirmNoBtn = document.getElementById('confirm-no-btn');
     const confirmYesBtn = document.getElementById('confirm-yes-btn');
@@ -80,10 +73,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (saveBtn) {
         saveBtn.addEventListener('click', function(event) {
+            // Don't prevent default - let form submit normally
+            // Only show toast if there are validation errors
             if (!employeeForm.checkValidity()) {
                 event.preventDefault();
-                showErrorPopup('THÔNG BÁO LỖI', 'Xin vui lòng nhập đầy đủ thông tin!', '');
+                window.showToast('Xin vui lòng nhập đầy đủ thông tin!', 'error');
+                // Show browser validation UI
+                employeeForm.reportValidity();
             }
+            // If form is valid, let it submit normally
         });
     }
 
