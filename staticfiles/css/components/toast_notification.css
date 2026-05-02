@@ -1,56 +1,65 @@
+/* Toast Notification Styling - Bottom Right */
 .toast-notification {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.98);
-    border: 1px solid rgba(15, 107, 32, 0.10);
-    color: #2f2f2f;
-    /* Tăng padding dọc lên 20px để cao hơn, ngang 32px để dài hơn */
-    padding: 20px 32px;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    /* Tăng độ dài tối thiểu lên 350px hoặc 400px tùy bạn */
-    min-width: 400px;
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
-    z-index: 9999;
-    opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 0.25s ease, transform 0.25s ease;
-    pointer-events: none;
-    font-family: 'Montserrat-Bold', sans-serif;
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
+    z-index: 10005 !important;
+    
+    /* Layout */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 15px !important;
+    
+    /* Styling */
+    background: #ffffff !important;
+    padding: 12px 30px !important;
+    border-radius: 50px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+    border-left: 6px solid #2ecc71 !important;
+    
+    /* Animation & Visibility */
+    transform: translateX(150%) !important;
+    opacity: 0 !important;
+    visibility: hidden;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+    
+    /* Size */
+    width: auto !important;
+    max-width: 90vw !important;
+    white-space: nowrap !important;
 }
 
-#toast-notification.show {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto; /* Cho phép tương tác khi hiện */
+.toast-notification.show {
+    transform: translateX(0) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
-.toast-content {
-    font-size: 17px; /* Tăng nhẹ size chữ */
-    font-weight: 700;
-    /* Đảm bảo chữ không xuống hàng */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+/* Types */
+.toast-notification.success { border-left-color: #2ecc71 !important; }
+.toast-notification.error { border-left-color: #e74c3c !important; }
+.toast-notification.warning { border-left-color: #f1c40f !important; }
+.toast-notification.info { border-left-color: #3498db !important; }
+
+.toast-message {
+    color: #333333 !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    font-family: "Montserrat", sans-serif !important;
+    margin: 0 !important;
 }
 
 .toast-icon {
-    margin-left: 24px;
-    /* Tăng kích thước icon từ 28px lên 36px */
-    width: 36px;
-    height: 36px;
-    background-color: #14b63a;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    flex-shrink: 0; /* Đảm bảo icon không bị bẹp khi chữ dài */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 22px !important;
+    flex-shrink: 0 !important;
 }
 
-.toast-icon i {
-    font-size: 20px; /* Tăng kích thước biểu tượng bên trong */
-}
+/* Icon Colors */
+.toast-notification.success .toast-icon { color: #2ecc71 !important; }
+.toast-notification.error .toast-icon { color: #e74c3c !important; }
+.toast-notification.warning .toast-icon { color: #f1c40f !important; }
+.toast-notification.info .toast-icon { color: #3498db !important; }
