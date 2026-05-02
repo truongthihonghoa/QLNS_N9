@@ -188,7 +188,9 @@
         </div>
     </div>
 </div>
-
+<!-- Cuối block content -->
+{% include 'partials/popup_confirm_delete.html' %}
+{% include 'partials/popup_confirm_cancel.html' %}
 <script>
     let currentRequestId = '';
     let currentStatusFilter = 'all';
@@ -365,23 +367,36 @@ let pendingRequestId = null;
 
 // --- XỬ LÝ XÓA ---
 function confirmDeleteRequest() {
-    // 1. Gán ID hiện tại vào biến tạm
     pendingRequestId = currentRequestId;
-
-    // 2. Hiển thị popup xóa
-    document.getElementById('confirm-delete-popup').style.display = 'flex';
+    const popup = document.getElementById('confirm-delete-popup');
+    if (popup) {
+        popup.style.display = 'flex'; // Đảm bảo là flex để căn giữa
+        popup.style.zIndex = '10002'; // Ép nó hiện lên trên cùng
+    } else {
+        console.error("Không tìm thấy element confirm-delete-popup");
+    }
 }
 
 
 function executeDelete() {
-    if (!pendingRequestId) return;
+    if (!pendingRequestId) {
+        console.log('No pendingRequestId');
+        return;
+    }
 
+    console.log('Deleting request:', pendingRequestId);
+    
     fetch(`/requests/api/delete/${pendingRequestId}/`, {
         method: 'POST',
         headers: { 'X-CSRFToken': '{{ csrf_token }}' }
     })
-    .then(res => res.json())
     .then(res => {
+        console.log('Response status:', res.status);
+        return res.json();
+    })
+    .then(res => {
+        console.log('Response data:', res);
+        
         // Đóng popup xác nhận
         closeModal('confirm-delete-popup');
 
@@ -399,6 +414,15 @@ function executeDelete() {
             } else {
                 alert(res.error);
             }
+        }
+    })
+    .catch(error => {
+        console.error('Delete error:', error);
+        closeModal('confirm-delete-popup');
+        if (typeof window.showToast === 'function') {
+            window.showToast('Lỗi hệ thống khi xóa yêu cầu', 'error');
+        } else {
+            alert('Lỗi hệ thống khi xóa yêu cầu');
         }
     });
 }

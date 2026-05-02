@@ -28,11 +28,8 @@ def login_view(request):
             request.session['role'] = role
 
         if role == 'Nhân viên':
-            try:
-                ma_nv = request.user.taikhoan.ma_nv.ma_nv
-                return redirect('employee_detail', employee_id=ma_nv)
-            except Exception:
-                return redirect('employee_list')
+            # Chuyển về danh sách tài khoản thay vì trang chi tiết
+            return redirect('accounts:account_employee_list')
         return redirect('dashboard')
 
     form = LoginForm()
@@ -64,10 +61,10 @@ def login_view(request):
 
             if role == 'Nhân viên':
                 try:
-                    ma_nv = user.taikhoan.ma_nv.ma_nv
-                    return redirect('employee_detail', employee_id=ma_nv)
+                    # ma_nv = user.taikhoan.ma_nv.ma_nv
+                    return redirect('accounts:account_employee_list', employee_id=ma_nv)
                 except Exception:
-                    return redirect('employee_list')
+                    return redirect('accounts:account_employee_list')
 
             return redirect('dashboard')
 
@@ -124,55 +121,31 @@ def dashboard_view(request):
 
     return render(request, 'accounts/dashboard.html', context)
 
+
+@login_required(login_url='/accounts/login/')
 def account_employee_list_view(request):
-    from apps.branches.models import ChiNhanh
-    from django.contrib.auth.models import User
-    from django.db.models import Q
+    user = request.user
+    try:
+        # Lấy thông tin nhân viên từ bảng TaiKhoan
+        nv = user.taikhoan.ma_nv
+        ho_ten = nv.ho_ten
+    except Exception:
+        ho_ten = user.username
 
-    branches = ChiNhanh.objects.filter(trang_thai='active').order_by('ma_chi_nhanh')
-    selected_branch = request.GET.get('branch') or (branches.first().ma_chi_nhanh if branches.exists() else None)
-    search_term = request.GET.get('q', '').strip()
+    # Tạo dữ liệu 1 hàng duy nhất như trong hình ảnh
+    account_rows = [{
+        'stt': 1,
+        'ho_ten': ho_ten,
+        'ten_dang_nhap': user.username,
+        'quyen': 'Nhân viên',
+        'trang_thai': 'Đang hoạt động',
+        'trang_thai_key': 'active',
+    }]
 
-    # Lấy danh sách user là nhân viên (không phải staff/superuser)
-    users = User.objects.filter(is_superuser=False, is_staff=False).select_related('taikhoan__ma_nv')
-
-    # Lọc theo chi nhánh
-    if selected_branch:
-        users = users.filter(taikhoan__ma_nv__ma_chi_nhanh=selected_branch)
-
-    # Tìm kiếm
-    if search_term:
-        users = users.filter(
-            Q(username__icontains=search_term) |
-            Q(taikhoan__ma_nv__ho_ten__icontains=search_term)
-        )
-
-    account_rows = []
-    for idx, user in enumerate(users, 1):
-        try:
-            nv = user.taikhoan.ma_nv
-        except:
-            nv = None
-
-        account_rows.append({
-            'stt': idx,
-            'ho_ten': nv.ho_ten if nv else user.username,
-            'ten_dang_nhap': user.username,
-            'quyen': 'Nhân viên',
-            'trang_thai': 'Đang hoạt động' if user.is_active else 'Ngừng hoạt động',
-            'trang_thai_key': 'active' if user.is_active else 'inactive',
-        })
-
-    return render(
-        request,
-        'accounts/employee_list.html',
-        {
-            'account_rows': account_rows,
-            'branches': branches,
-            'selected_branch': selected_branch,
-            'search_term': search_term,
-        },
-    )
+    return render(request, 'accounts/employee_list.html', {
+        'account_rows': account_rows,
+        'selected_branch_name': "Hải Châu", # Có thể thay bằng nv.ma_chi_nhanh.ten_chi_nhanh
+    })
 
 @login_required(login_url='/accounts/login/')
 def account_admin_list_view(request):

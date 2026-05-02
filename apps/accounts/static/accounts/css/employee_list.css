@@ -517,7 +517,7 @@ Commit
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    min-width: 100px;
+    min-width: 200px;
 }
 
 .btn-luu:hover {

@@ -47,7 +47,7 @@
             {% if request.user.is_superuser or request.user.is_staff %}
                 <a href="{% url 'accounts:account_admin_list' %}" class="nav-item">Tài khoản</a>
             {% else %}
-                <a href="{% url 'employee_detail' employee_id=request.user.taikhoan.ma_nv.ma_nv %}" class="nav-item">Tài khoản</a>
+                <a href="{% url 'accounts:account_employee_list'%}" class="nav-item">Tài khoản</a>
             {% endif %}
             <a href="{% url 'branches:branch_admin' %}" class="nav-item">Chi nhánh</a>
             <a href="{% url 'employee_list' %}" class="nav-item">Nhân Viên</a>
