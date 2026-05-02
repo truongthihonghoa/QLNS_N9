@@ -1,0 +1,814 @@
+/* Premium Modern Schedule Redesign CSS - Green Theme & Polished Aesthetic */
+
+:root {
+    --primary-green: #174D17;
+    --hover-green: #2E7D32;
+    --bg-page: #F7EFE6;
+    --bg-white: #FFFFFF;
+    --border-ultra-light: #F1F1F1;
+    --border-light: #EEEEEE;
+    --text-main: #333333;
+    --text-muted: #888888;
+    --event-blue-bg: #E8F4FD;
+    /* Softer Blue */
+    --event-blue-border: #3B82F6;
+    /* Modern Blue */
+    --white: #ffffff;
+}
+
+/* Base Overrides */
+.main-content {
+    background-color: var(--bg-page) !important;
+    padding: 165px 20px 20px 20px !important;
+}
+
+/* Main Container - Rounded Card Effect */
+.schedule-layout {
+    display: flex;
+    background: var(--bg-white);
+    min-height: calc(100vh - 200px);
+    border-radius: 24px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    margin-top: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.calendar-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    border-right: 1px solid var(--border-ultra-light);
+}
+
+.calendar-sidebar {
+    width: 320px;
+    background: var(--bg-white);
+    padding: 24px;
+    overflow-y: auto;
+}
+
+/* Toolbar Redesign */
+.odoo-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    background: var(--bg-white);
+    border-radius: 20px;
+    margin-bottom: 15px;
+    height: 70px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.toolbar-separator {
+    width: 1px;
+    height: 30px;
+    background: #E5E7EB;
+    margin: 0 5px;
+}
+
+.breadcrumb-item {
+    font-size: 22px;
+    font-weight: 700;
+    color: #444;
+    letter-spacing: -0.5px;
+}
+
+/* Rounded Pill Buttons */
+.btn-premium {
+    background-color: var(--primary-green) !important;
+    color: var(--white) !important;
+    padding: 11px 26px !important;
+    border-radius: 50px !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none !important;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.btn-premium:hover {
+    background-color: var(--hover-green) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(23, 77, 23, 0.25);
+}
+
+.btn-premium-nav {
+    background: #F9FAFB !important;
+    color: #4B5563 !important;
+    border: none !important;
+    border-radius: 50px !important;
+    padding: 8px 16px !important;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-premium-nav:hover {
+    background: #F3F4F6 !important;
+    color: #111827 !important;
+}
+
+.toolbar-nav-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Bold Boxed Components for Search and Filter */
+.branch-filter-pill,
+.search-input-pill {
+    display: flex !important;
+    align-items: center !important;
+    background: #ffffff !important;
+    border: 1.5px solid #374151 !important;
+    /* Reduced thickness and slightly softer color */
+    border-radius: 12px !important;
+    padding: 0 15px !important;
+    height: 46px !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+.branch-filter-pill {
+    width: 200px !important;
+    /* Shorter width for dropdown */
+}
+
+.search-input-pill {
+    width: 350px !important;
+    /* Longer width for search */
+}
+
+.branch-filter-pill:focus-within,
+.search-input-pill:focus-within {
+    border-color: var(--primary-green) !important;
+    box-shadow: 0 0 0 5px rgba(23, 77, 23, 0.2) !important;
+}
+
+.search-input-pill i {
+    color: #1a1a1a !important;
+    /* Match bold border */
+    margin-right: 12px !important;
+    font-size: 16px !important;
+    font-weight: 900 !important;
+}
+
+.search-input-pill input {
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    width: 100% !important;
+    height: 100% !important;
+    font-size: 16px !important;
+    /* Standard size */
+    font-weight: 500 !important;
+    /* Standard weight */
+    color: #333 !important;
+    font-family: 'Montserrat', sans-serif !important;
+    padding: 0 !important;
+}
+
+#branch-filter {
+    border: none !important;
+    background: transparent !important;
+    height: 100% !important;
+    width: 100%;
+    padding: 0 30px 0 0px !important;
+    font-size: 14px !important;
+    /* Smaller size as requested */
+    font-weight: 600 !important;
+    color: #333 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    cursor: pointer;
+    outline: none !important;
+    box-shadow: none !important;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right center !important;
+    background-size: 12px !important;
+    transition: color 0.2s;
+}
+
+#branch-filter:hover {
+    color: var(--primary-green) !important;
+}
+
+/* FullCalendar Overrides */
+.fc {
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+/* Softer Grid Lines */
+.fc-theme-standard td,
+.fc-theme-standard th {
+    border: 1px solid var(--border-ultra-light) !important;
+}
+
+.fc .fc-timegrid-slot {
+    height: 48px !important;
+    /* Slightly more height */
+}
+
+/* Week View Header Redesign */
+.fc-col-header-cell {
+    padding: 20px 0 !important;
+    background: #FAFBFC !important;
+    border-bottom: 2px solid var(--border-ultra-light) !important;
+}
+
+.fc-col-header-cell-cushion {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-decoration: none !important;
+}
+
+.header-day-name {
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: #9CA3AF;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.header-day-number {
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1;
+    color: #374151;
+}
+
+.fc-day-today {
+    background-color: rgba(23, 77, 23, 0.015) !important;
+}
+
+.fc-day-today .header-day-number {
+    color: var(--primary-green);
+}
+
+/* Event Styling - High Polish */
+.fc-v-event {
+    background-color: var(--event-blue-bg);
+    border: none;
+    border-left: 5px solid var(--event-blue-border);
+    border-radius: 12px;
+    padding: 2px;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Các lớp màu theo ca làm việc */
+.shift-morning {
+    background-color: #EBF5FF !important;
+    border-left: 5px solid #3B82F6 !important;
+}
+
+.shift-morning .fc-event-main {
+    color: #1E40AF !important;
+}
+
+.shift-afternoon {
+    background-color: #F0FDF4 !important;
+    border-left: 5px solid #22C55E !important;
+}
+
+.shift-afternoon .fc-event-main {
+    color: #166534 !important;
+}
+
+.shift-evening {
+    background-color: #FFFBEB !important;
+    border-left: 5px solid #F59E0B !important;
+}
+
+.shift-evening .fc-event-main {
+    color: #92400E !important;
+}
+
+.fc-v-event:hover {
+    transform: scale(1.02) translateY(-2px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15) !important;
+    z-index: 100 !important;
+}
+
+.fc-event-main {
+    padding: 8px 12px !important;
+    color: #333 !important;
+}
+
+/* Sidebar Styling */
+.sidebar-title {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #6B7280;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: 1.5px;
+}
+
+.staff-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #FAFBFC;
+    transition: opacity 0.2s;
+}
+
+.staff-item:hover {
+    opacity: 0.8;
+}
+
+.staff-checkbox {
+    width: 20px;
+    height: 20px;
+    margin-right: 18px;
+    cursor: pointer;
+    accent-color: var(--primary-green);
+    border-radius: 6px;
+}
+
+.staff-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 14px;
+    box-shadow: 0 0 0 2px white, 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.staff-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #374151;
+}
+
+.btn-outline-green {
+    border: 1px solid #E5E7EB;
+    color: var(--primary-green);
+    background: #F9FAFB;
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-outline-green:hover {
+    background: white;
+    border-color: var(--primary-green);
+}
+
+/* Time Labels Polish */
+.fc .fc-timegrid-slot-label-cushion {
+    font-size: 11px;
+    font-weight: 800;
+    color: #9CA3AF;
+    text-align: right;
+    padding-right: 15px;
+}
+
+/* Hidden headers for cleaner look */
+.fc-scrollgrid-section-header.fc-scrollgrid-section-sticky>th {
+    border-bottom: none !important;
+}
+
+/* Mini Calendar Styling - High Polish (Image 2 style) */
+#mini-calendar {
+    font-size: 13px;
+    border: none !important;
+}
+
+#mini-calendar .fc-view-harness {
+    background: transparent;
+}
+
+#mini-calendar .fc-scrollgrid {
+    border: none !important;
+}
+
+#mini-calendar td,
+#mini-calendar th {
+    border: none !important;
+    /* Remove all grid lines */
+    padding: 2px 0 !important;
+}
+
+/* Header: Tháng 4 2026 */
+#mini-calendar .fc-toolbar-title {
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    color: #374151 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#mini-calendar .fc-header-toolbar {
+    margin-bottom: 20px !important;
+    padding: 0 10px;
+}
+
+#mini-calendar .fc-button {
+    background: transparent !important;
+    border: none !important;
+    color: #9CA3AF !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+#mini-calendar .fc-button:hover {
+    color: var(--primary-green) !important;
+}
+
+/* Day Headers: T2, T3... */
+#mini-calendar .fc-col-header-cell-cushion {
+    font-size: 11px;
+    font-weight: 700;
+    color: #D1D5DB !important;
+    /* Light gray */
+    padding-bottom: 15px !important;
+    text-decoration: none !important;
+}
+
+#mini-calendar .fc-daygrid-day-number {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    font-weight: 700;
+    color: #374151;
+    text-decoration: none !important;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+#mini-calendar .fc-daygrid-day:hover .fc-daygrid-day-number {
+    background-color: #F3F4F6;
+}
+
+/* Active/Today Highlight in Mini Calendar */
+#mini-calendar .fc-day-today .fc-daygrid-day-number {
+    background-color: #E5E7EB !important;
+    /* Light gray background like Image 2 */
+    color: #1F2937 !important;
+}
+
+#mini-calendar .fc-daygrid-day.fc-day-other .fc-daygrid-day-number {
+    color: #E5E7EB !important;
+    /* Faded other month days */
+}
+
+/* --- ODOO MODAL REDESIGN (GREEN THEME) --- */
+.odoo-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 160px;
+    width: 100%;
+    height: calc(100% - 160px);
+    background-color: rgba(0, 0, 0, 0.4);
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 20px;
+    backdrop-filter: blur(2px);
+}
+
+.odoo-modal-content {
+    background-color: #fff;
+    border-radius: 12px;
+    width: 650px;
+    max-width: 95%;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: modalFadeIn 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.odoo-modal-header {
+    background-color: var(--primary-green);
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.odoo-modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.odoo-modal-close {
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.odoo-modal-close:hover {
+    opacity: 1;
+}
+
+.odoo-modal-body {
+    padding: 20px 25px;
+    max-height: 42vh;
+    overflow-y: auto;
+}
+
+/* Custom scrollbar for modal body */
+.odoo-modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.odoo-modal-body::-webkit-scrollbar-track {
+    background: #fdfdfd;
+}
+
+.odoo-modal-body::-webkit-scrollbar-thumb {
+    background: #e0e0e0;
+    border-radius: 10px;
+}
+
+.odoo-modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-green);
+}
+
+.modal-info-item {
+    display: grid;
+    grid-template-columns: 35px 1fr;
+    align-items: center;
+    margin-bottom: 20px;
+    color: #374151;
+}
+
+.modal-info-item i {
+    font-size: 18px;
+    color: var(--primary-green);
+}
+
+.modal-info-item span {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.modal-divider {
+    height: 1px;
+    background-color: #F1F1F1;
+    margin: 20px 0;
+}
+
+.participant-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.participant-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background-color: var(--primary-green);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.participant-details .name {
+    display: block;
+    font-weight: 700;
+    font-size: 15px;
+    color: #111827;
+}
+
+.participant-details .role {
+    font-size: 12px;
+    color: #9CA3AF;
+}
+
+.modal-status-tag {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.status-chua-gui {
+    background-color: #FFFBEB;
+    color: #F59E0B;
+    /* Orange for Not Sent */
+}
+
+.status-da-gui {
+    background-color: #F0FDF4;
+    color: #22C55E;
+    /* Green for Sent */
+}
+
+.odoo-modal-footer {
+    padding: 15px 30px 25px 30px;
+    display: flex;
+    gap: 12px;
+    border-top: 1px solid #F1F1F1;
+}
+
+.btn-modal-edit {
+    background-color: var(--primary-green);
+    color: white !important;
+    padding: 0 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-decoration: none !important;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    /* To match delete button border height */
+    text-align: center;
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+.btn-modal-edit:hover {
+    background-color: var(--hover-green);
+    transform: translateY(-1px);
+}
+
+.btn-modal-delete {
+    background-color: white;
+    color: #4B5563;
+    padding: 0 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: 1px solid #E5E7EB;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+.btn-modal-delete:hover {
+    background-color: #F9FAFB;
+    border-color: #D1D5DB;
+    color: #111827;
+}
+
+/* Premium Table for Modal (UC 4.4) */
+.premium-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.premium-table thead th {
+    background: #ECFDF5 !important;
+    /* Light Emerald */
+    padding: 16px 20px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--primary-green);
+    /* Use Project Primary Green */
+    text-align: left;
+    border-bottom: 2px solid var(--primary-green);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.premium-table tbody td {
+    padding: 18px 20px;
+    font-size: 14px;
+    color: #374151;
+    border-bottom: 1px solid #F0FDF4;
+    vertical-align: middle;
+    transition: all 0.2s;
+}
+
+.premium-table tbody tr:hover td {
+    background-color: #F0FDF4;
+    /* Very Light Green on hover */
+}
+
+/* Checkbox styling */
+.premium-table input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--primary-green);
+    border: 2px solid #D1D5DB;
+    border-radius: 4px;
+}
+
+.notif-info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.notif-main-info {
+    font-weight: 800;
+    color: var(--primary-green);
+    font-size: 15px;
+}
+
+.notif-sub-info {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+}
+
+.notif-staff-list {
+    font-size: 13px;
+    color: var(--primary-green);
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.status-badge-pending {
+    background: #FEF3C7;
+    color: #92400E;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    border: 1px solid #F59E0B;
+}
+
+.status-badge-sent {
+    background: #D1FAE5;
+    color: var(--primary-green);
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    border: 1px solid var(--primary-green);
+}
+
+.btn-confirm-send {
+    background: #28a745 !important;
+    color: white !important;
+    box-shadow: 0 4px 14px rgba(40, 167, 69, 0.3) !important;
+    border: none !important;
+}
+
+.btn-confirm-send:hover {
+    background-color: #218838 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4) !important;
+}

@@ -20,13 +20,11 @@ const PayrollHelpers = {
     },
 
     // Hiển thị thông báo Toast (nếu cần gọi thủ công)
-    showToast: function(message) {
-        const toast = document.getElementById("toast-notification");
-        const toastMsg = document.getElementById("toast-message");
-        if (toast && toastMsg) {
-            toastMsg.textContent = message;
-            toast.classList.add("show");
-            setTimeout(() => { toast.classList.remove("show"); }, 3000);
+    showToast: function(message, type = 'success') {
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
+        } else {
+            console.warn('Global showToast not found');
         }
     }
 };
@@ -70,6 +68,8 @@ document.addEventListener('DOMContentLoaded', function() {
             message = 'Duyệt bảng lương thành công';
         } else if (action === 'reject') {
             message = 'Từ chối bảng lương thành công';
+        } else if (action === 'send') {
+            message = 'Gửi bảng lương thành công';
         }
 
         // 2. Hiện Toast Notification
@@ -81,6 +81,8 @@ document.addEventListener('DOMContentLoaded', function() {
         sessionStorage.removeItem('payroll_saved');
         sessionStorage.removeItem('payroll_action');
     }
+
+    initPayrollSendControls();
 });
 
 // ================================================================
@@ -107,6 +109,15 @@ function filterPayrollByStatus(statusKey) {
     if (exportContainer) {
         exportContainer.style.display = (statusKey === 'da-duyet') ? 'block' : 'none';
     }
+
+    // Reset send selection when switching tabs
+    const sendSelectAll = document.getElementById('payroll-send-select-all');
+    if (sendSelectAll) {
+        sendSelectAll.checked = false;
+    }
+    document.querySelectorAll('.payroll-send-checkbox').forEach(cb => {
+        cb.checked = false;
+    });
 }
 
 // ================================================================
@@ -235,6 +246,70 @@ function toggleSelectAll(source) {
 function handleExportApproved() {
     const format = document.getElementById('export-format-select').value;
     alert('Tính năng xuất file ' + format.toUpperCase() + ' hiện đang được triển khai.');
+}
+
+function initPayrollSendControls() {
+    const sendBtn = document.getElementById('payroll-send-btn');
+    const selectAll = document.getElementById('payroll-send-select-all');
+    if (!sendBtn || !selectAll) {
+        return;
+    }
+
+    function getVisibleApprovedCheckboxes() {
+        const boxes = Array.from(document.querySelectorAll('.payroll-send-checkbox'));
+        return boxes.filter(cb => {
+            if (cb.disabled) return false;
+            const row = cb.closest('tr');
+            if (!row) return false;
+            if (row.getAttribute('data-status') !== 'da-duyet') return false;
+            return row.style.display !== 'none';
+        });
+    }
+
+    selectAll.addEventListener('change', function() {
+        const boxes = getVisibleApprovedCheckboxes();
+        boxes.forEach(cb => { cb.checked = selectAll.checked; });
+    });
+
+    sendBtn.addEventListener('click', function() {
+        const url = sendBtn.dataset.sendUrl;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+
+        const selected = getVisibleApprovedCheckboxes().filter(cb => cb.checked).map(cb => cb.value);
+        if (selected.length === 0) {
+            alert('Vui lòng chọn ít nhất 1 bảng lương để gửi.');
+            return;
+        }
+
+        const formData = new FormData();
+        selected.forEach(ma => formData.append('ma_luongs[]', ma));
+        if (csrfToken) {
+            formData.append('csrfmiddlewaretoken', csrfToken);
+        }
+
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                sessionStorage.setItem('payroll_success', 'true');
+                sessionStorage.setItem('payroll_action', 'send');
+                window.location.reload();
+                return;
+            }
+            alert('Gửi bảng lương thất bại: ' + (data.message || 'Lỗi không xác định'));
+        })
+        .catch(err => {
+            console.error('Lỗi gửi bảng lương:', err);
+            alert('Gửi bảng lương thất bại, vui lòng thử lại.');
+        });
+    });
 }
 
 // --- Popup Hủy ---

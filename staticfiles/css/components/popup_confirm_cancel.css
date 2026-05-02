@@ -1,120 +1,120 @@
+/* Confirm Popup Styling - High Protection from Conflicts */
 .confirm-popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
     display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 10000 !important;
+    backdrop-filter: blur(4px) !important;
 }
 
-.confirm-popup-box {
-  position: relative;
-  width: 500px;
-  height: 250px;
-  background-color: #ffffff;
-  border-radius: 18px;
+.cf-popup-box {
+    background-color: #ffffff !important;
+    width: auto !important;
+    min-width: 500px !important;
+    max-width: 600px !important;
+    padding: 32px !important;
+    border-radius: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15) !important;
+    position: relative !important;
+    box-sizing: border-box !important;
 }
 
-.confirm-popup-box .mdi-light-alert {
-  position: absolute;
-  top: 16px;
-  left: 225px;
-  width: 50px;
-  height: 50px;
+/* Force children to stack properly and ignore any absolute parents */
+.cf-popup-icon,
+.cf-popup-header,
+.cf-popup-message,
+.cf-popup-actions {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
 }
 
-.confirm-popup-box .heading {
-  display: flex;
-  flex-direction: column;
-  width: calc(100% - 80px);
-  align-items: center;
-  position: absolute;
-  top: 85px;
-  left: 40px;
+.cf-popup-icon {
+    margin-bottom: 20px !important;
+    display: flex !important;
+    justify-content: center !important;
 }
 
-.confirm-popup-box .text-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  margin-top: -1px;
-  font-family: "Montserrat-SemiBold", Helvetica, sans-serif;
-  font-weight: 600;
-  color: #000000;
-  font-size: 24px;
-  text-align: center;
-  line-height: normal;
+.cf-popup-icon svg {
+    width: 50px !important;
+    height: 50px !important;
 }
 
-.confirm-popup-box .div {
-  position: absolute;
-  top: 120px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 96px);
-  margin: 0;
-  font-family: "Montserrat-Regular", Helvetica, sans-serif;
-  font-weight: 400;
-  color: #000000;
-  font-size: 14px;
-  text-align: center;
-  line-height: 22px;
-  white-space: normal;
+.cf-popup-header {
+    margin-bottom: 8px !important;
 }
 
-.confirm-popup-box .button-no,
-.confirm-popup-box .button-yes {
-  all: unset;
-  box-sizing: border-box;
-  position: absolute;
-  top: 170px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+.cf-popup-title {
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 24px !important;
+    font-weight: 800 !important;
+    color: #0f6b20 !important;
+    margin: 0 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
 }
 
-.confirm-popup-box .button-no {
-  left: 68px;
-  width: 130px;
-  background-color: #e0e0e0;
+.cf-popup-message {
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 16px !important;
+    color: #555555 !important;
+    line-height: 1.5 !important;
+    margin-bottom: 28px !important;
+    font-weight: 500 !important;
+    padding: 0 20px !important;
+    white-space: nowrap !important;
 }
 
-.confirm-popup-box .button-yes {
-  right: 68px;
-  width: 146px;
-  background-color: #174d17de;
+.cf-popup-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 40px !important;
+    justify-content: center !important;
 }
 
-.confirm-popup-box .button-no:hover,
-.confirm-popup-box .button-yes:hover {
-    background-color: #0000ff;
+.cf-popup-box button {
+    padding: 10px 30px !important;
+    border-radius: 10px !important;
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+    min-width: 130px !important;
+    box-sizing: border-box !important;
 }
 
-.confirm-popup-box .text-wrapper-2 {
-  font-family: "Montserrat-Bold", Helvetica, sans-serif;
-  font-weight: 700;
-  color: #666666;
-  font-size: 24px;
+.cf-popup-box .button-no {
+    background-color: #eeeeee !important;
+    color: #666666 !important;
 }
 
-.confirm-popup-box .text-wrapper-3 {
-  font-family: "Montserrat-Bold", Helvetica, sans-serif;
-  font-weight: 700;
-  color: #ffffff;
-  font-size: 24px;
+.cf-popup-box .button-no:hover {
+    background-color: #e2e2e2 !important;
+    transform: translateY(-2px) !important;
 }
 
-.confirm-popup-box .button-no:hover .text-wrapper-2,
-.confirm-popup-box .button-yes:hover .text-wrapper-3 {
-    color: #ffffff;
+.cf-popup-box .button-yes {
+    background-color: #0f6b20 !important;
+    color: #ffffff !important;
+}
+
+.cf-popup-box .button-yes:hover {
+    background-color: #0c561a !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 15px rgba(15, 107, 32, 0.2) !important;
 }

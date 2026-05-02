@@ -37,37 +37,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    const errorPopup = document.getElementById('error-popup');
-    const errorPopupExitBtn = document.getElementById('error-popup-exit-btn');
-    const errorPopupBackBtn = document.getElementById('error-popup-back-btn');
-
     function showErrorPopup(title, msg1, msg2) {
-        if (errorPopup) {
-            document.getElementById('error-popup-title').textContent = title;
-            document.getElementById('error-popup-message1').textContent = msg1;
-            document.getElementById('error-popup-message2').textContent = msg2;
-            errorPopup.style.display = 'flex';
+        if (typeof window.showToast === 'function') {
+            window.showToast(msg1, 'error');
+        } else {
+            alert(msg1);
         }
-    }
-
-    function hideErrorPopup() {
-        if (errorPopup) {
-            errorPopup.style.display = 'none';
-        }
-    }
-
-    if (errorPopupExitBtn) {
-        errorPopupExitBtn.addEventListener('click', () => window.location.href = employeeForm.dataset.returnUrl || employeeForm.dataset.employeeListUrl);
-    }
-    if (errorPopupBackBtn) {
-        errorPopupBackBtn.addEventListener('click', hideErrorPopup);
-    }
-    if (errorPopup) {
-        errorPopup.addEventListener('click', (event) => {
-            if (event.target === errorPopup) {
-                hideErrorPopup();
-            }
-        });
     }
 
     const confirmCancelPopup = document.getElementById('confirm-cancel-popup');

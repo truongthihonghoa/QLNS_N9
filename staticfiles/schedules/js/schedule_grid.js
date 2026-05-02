@@ -167,7 +167,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // 3. LOGIC XỬ LÝ SỰ KIỆN (EVENT HANDLING)
     function handleEditShift(shiftData, dateKey, shiftLabel) {
         // Logic thực tế: Mở modal form chỉnh sửa và điền dữ liệu
-        alert(`Chỉnh sửa lịch làm việc:\nNgày: ${dateKey}\nCa: ${shiftLabel}\nID Lịch: ${shiftData.id}\nNhân viên: ${shiftData.details.map(e => e.name).join(', ')}`);
+        if (typeof window.showToast === 'function') {
+            window.showToast(`Chỉnh sửa lịch làm việc: ${dateKey} - ${shiftLabel}`, 'info');
+        } else {
+            alert(`Chỉnh sửa lịch làm việc:\nNgày: ${dateKey}\nCa: ${shiftLabel}\nID Lịch: ${shiftData.id}\nNhân viên: ${shiftData.details.map(e => e.name).join(', ')}`);
+        }
         // Ví dụ chuyển hướng đến trang chỉnh sửa:
         // window.location.href = `/schedules/edit/${shiftData.id}`;
     }
@@ -177,10 +181,18 @@ document.addEventListener("DOMContentLoaded", function () {
             if (savedData[dateKey] && savedData[dateKey][shiftKey]) {
                 delete savedData[dateKey][shiftKey];
                 localStorage.setItem(storageKey, JSON.stringify(savedData));
-                alert("Đã xóa ca làm thành công!");
+                if (typeof window.showToast === 'function') {
+                    window.showToast("Đã xóa ca làm thành công!");
+                } else {
+                    alert("Đã xóa ca làm thành công!");
+                }
                 renderBoard(); // Render lại bảng để cập nhật giao diện
             } else {
-                alert("Không tìm thấy ca làm việc để xóa.");
+                if (typeof window.showToast === 'function') {
+                    window.showToast("Không tìm thấy ca làm việc để xóa.", "error");
+                } else {
+                    alert("Không tìm thấy ca làm việc để xóa.");
+                }
             }
         }
     }

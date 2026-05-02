@@ -36,15 +36,12 @@ let aggregatedData = null;
 // UTILITY FUNCTIONS
 // ============================================
 
-function showToast(message, duration = 3000) {
-  const toast = document.getElementById('toast');
-  const toastText = document.getElementById('toast-text');
-  toastText.textContent = message;
-  toast.style.display = 'block';
-  
-  setTimeout(() => {
-    toast.style.display = 'none';
-  }, duration);
+function showToast(message, type = 'success') {
+  if (typeof window.showToast === 'function') {
+    window.showToast(message, type);
+  } else {
+    alert(message);
+  }
 }
 
 function formatDateToVN(dateString) {

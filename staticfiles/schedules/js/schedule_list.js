@@ -166,34 +166,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showMessage(message, type) {
-        // Remove existing alerts
-        const existingAlerts = document.querySelectorAll('.alert');
-        existingAlerts.forEach(alert => alert.remove());
-        
-        // Create new alert
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type}`;
-        alertDiv.style.cssText = 'padding: 10px; margin: 10px 0; border-radius: 5px; z-index: 9999; position: fixed; top: 20px; right: 20px; max-width: 400px;';
-        
-        if (type === 'error') {
-            alertDiv.style.backgroundColor = '#f8d7da';
-            alertDiv.style.color = '#721c24';
-            alertDiv.style.border = '1px solid #f5c6cb';
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
         } else {
-            alertDiv.style.backgroundColor = '#d4edda';
-            alertDiv.style.color = '#155724';
-            alertDiv.style.border = '1px solid #c3e6cb';
+            alert(message);
         }
-        
-        alertDiv.textContent = message;
-        document.body.appendChild(alertDiv);
-        
-        // Auto hide after 5 seconds
-        setTimeout(() => {
-            if (alertDiv) {
-                alertDiv.remove();
-            }
-        }, 5000);
     }
 
     // Event listeners

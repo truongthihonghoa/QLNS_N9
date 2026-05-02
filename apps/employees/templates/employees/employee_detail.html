@@ -107,22 +107,6 @@
     </div>
 </section>
 
-<div class="employee-success-toast" id="employee-success-toast" role="status" aria-live="polite">
-    <div class="employee-success-toast-content">
-        <p class="employee-success-toast-message" id="employee-success-toast-message"></p>
-    </div>
-    <div class="employee-success-toast-icon">
-        <i class="fa-solid fa-check"></i>
-    </div>
-</div>
-
-{% if messages %}
-    {% for message in messages %}
-        {% if message.level_tag == 'success' %}
-            <div id="employee-success-message" data-message="{{ message|striptags }}" hidden></div>
-        {% endif %}
-    {% endfor %}
-{% endif %}
 {% endblock %}
 
 {% block extra_js %}

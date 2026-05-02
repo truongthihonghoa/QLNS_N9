@@ -25,12 +25,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Validate
             if (!ngayLam || !khungGio) {
-                alert('Vui lòng điền đầy đủ thông tin');
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Vui lòng điền đầy đủ thông tin', 'error');
+                } else {
+                    alert('Vui lòng điền đầy đủ thông tin');
+                }
                 return;
             }
 
             // Show success message
-            alert('Tạo lịch làm việc thành công (Demo UI)');
+            if (typeof window.showToast === 'function') {
+                window.showToast('Tạo lịch làm việc thành công (Demo UI)');
+            } else {
+                alert('Tạo lịch làm việc thành công (Demo UI)');
+            }
 
             // Navigate back to list after 1 second
             setTimeout(() => {
