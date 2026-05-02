@@ -169,8 +169,14 @@ def api_update_request(request, ma_dk):
         yc = get_object_or_404(YeuCau, ma_yc=ma_dk)
 
         # SECURITY CHECK: Chỉ chủ nhân hoặc Admin mới được sửa
-        nhan_vien_me = TaiKhoan.objects.get(user=request.user).ma_nv
-        if yc.ma_nv != nhan_vien_me and not _is_admin(request.user):
+        is_admin = _is_admin(request.user)
+        nhan_vien_me = None
+        try:
+            nhan_vien_me = request.user.taikhoan.ma_nv
+        except Exception:
+            pass
+
+        if not is_admin and (not nhan_vien_me or yc.ma_nv != nhan_vien_me):
             return JsonResponse({'success': False, 'error': 'Bạn không có quyền sửa đơn này.'}, status=403)
 
         if yc.trang_thai != 'Chờ duyệt':
@@ -192,8 +198,14 @@ def api_delete_request(request, ma_dk):
         yc = get_object_or_404(YeuCau, ma_yc=ma_dk)
 
         # SECURITY CHECK: Chỉ chủ nhân hoặc Admin mới được xóa
-        nhan_vien_me = TaiKhoan.objects.get(user=request.user).ma_nv
-        if yc.ma_nv != nhan_vien_me and not _is_admin(request.user):
+        is_admin = _is_admin(request.user)
+        nhan_vien_me = None
+        try:
+            nhan_vien_me = request.user.taikhoan.ma_nv
+        except Exception:
+            pass
+
+        if not is_admin and (not nhan_vien_me or yc.ma_nv != nhan_vien_me):
             return JsonResponse({'success': False, 'error': 'Bạn không có quyền xóa đơn này.'}, status=403)
 
         if yc.trang_thai != 'Chờ duyệt':
