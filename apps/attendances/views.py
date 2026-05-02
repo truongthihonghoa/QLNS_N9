@@ -27,7 +27,21 @@ def attendance_list_view(request):
     role = request.session.get('role', 'Nhân viên')
     
     if user.is_superuser or user.is_staff or role != "Nhân viên":
-        branch_id = request.GET.get('branch') or (ChiNhanh.objects.filter(trang_thai='active').first().ma_chi_nhanh if ChiNhanh.objects.filter(trang_thai='active').exists() else None)
+        # Xác định chi nhánh của Quản lý
+        user_branch_id = None
+        if not user.is_superuser:
+            try:
+                user_branch_id = user.taikhoan.ma_nv.ma_chi_nhanh_id
+            except Exception:
+                pass
+
+        branches = ChiNhanh.objects.filter(trang_thai='active')
+        if user_branch_id:
+            branches = branches.filter(ma_chi_nhanh=user_branch_id)
+            branch_id = user_branch_id
+        else:
+            branch_id = request.GET.get('branch') or (branches.first().ma_chi_nhanh if branches.exists() else None)
+
         search_query = (request.GET.get('search') or '').strip()
         selected_month = request.GET.get('month', '')
         selected_year = request.GET.get('year', '')
@@ -36,14 +50,15 @@ def attendance_list_view(request):
 
         if branch_id:
             attendances = attendances.filter(ma_nv__ma_chi_nhanh=branch_id)
+            if user_branch_id and branch_id != user_branch_id:
+                attendances = attendances.none()
+        
         if search_query:
             attendances = attendances.filter(ma_nv__ho_ten__icontains=search_query)
         if selected_month and selected_month.isdigit():
             attendances = attendances.filter(ngay_lam__month=int(selected_month))
         if selected_year and selected_year.isdigit():
             attendances = attendances.filter(ngay_lam__year=int(selected_year))
-
-        branches = ChiNhanh.objects.filter(trang_thai='active')
 
         context = {
             'is_manager': True,

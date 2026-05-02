@@ -152,15 +152,30 @@ def account_admin_list_view(request):
     from apps.branches.models import ChiNhanh
     from django.contrib.auth.models import User
 
+    # Xác định chi nhánh của Quản lý
+    user_branch_id = None
+    if not request.user.is_superuser:
+        try:
+            user_branch_id = request.user.taikhoan.ma_nv.ma_chi_nhanh_id
+        except Exception:
+            pass
+
     branches = ChiNhanh.objects.filter(trang_thai='active').order_by('ma_chi_nhanh')
-    selected_branch = request.GET.get('branch') or (branches.first().ma_chi_nhanh if branches.exists() else None)
+    if user_branch_id:
+        branches = branches.filter(ma_chi_nhanh=user_branch_id)
+        selected_branch = user_branch_id
+    else:
+        selected_branch = request.GET.get('branch') or (branches.first().ma_chi_nhanh if branches.exists() else None)
 
     search_term = request.GET.get('q', '').strip()
 
     # 🔥 PHÂN QUYỀN TẠI ĐÂY
-    if request.user.is_superuser or request.user.is_staff:
-        # Admin / Chủ → xem tất cả
+    if request.user.is_superuser:
+        # Chủ → xem tất cả
         all_users = User.objects.all().select_related('taikhoan__ma_nv')
+    elif request.user.is_staff:
+        # Quản lý → xem người cùng chi nhánh
+        all_users = User.objects.filter(taikhoan__ma_nv__ma_chi_nhanh=user_branch_id).select_related('taikhoan__ma_nv')
     else:
         # Nhân viên → chỉ xem chính mình
         all_users = User.objects.filter(id=request.user.id).select_related('taikhoan__ma_nv')
@@ -168,6 +183,8 @@ def account_admin_list_view(request):
     # 🔍 SEARCH & FILTER (sau khi đã phân quyền)
     if selected_branch:
         all_users = all_users.filter(taikhoan__ma_nv__ma_chi_nhanh=selected_branch)
+        if user_branch_id and selected_branch != user_branch_id:
+            all_users = all_users.none()
 
     if search_term:
         from django.db.models import Q

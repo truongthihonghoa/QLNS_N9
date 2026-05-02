@@ -229,12 +229,14 @@
 
     <div id="export-approved-container" class="export-data-wrapper" style="display: none;">
         <div class="export-controls">
-            <label style="display: inline-flex; align-items: center; gap: 12px; margin-right: 15px; font-weight: 700; font-size: 18px; cursor: pointer; user-select: none; font-family: 'Montserrat', sans-serif;">
-                <input type="checkbox" id="payroll-send-select-all"
-                       style="width: 24px; height: 24px; cursor: pointer; accent-color: #174d17; margin: 0; vertical-align: middle;">
-                <span style="line-height: 1;">Chọn tất cả</span>
-            </label>
-            <button type="button" class="btn-export-final" id="payroll-send-btn" data-send-url="{% url 'payroll_send' %}">Gửi bảng lương</button>
+            {% if request.user.is_superuser %}
+                <label style="display: inline-flex; align-items: center; gap: 12px; margin-right: 15px; font-weight: 700; font-size: 18px; cursor: pointer; user-select: none; font-family: 'Montserrat', sans-serif;">
+                    <input type="checkbox" id="payroll-send-select-all"
+                           style="width: 24px; height: 24px; cursor: pointer; accent-color: #174d17; margin: 0; vertical-align: middle;">
+                    <span style="line-height: 1;">Chọn tất cả</span>
+                </label>
+                <button type="button" class="btn-export-final" id="payroll-send-btn" data-send-url="{% url 'payroll_send' %}">Gửi bảng lương</button>
+            {% endif %}
             <select id="export-format-select" class="export-dropdown">
                 <option value="pdf">Xuất file PDF</option>
                 <option value="excel">Xuất file Excel</option>

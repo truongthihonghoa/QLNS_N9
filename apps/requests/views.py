@@ -23,12 +23,20 @@ def request_approval_view(request):
     
     query = YeuCau.objects.select_related('ma_nv__ma_chi_nhanh').all()
 
-    # PHÂN QUYỀN: Nếu không phải Admin/Manager thì chỉ thấy đơn của mình
-    if not (is_admin or role != "Nhân viên"):
+    # PHÂN QUYỀN
+    if role == "Nhân viên":
+        # Nhân viên chỉ thấy đơn của mình
         try:
             nhan_vien_me = TaiKhoan.objects.get(user=request.user).ma_nv
             query = query.filter(ma_nv=nhan_vien_me)
         except TaiKhoan.DoesNotExist:
+            query = query.none()
+    elif role == "Quản lý" and not request.user.is_superuser:
+        # Quản lý chỉ thấy đơn của nhân viên thuộc chi nhánh mình
+        try:
+            user_branch_id = request.user.taikhoan.ma_nv.ma_chi_nhanh_id
+            query = query.filter(ma_nv__ma_chi_nhanh_id=user_branch_id)
+        except Exception:
             query = query.none()
 
     yeu_cau_list = query.order_by('-ma_yc')
@@ -60,6 +68,12 @@ def request_approval_view(request):
         })
 
     branches = ChiNhanh.objects.filter(trang_thai='active').order_by('ma_chi_nhanh')
+    if role == "Quản lý" and not request.user.is_superuser:
+        try:
+            u_branch_id = request.user.taikhoan.ma_nv.ma_chi_nhanh_id
+            branches = branches.filter(ma_chi_nhanh=u_branch_id)
+        except Exception:
+            branches = branches.none()
 
     return render(request, 'requests/request_approval.html', {
         'requests_data': requests_data,

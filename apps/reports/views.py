@@ -88,7 +88,19 @@ def report_list_view(request):
                     'khong_phep': emp_unpaid
                 })
 
+        # Xác định chi nhánh của Quản lý
+        user_branch_id = None
+        if not request.user.is_superuser:
+            try:
+                user_branch_id = request.user.taikhoan.ma_nv.ma_chi_nhanh_id
+            except Exception:
+                pass
+
         branches = ChiNhanh.objects.filter(trang_thai='active')
+        if user_branch_id:
+            branches = branches.filter(ma_chi_nhanh=user_branch_id)
+            branch_id = user_branch_id
+
         return render(request, 'reports/report_list.html', {
             'show_dashboard': True,
             'is_owner': request.user.is_superuser,

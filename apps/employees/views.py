@@ -91,9 +91,24 @@ def employee_list_view(request):
         except Exception:
             employees = employees.none()
     else:
-        # Chủ và Quản lý thấy tất cả theo bộ lọc
-        if branch_filter:
-            employees = employees.filter(ma_chi_nhanh_id=branch_filter)
+        # Chủ và Quản lý thấy dữ liệu
+        user_branch_id = None
+        if not request.user.is_superuser:
+            try:
+                user_branch_id = request.user.taikhoan.ma_nv.ma_chi_nhanh_id
+            except Exception:
+                pass
+
+        if user_branch_id:
+            # Quản lý chỉ thấy chi nhánh của mình
+            employees = employees.filter(ma_chi_nhanh_id=user_branch_id)
+            # Nếu có filter từ UI thì phải trùng với chi nhánh mình quản lý
+            if branch_filter and branch_filter != user_branch_id:
+                employees = employees.none()
+        else:
+            # Chủ thấy tất cả theo bộ lọc
+            if branch_filter:
+                employees = employees.filter(ma_chi_nhanh_id=branch_filter)
 
         if search_query:
             employees = employees.filter(
@@ -104,11 +119,20 @@ def employee_list_view(request):
                 | Q(ma_chi_nhanh__ten_chi_nhanh__icontains=search_query)
             )
 
+    # Lọc danh sách chi nhánh trong context
+    all_branches = ChiNhanh.objects.all()
+    if not request.user.is_superuser:
+        try:
+            u_branch_id = request.user.taikhoan.ma_nv.ma_chi_nhanh_id
+            all_branches = all_branches.filter(ma_chi_nhanh=u_branch_id)
+        except Exception:
+            all_branches = all_branches.none()
+
     context = {
         "employee_cards": _build_employee_cards(employees),
         "search_query": search_query,
         "employee_count": employees.count(),
-        "branches": ChiNhanh.objects.all(),
+        "branches": all_branches,
         "current_branch": branch_filter,
         "role": role,
     }

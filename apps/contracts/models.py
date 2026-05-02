@@ -14,6 +14,7 @@ class HopDongLaoDong(models.Model):
         ('PHUC_VU', 'Phục vụ'),
         ('PHA_CHE', 'Pha chế'),
         ('GIU_XE', 'Giữ xe'),
+        ('THU_NGAN', 'Thu ngân'),
     ]
 
     TRANG_THAI_CHOICES = [

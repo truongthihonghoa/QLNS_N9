@@ -12,10 +12,19 @@ from apps.employees.models import NhanVien
 def branch_list(request):
     user = request.user
 
-    # 1. Nếu là Admin/Staff (is_staff=True trong bảng auth_user)
-    if user.is_superuser or user.is_staff:
+    # 1. Nếu là Admin/Staff
+    if user.is_superuser:
         branches = ChiNhanh.objects.all().order_by('ma_chi_nhanh')
         return render(request, 'branches/branch_list.html', {'branches': branches})
+    
+    if user.is_staff:
+        # Quản lý chỉ thấy chi nhánh của mình
+        try:
+            user_branch_id = user.taikhoan.ma_nv.ma_chi_nhanh_id
+            branches = ChiNhanh.objects.filter(ma_chi_nhanh=user_branch_id).order_by('ma_chi_nhanh')
+            return render(request, 'branches/branch_list.html', {'branches': branches})
+        except Exception:
+            pass
 
     # 2. Nếu là Nhân viên thường
     try:

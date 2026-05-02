@@ -20,25 +20,44 @@ def schedule_list_view(request):
     # Đồng bộ hóa trạng thái (giữ nguyên logic cũ)
     LichLamViec.objects.filter(trang_thai='Chờ duyệt').update(trang_thai='Chờ gửi')
     
-    role = request.session.get('role', 'Nhân viên')
-    is_admin_user = _is_admin(request.user) or role != "Nhân viên"
+    # Xác định chi nhánh của Quản lý
+    user_branch_id = None
+    if not request.user.is_superuser:
+        try:
+            user_branch_id = request.user.taikhoan.ma_nv.ma_chi_nhanh_id
+        except Exception:
+            pass
+
+    branches = ChiNhanh.objects.filter(trang_thai='active').order_by('ten_chi_nhanh')
+    if user_branch_id:
+        branches = branches.filter(ma_chi_nhanh=user_branch_id)
+        branch_id = user_branch_id
+    else:
+        branch_id = request.GET.get('branch', 'all')
     
-    branch_id = request.GET.get('branch', 'all')
     status_filter = request.GET.get('status', 'all')
     
     schedules_data = []
     query = LichLamViec.objects.select_related('ma_nv', 'ma_chi_nhanh').all()
     
-    # PHÂN QUYỀN: Nhân viên chỉ thấy lịch của mình và không thấy 'Chờ gửi'
+    role = request.session.get('role', 'Nhân viên')
+    is_admin_user = _is_admin(request.user) or role != "Nhân viên"
+
+    # PHÂN QUYỀN
     if not is_admin_user:
         try:
             tk = TaiKhoan.objects.get(user=request.user)
             query = query.filter(ma_nv=tk.ma_nv).exclude(trang_thai='Chờ gửi')
         except TaiKhoan.DoesNotExist:
             query = query.none()
+    elif user_branch_id:
+        query = query.filter(ma_chi_nhanh_id=user_branch_id)
     
     if branch_id != 'all':
         query = query.filter(ma_chi_nhanh_id=branch_id)
+        if user_branch_id and branch_id != user_branch_id:
+            query = query.none()
+    
     if status_filter != 'all':
         query = query.filter(trang_thai=status_filter)
         
@@ -55,8 +74,6 @@ def schedule_list_view(request):
             'chuc_vu': schedule.ma_nv.chuc_vu if schedule.ma_nv else 'Nhân viên',
             'ten_chi_nhanh': schedule.ma_chi_nhanh.ten_chi_nhanh if schedule.ma_chi_nhanh else 'N/A',
         })
-
-    branches = ChiNhanh.objects.filter(trang_thai='active').order_by('ten_chi_nhanh')
 
     return render(request, 'schedules/schedule_list.html', {
         'schedules': schedules_data,

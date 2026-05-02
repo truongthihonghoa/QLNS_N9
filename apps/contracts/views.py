@@ -66,8 +66,23 @@ def contract_list_view(request):
         except Exception:
             contracts_qs = contracts_qs.none()
     else:
-        if branch_filter:
-            contracts_qs = contracts_qs.filter(ma_chi_nhanh_id=branch_filter)
+        # Chủ và Quản lý thấy dữ liệu
+        user_branch_id = None
+        if not request.user.is_superuser:
+            try:
+                user_branch_id = request.user.taikhoan.ma_nv.ma_chi_nhanh_id
+            except Exception:
+                pass
+
+        if user_branch_id:
+            # Quản lý chỉ thấy chi nhánh của mình
+            contracts_qs = contracts_qs.filter(ma_chi_nhanh_id=user_branch_id)
+            if branch_filter and branch_filter != user_branch_id:
+                contracts_qs = contracts_qs.none()
+        else:
+            # Chủ thấy tất cả theo bộ lọc
+            if branch_filter:
+                contracts_qs = contracts_qs.filter(ma_chi_nhanh_id=branch_filter)
 
     contracts_list = []
     for hd in contracts_qs:
@@ -92,11 +107,23 @@ def contract_list_view(request):
             "trang_thai_display": status["display"],
         })
 
+    # Lọc danh sách chi nhánh và nhân viên trong context
+    all_branches = ChiNhanh.objects.all()
+    all_employees = NhanVien.objects.all()
+    if not request.user.is_superuser:
+        try:
+            u_branch_id = request.user.taikhoan.ma_nv.ma_chi_nhanh_id
+            all_branches = all_branches.filter(ma_chi_nhanh=u_branch_id)
+            all_employees = all_employees.filter(ma_chi_nhanh=u_branch_id)
+        except Exception:
+            all_branches = all_branches.none()
+            all_employees = all_employees.none()
+
     return render(request, "contracts/contract_list.html", {
         "contracts": contracts_list,
-        "branches": ChiNhanh.objects.all(),
+        "branches": all_branches,
         "current_branch": branch_filter,
-        "employees": NhanVien.objects.all(),
+        "employees": all_employees,
         "contract_types": HopDongLaoDong.LOAI_HD_CHOICES,
         "role": role,
     })

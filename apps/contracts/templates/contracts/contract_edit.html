@@ -104,7 +104,7 @@
                         <option value="" selected disabled>Chọn chức vụ</option>
                         {% for value, label in positions %}
                             <option value="{{ value }}"
-                                {% if contracts.chuc_vu == value %}selected{% endif %}>
+                                {% if contract.chuc_vu == value %}selected{% endif %}>
                                 {{ label }}
                             </option>
                         {% endfor %}

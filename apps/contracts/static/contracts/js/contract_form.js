@@ -28,36 +28,45 @@ document.addEventListener('DOMContentLoaded', function () {
     const confirmNoBtn = document.getElementById('confirm-no-btn');
     const confirmYesBtn = document.getElementById('confirm-yes-btn');
 
+    // Mapping từ Tiếng Việt sang Mã (Key) để tránh bị reset trường Chức vụ
+    const positionMap = {
+        'Quản lý': 'QUAN_LY',
+        'Phục vụ': 'PHUC_VU',
+        'Pha chế': 'PHA_CHE',
+        'Giữ xe': 'GIU_XE',
+        'Thu ngân': 'THU_NGAN'
+    };
 
-    function syncEmployeeCode() {
+
+    function syncEmployeeCode(skipAutofill = false) {
         const selectedOption = employeeOptions.find((option) => option.value === employeeNameInput.value.trim());
         if (selectedOption) {
             employeeCodeInput.value = selectedOption.dataset.code || '';
             
-            // Cập nhật Chức vụ (Ghi đè hoặc xóa nếu nhân viên mới không có)
-            const pos = selectedOption.dataset.position;
-            if (positionSelect) {
-                if (pos && pos !== 'None' && pos !== '') {
-                    positionSelect.value = pos;
-                } else {
-                    positionSelect.value = ""; 
+            // Nếu không phải đang trong quá trình nộp form, mới thực hiện tự động điền
+            if (!skipAutofill) {
+                const pos = selectedOption.dataset.position;
+                if (positionSelect) {
+                    if (pos && pos !== 'None' && pos !== '') {
+                        // Dùng positionMap để lấy mã đúng (QUAN_LY, PHUC_VU...)
+                        const mappedValue = positionMap[pos] || pos;
+                        positionSelect.value = mappedValue;
+                    }
                 }
-            }
-            
-            // Cập nhật Địa điểm làm việc (Ghi đè hoặc xóa nếu nhân viên mới không có)
-            const branch = selectedOption.dataset.branch;
-            if (branchSelect) {
-                if (branch && branch !== 'None' && branch !== '' && branch !== 'undefined') {
-                    branchSelect.value = branch;
-                } else {
-                    branchSelect.value = "";
+                
+                const branch = selectedOption.dataset.branch;
+                if (branchSelect) {
+                    if (branch && branch !== 'None' && branch !== '' && branch !== 'undefined') {
+                        branchSelect.value = branch;
+                    }
                 }
             }
         } else {
-            // Xóa hết dữ liệu nếu không chọn nhân viên nào
             employeeCodeInput.value = '';
-            if (positionSelect) positionSelect.value = "";
-            if (branchSelect) branchSelect.value = "";
+            if (!skipAutofill) {
+                if (positionSelect) positionSelect.value = "";
+                if (branchSelect) branchSelect.value = "";
+            }
         }
     }
 
@@ -232,7 +241,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function submitForm(event) {
         event.preventDefault();
-        syncEmployeeCode();
+        // Chỉ đồng bộ mã, không tự động điền lại các trường khác để tránh mất dữ liệu đã chọn
+        syncEmployeeCode(true);
         updateMucLuong();
 
         // Strip dots before sending

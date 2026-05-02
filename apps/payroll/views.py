@@ -59,8 +59,21 @@ def payroll_list_view(request):
     if role == "Nhân viên":
         return redirect('payroll:my_salary')
 
+    # Phân quyền chi nhánh
+    user_branch_id = None
+    if not request.user.is_superuser:
+        try:
+            user_branch_id = request.user.taikhoan.ma_nv.ma_chi_nhanh_id
+        except Exception:
+            pass
+
     branches = ChiNhanh.objects.filter(trang_thai='active').order_by('ma_chi_nhanh')
-    selected_branch = request.GET.get('branch') or (branches.first().ma_chi_nhanh if branches.exists() else None)
+    if user_branch_id:
+        branches = branches.filter(ma_chi_nhanh=user_branch_id)
+        selected_branch = user_branch_id
+    else:
+        selected_branch = request.GET.get('branch') or (branches.first().ma_chi_nhanh if branches.exists() else None)
+
     month = request.GET.get('month')
     year = request.GET.get('year')
     search_q = (request.GET.get('q') or '').strip()
@@ -199,8 +212,9 @@ def payroll_period_employees_view(request):
 @login_required(login_url='/accounts/login/')
 @require_POST
 def payroll_save_view(request):
-    if not (request.user.is_staff or request.user.is_superuser):
-        return JsonResponse({'status': 'error', 'message': 'forbidden'}, status=403)
+    # Chỉ Chủ mới được quyền lưu/tính lương
+    if not request.user.is_superuser:
+        return JsonResponse({'status': 'error', 'message': 'Bạn không có quyền thực hiện tính lương.'}, status=403)
 
     try:
         ma_luong = (request.POST.get('ma_luong') or '').strip()
@@ -250,16 +264,16 @@ def payroll_save_view(request):
 @login_required(login_url='/accounts/login/')
 @require_POST
 def payroll_delete_view(request, ma_luong):
-    if not (request.user.is_staff or request.user.is_superuser):
-        return JsonResponse({'error': 'forbidden'}, status=403)
+    if not request.user.is_superuser:
+        return JsonResponse({'error': 'Bạn không có quyền xóa bảng lương.'}, status=403)
     get_object_or_404(Luong, pk=ma_luong).delete()
     return JsonResponse({'status': 'success', 'message': 'Deleted'})
 
 @login_required(login_url='/accounts/login/')
 @require_POST
 def payroll_update_status_view(request, ma_luong):
-    if not (request.user.is_staff or request.user.is_superuser):
-        return JsonResponse({'status': 'error', 'message': 'forbidden'}, status=403)
+    if not request.user.is_superuser:
+        return JsonResponse({'status': 'error', 'message': 'Bạn không có quyền duyệt lương.'}, status=403)
     
     obj = get_object_or_404(Luong, pk=ma_luong)
     try:
@@ -282,8 +296,8 @@ def payroll_update_status_view(request, ma_luong):
 @login_required(login_url='/accounts/login/')
 @require_POST
 def payroll_send_view(request):
-    if not (request.user.is_staff or request.user.is_superuser):
-        return JsonResponse({'status': 'error', 'message': 'forbidden'}, status=403)
+    if not request.user.is_superuser:
+        return JsonResponse({'status': 'error', 'message': 'Bạn không có quyền gửi bảng lương.'}, status=403)
 
     ma_luongs = request.POST.getlist('ma_luongs[]') or request.POST.getlist('ma_luongs') or []
     updated = Luong.objects.filter(ma_luong__in=ma_luongs, trang_thai='da_duyet', da_gui=False).update(da_gui=True)
@@ -292,6 +306,9 @@ def payroll_send_view(request):
 @login_required(login_url='/accounts/login/')
 @require_POST
 def payroll_calculate_view(request):
+    if not request.user.is_superuser:
+        messages.error(request, 'Bạn không có quyền thực hiện tính lương.')
+        return redirect('payroll_list')
     branch = request.POST.get('branch')
     month = request.POST.get('month')
     year = request.POST.get('year')
@@ -326,6 +343,9 @@ def payroll_calculate_view(request):
 
 @login_required(login_url='/accounts/login/')
 def payroll_add_view(request):
+    if not request.user.is_superuser:
+        messages.error(request, 'Bạn không có quyền thêm bảng lương.')
+        return redirect('payroll_list')
     if request.method == "POST":
         branch, month, year = request.POST.get('branch'), request.POST.get('month'), request.POST.get('year')
         selected_ids = request.POST.getlist('selected_employees')
@@ -384,6 +404,9 @@ def payroll_add_view(request):
 
 @login_required(login_url='/accounts/login/')
 def payroll_edit_view(request, ma_luong):
+    if not request.user.is_superuser:
+        messages.error(request, 'Bạn không có quyền sửa bảng lương.')
+        return redirect('payroll_list')
     obj = get_object_or_404(Luong.objects.select_related('nhan_vien', 'chi_nhanh'), pk=ma_luong)
     if request.method == "POST":
         bonus = clean_money(request.POST.get(f'bonus_{obj.nhan_vien.ma_nv}', 0))
