@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const deleteYesBtn = document.getElementById('delete-popup-yes-btn');
     const deleteAlert = document.getElementById('contract-delete-alert');
     const deleteAlertClose = document.getElementById('contract-delete-alert-close');
-    const deleteSuccessToast = document.getElementById('contract-delete-success-toast');
     const searchInput = document.getElementById('contract-search-input');
     const searchBtn = document.getElementById('contract-search-btn');
     const searchEmpty = document.getElementById('contract-search-empty');
@@ -227,32 +226,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    // Show Success Toast at bottom-right
-                    if (deleteSuccessToast) {
-                        deleteSuccessToast.classList.add('is-visible');
+                    // Show Global Success Toast
+                    if (typeof window.showToast === 'function') {
+                        window.showToast(data.message || 'Xóa hợp đồng thành công', 'success');
                         
-                        // Wait 3 seconds then remove row and hide
+                        // Wait 2 seconds then remove row
                         setTimeout(() => {
-                            deleteSuccessToast.classList.remove('is-visible');
-                            // Remove row from UI
                             const row = document.querySelector(`.delete-btn[data-delete-id="${deleteId}"]`).closest('tr');
                             if (row) {
                                 row.remove();
                                 updateVisibleIndexes();
                             }
-                        }, 3000);
+                        }, 2000);
                     } else {
                         location.reload();
                     }
                 } else {
-                    // Show Centered Alert (Active Contract or Other Error)
-                    if (deleteAlert) {
-                        deleteAlert.classList.add('is-visible');
-                        
-                        // Auto-hide alert after 3 seconds
-                        setTimeout(() => {
-                            deleteAlert.classList.remove('is-visible');
-                        }, 3000);
+                    // Show Global Error Toast
+                    if (typeof window.showToast === 'function') {
+                        window.showToast(data.message || 'Không thể xóa hợp đồng này', 'error');
                     } else {
                         alert(data.message || 'Không thể xóa hợp đồng này');
                     }
@@ -263,9 +255,4 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    if (deleteAlertClose) {
-        deleteAlertClose.addEventListener('click', () => {
-            if (deleteAlert) deleteAlert.classList.remove('is-visible');
-        });
-    }
 });

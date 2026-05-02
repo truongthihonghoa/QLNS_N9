@@ -1,38 +1,42 @@
-from django.shortcuts import render, redirect
+import json
+import uuid
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
-from .models import YeuCau
-from apps.branches.models import ChiNhanh
-import json
+from django.contrib.auth.decorators import login_required
+from django.utils.timezone import localtime, now
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_POST
+
+from .models import YeuCau
+from ..branches.models import ChiNhanh
+from ..accounts.models import TaiKhoan
+from ..employees.models import NhanVien
 
 def _is_admin(user):
     return user.is_authenticated and (user.is_staff or user.is_superuser)
 
-
+@login_required(login_url='/accounts/login/')
 def request_approval_view(request):
-    # Lay tat ca cac yeu cau tu database
+    is_admin = _is_admin(request.user)
+    role = request.session.get('role', 'Nhân viên')
+    
     query = YeuCau.objects.select_related('ma_nv__ma_chi_nhanh').all()
 
-    # PHÂN QUYỀN: Nhân viên chỉ xem đơn của mình
-    is_admin = _is_admin(request.user)
-    if not is_admin:
+    # PHÂN QUYỀN: Nếu không phải Admin/Manager thì chỉ thấy đơn của mình
+    if not (is_admin or role != "Nhân viên"):
         try:
-            ma_nv_me = request.user.taikhoan.ma_nv
-            query = query.filter(ma_nv=ma_nv_me)
-        except:
+            nhan_vien_me = TaiKhoan.objects.get(user=request.user).ma_nv
+            query = query.filter(ma_nv=nhan_vien_me)
+        except TaiKhoan.DoesNotExist:
             query = query.none()
 
     yeu_cau_list = query.order_by('-ma_yc')
-
     requests_data = []
-    for yc in yeu_cau_list:
-        # Chuan bi du lieu chi tiet de hien thi trong popup - Sua thanh Loai de nghi
-        loai_hien_thi = yc.loai_yeu_cau
-        if loai_hien_thi == 'Đăng ký ca làm':
-            loai_hien_thi = 'Ca làm'
 
+    for yc in yeu_cau_list:
+        loai_hien_thi = 'Ca làm' if yc.loai_yeu_cau == 'Đăng ký ca làm' else yc.loai_yeu_cau
+        
         details = [
             ['Mã nhân viên', yc.ma_nv.ma_nv],
             ['Tên nhân viên', yc.ma_nv.ho_ten],
@@ -48,203 +52,140 @@ def request_approval_view(request):
             'ma_nv': yc.ma_nv.ma_nv,
             'ten_nv': yc.ma_nv.ho_ten,
             'ma_chi_nhanh': yc.ma_nv.ma_chi_nhanh.ma_chi_nhanh if yc.ma_nv.ma_chi_nhanh else '',
-            'loai_yc': loai_hien_thi,  # Dung gia tri da rut gon
+            'loai_yc': loai_hien_thi,
             'ngay_dk': yc.ngay_bd.strftime('%d/%m/%Y') if yc.ngay_bd else '',
             'trang_thai': yc.trang_thai,
-            'trang_thai_key': 'pending' if yc.trang_thai == 'Chờ duyệt' else 'approved' if yc.trang_thai == 'Đã duyệt' else 'rejected',
+            'trang_thai_key': 'approved' if yc.trang_thai == 'Đã duyệt' else 'rejected' if yc.trang_thai == 'Từ chối' else 'pending',
             'chi_tiet_json': json.dumps(details)
         })
 
-    # Lấy tất cả chi nhánh trong bảng chi nhánh
-    branches = ChiNhanh.objects.all().order_by('ma_chi_nhanh')
+    branches = ChiNhanh.objects.filter(trang_thai='active').order_by('ma_chi_nhanh')
 
     return render(request, 'requests/request_approval.html', {
         'requests_data': requests_data,
         'types': ['Nghỉ phép', 'Ca làm'],
-        'is_admin': is_admin,
+        'is_admin': is_admin or role != "Nhân viên",
         'branches': branches,
     })
 
-
+@login_required(login_url='/accounts/login/')
 def request_list_view(request):
     return redirect('request_approval')
 
-
+@login_required(login_url='/accounts/login/')
 def request_review_list_view(request):
     return redirect('request_approval')
 
-
+@login_required(login_url='/accounts/login/')
+@require_POST
 def approve_request(request, ma_dk):
     if not _is_admin(request.user):
-        return JsonResponse({
-            'success': False,
-            'error': 'Bạn không có quyền thực hiện thao tác này'
-        }, status=403)
+        return JsonResponse({'success': False, 'error': 'Bạn không có quyền duyệt đề nghị.'}, status=403)
 
     try:
         yc = YeuCau.objects.get(ma_yc=ma_dk)
-
-        # Tránh duyệt lại nhiều lần
         if yc.trang_thai != 'Chờ duyệt':
-            return JsonResponse({
-                'success': False,
-                'error': 'Yêu cầu này đã được xử lý'
-            })
+            return JsonResponse({'success': False, 'error': 'Yêu cầu này đã được xử lý.'})
 
         yc.trang_thai = 'Đã duyệt'
         yc.save()
-
-        return JsonResponse({
-            'success': True,
-            'message': 'Duyệt thành công'
-        })
-
+        return JsonResponse({'success': True, 'message': 'Duyệt thành công'})
     except YeuCau.DoesNotExist:
-        return JsonResponse({
-            'success': False,
-            'error': 'Không tìm thấy yêu cầu'
-        }, status=404)
+        return JsonResponse({'success': False, 'error': 'Không tìm thấy yêu cầu.'}, status=404)
 
+@login_required(login_url='/accounts/login/')
+@require_POST
 def reject_request(request, ma_dk):
     if not _is_admin(request.user):
-        return JsonResponse({
-            'success': False,
-            'error': 'Bạn không có quyền thực hiện thao tác này'
-        }, status=403)
+        return JsonResponse({'success': False, 'error': 'Bạn không có quyền từ chối đề nghị.'}, status=403)
 
     try:
         yc = YeuCau.objects.get(ma_yc=ma_dk)
-
         if yc.trang_thai != 'Chờ duyệt':
-            return JsonResponse({
-                'success': False,
-                'error': 'Yêu cầu này đã được xử lý'
-            })
+            return JsonResponse({'success': False, 'error': 'Yêu cầu này đã được xử lý.'})
 
         yc.trang_thai = 'Từ chối'
         yc.save()
-
-        return JsonResponse({
-            'success': True,
-            'message': 'Từ chối thành công'
-        })
-
+        return JsonResponse({'success': True, 'message': 'Từ chối thành công'})
     except YeuCau.DoesNotExist:
-        return JsonResponse({
-            'success': False,
-            'error': 'Không tìm thấy yêu cầu'
-        }, status=404)
+        return JsonResponse({'success': False, 'error': 'Không tìm thấy yêu cầu.'}, status=404)
 
-import json
-import uuid
-from django.http import JsonResponse
-from django.utils.timezone import localtime, now
-from .models import YeuCau  # Đảm bảo bạn đã import đúng Model
-
-
+@login_required(login_url='/accounts/login/')
+@require_POST
 def api_submit_request(request):
-    if request.method == 'POST':
+    try:
+        data = json.loads(request.body)
+        loai_chi_tiet = data.get('loai_yeu_cau')
+        ngay_bd = data.get('ngay_bd')
+        ngay_kt = data.get('ngay_kt')
+        ly_do = data.get('ly_do')
+
+        if not all([loai_chi_tiet, ngay_bd, ly_do]):
+            return JsonResponse({'success': False, 'error': 'Vui lòng nhập đầy đủ thông tin.'}, status=400)
+
         try:
-            data = json.loads(request.body)
-            loai_chi_tiet = data.get('loai_yeu_cau')  # Ví dụ: 'Nghỉ phép' hoặc 'Đăng ký ca'
-            ngay_bd = data.get('ngay_bd')
-            ngay_kt = data.get('ngay_kt')
-            ly_do = data.get('ly_do')
+            nhan_vien = TaiKhoan.objects.get(user=request.user).ma_nv
+        except TaiKhoan.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Tài khoản không gắn với nhân viên nào.'}, status=400)
 
-            if not loai_chi_tiet or not ngay_bd or not ly_do:
-                return JsonResponse({'success': False, 'error': 'Vui lòng nhập đầy đủ thông tin.'}, status=400)
+        prefix = "YC"
+        if 'nghỉ' in loai_chi_tiet.lower(): prefix = "NP"
+        elif 'đăng ký' in loai_chi_tiet.lower() or 'làm' in loai_chi_tiet.lower(): prefix = "DK"
 
-            # 1. Lấy thông tin nhân viên từ request.user
-            try:
-                nhan_vien = request.user.taikhoan.ma_nv
-            except AttributeError:
-                return JsonResponse({'success': False, 'error': 'Tài khoản không gắn với nhân viên nào.'}, status=400)
+        ngay_gui_str = localtime(now()).strftime('%Y%m%d')
+        ma_yc = f"{prefix}_{nhan_vien.ma_nv}_{ngay_gui_str}"
 
-            # 2. Xác định tiền tố mã (Prefix)
-            # Giả sử loai_chi_tiet truyền lên là 'Nghỉ phép' hoặc 'Đăng ký làm'
-            prefix = "YC"  # Mặc định
-            if 'nghỉ' in loai_chi_tiet.lower():
-                prefix = "NP"
-            elif 'đăng ký' in loai_chi_tiet.lower() or 'làm' in loai_chi_tiet.lower():
-                prefix = "DK"
+        if YeuCau.objects.filter(ma_yc=ma_yc).exists():
+            ma_yc = f"{ma_yc}_{str(uuid.uuid4().int)[:3]}"
 
-            # 3. Tạo mã yêu cầu theo định dạng: PREFIX_MANV_YYYYMMDD
-            thoi_gian_hien_tai = localtime(now())
-            ngay_gui_str = thoi_gian_hien_tai.strftime('%Y%m%d')
+        YeuCau.objects.create(
+            ma_yc=ma_yc, loai_yeu_cau=loai_chi_tiet,
+            ngay_bd=ngay_bd, ngay_kt=ngay_kt or ngay_bd,
+            ly_do=ly_do, trang_thai='Chờ duyệt', ma_nv=nhan_vien
+        )
+        return JsonResponse({'success': True, 'message': 'Đã gửi đề nghị thành công'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
-            # Mã cơ bản: NP_NV00003_20260430
-            ma_yc = f"{prefix}_{nhan_vien.ma_nv}_{ngay_gui_str}"
-
-            # 4. Kiểm tra trùng mã (phòng trường hợp 1 ngày gửi 2 đơn cùng loại)
-            if YeuCau.objects.filter(ma_yc=ma_yc).exists():
-                # Nếu trùng thì thêm 3 số ngẫu nhiên từ UUID vào cuối
-                ma_yc = f"{ma_yc}_{str(uuid.uuid4().int)[:3]}"
-
-            # 5. Lưu vào Database
-            YeuCau.objects.create(
-                ma_yc=ma_yc,
-                loai_yeu_cau=loai_chi_tiet,
-                ngay_bd=ngay_bd,
-                ngay_kt=ngay_kt or ngay_bd,
-                ly_do=ly_do,
-                trang_thai='Chờ duyệt',
-                ma_nv=nhan_vien
-            )
-
-            return JsonResponse({
-                'success': True,
-                'message': f'Đã gửi đề nghị thành công'
-            })
-
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=400)
-
-    return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
-
-
-# Bổ sung vào views.py
-
+@login_required(login_url='/accounts/login/')
+@require_POST
 def api_update_request(request, ma_dk):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            yc = YeuCau.objects.get(ma_yc=ma_dk)
+    try:
+        data = json.loads(request.body)
+        yc = get_object_or_404(YeuCau, ma_yc=ma_dk)
 
-            # KIỂM TRA: Chỉ được sửa khi trạng thái là 'Chờ duyệt'
-            if yc.trang_thai != 'Chờ duyệt':
-                return JsonResponse({'success': False, 'error': 'Không thể sửa yêu cầu đã được xử lý.'}, status=400)
+        # SECURITY CHECK: Chỉ chủ nhân hoặc Admin mới được sửa
+        nhan_vien_me = TaiKhoan.objects.get(user=request.user).ma_nv
+        if yc.ma_nv != nhan_vien_me and not _is_admin(request.user):
+            return JsonResponse({'success': False, 'error': 'Bạn không có quyền sửa đơn này.'}, status=403)
 
-            # Cập nhật thông tin
-            yc.loai_yeu_cau = data.get('loai_yeu_cau', yc.loai_yeu_cau)
-            yc.ngay_bd = data.get('ngay_bd', yc.ngay_bd)
-            yc.ngay_kt = data.get('ngay_kt', yc.ngay_kt)
-            yc.ly_do = data.get('ly_do', yc.ly_do)
+        if yc.trang_thai != 'Chờ duyệt':
+            return JsonResponse({'success': False, 'error': 'Không thể sửa yêu cầu đã được xử lý.'}, status=400)
 
-            # Cập nhật lại mã YC nếu loại yêu cầu thay đổi (tùy chọn)
-            # Ở đây giữ nguyên mã cũ để tránh lỗi liên kết dữ liệu
+        yc.loai_yeu_cau = data.get('loai_yeu_cau', yc.loai_yeu_cau)
+        yc.ngay_bd = data.get('ngay_bd', yc.ngay_bd)
+        yc.ngay_kt = data.get('ngay_kt', yc.ngay_kt)
+        yc.ly_do = data.get('ly_do', yc.ly_do)
+        yc.save()
+        return JsonResponse({'success': True, 'message': 'Cập nhật đề nghị thành công'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
-            yc.save()
-            return JsonResponse({'success': True, 'message': 'Cập nhật đề nghị thành công'})
-        except YeuCau.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Không tìm thấy yêu cầu.'}, status=404)
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=400)
-    return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
-
-
+@login_required(login_url='/accounts/login/')
+@require_POST
 def api_delete_request(request, ma_dk):
-    if request.method == 'POST':  # Dùng POST để bảo mật hơn GET
-        try:
-            yc = YeuCau.objects.get(ma_yc=ma_dk)
+    try:
+        yc = get_object_or_404(YeuCau, ma_yc=ma_dk)
 
-            # KIỂM TRA: Chỉ được xóa khi trạng thái là 'Chờ duyệt'
-            if yc.trang_thai != 'Chờ duyệt':
-                return JsonResponse({'success': False, 'error': 'Chỉ có thể xóa yêu cầu đang chờ duyệt.'}, status=400)
+        # SECURITY CHECK: Chỉ chủ nhân hoặc Admin mới được xóa
+        nhan_vien_me = TaiKhoan.objects.get(user=request.user).ma_nv
+        if yc.ma_nv != nhan_vien_me and not _is_admin(request.user):
+            return JsonResponse({'success': False, 'error': 'Bạn không có quyền xóa đơn này.'}, status=403)
 
-            yc.delete()
-            return JsonResponse({'success': True, 'message': 'Đã xóa yêu cầu thành công'})
-        except YeuCau.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Không tìm thấy yêu cầu.'}, status=404)
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=400)
-    return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
+        if yc.trang_thai != 'Chờ duyệt':
+            return JsonResponse({'success': False, 'error': 'Chỉ có thể xóa yêu cầu đang chờ duyệt.'}, status=400)
+
+        yc.delete()
+        return JsonResponse({'success': True, 'message': 'Đã xóa yêu cầu thành công'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)

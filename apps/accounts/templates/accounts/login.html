@@ -7,9 +7,10 @@
     <title>Đăng nhập - GE CAFE HRM</title>
 
     <link rel="stylesheet" href="{% static 'accounts/css/login.css' %}" />
-    <link rel="stylesheet" href="{% static 'accounts/css/popup_forgot_password.css' %}" />
-    <link rel="stylesheet" href="{% static 'accounts/css/popup_confirm_cancel.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/components/popup_forgot_password.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <style>
         .background-shadow .p, .background-shadow .error-message { display: block; justify-content: flex-start; text-align: left; width: auto; margin-left: 106px; margin-right: 106px; align-self: stretch; font-family: "Montserrat-Regular", Helvetica, sans-serif; font-size: 13px; margin-top: 13px; }
@@ -24,49 +25,10 @@
         .symbol-wrapper img { cursor: pointer; user-select: none; width: 16px; height: 16px; }
         .paragraph img { width: 14px; height: 14px; margin-right: 5px; }
 
-        /* Messages styling */
-        .messages-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 3000;
-        }
-        .message {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            font-family: "Montserrat-Regular", Helvetica, sans-serif;
-            font-size: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            animation: slideIn 0.3s ease;
-        }
-        .message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
     </style>
   </head>
   <body>
     <!-- Messages Display -->
-    {% if messages %}
-    <div class="messages-container">
-        {% for message in messages %}
-        <div class="message {{ message.tags }}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
 
     <form method="post" action="{% url 'accounts:login' %}">
         {% csrf_token %}
@@ -107,10 +69,27 @@
         </div>
     </form>
 
-    {% include 'accounts/partials/popup_forgot_password.html' %}
-    {% include 'accounts/partials/popup_confirm_cancel.html' %}
-    {% include 'partials/popup_success.html' %}
+    {% include 'partials/popup_forgot_password.html' %}
+    {% include 'partials/popup_confirm_cancel.html' %}
+    {% include 'partials/toast_notification.html' %}
 
+    <script src="{% static 'js/main.js' %}?v=1.1"></script>
     <script src="{% static 'accounts/js/login.js' %}" defer></script>
+    
+    {% if messages %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for message in messages %}
+                {% if 'success' in message.tags %}
+                    window.showToast("{{ message|escapejs }}", "success");
+                {% elif 'error' in message.tags or 'danger' in message.tags %}
+                    window.showToast("{{ message|escapejs }}", "error");
+                {% else %}
+                    window.showToast("{{ message|escapejs }}", "info");
+                {% endif %}
+            {% endfor %}
+        });
+    </script>
+    {% endif %}
   </body>
 </html>

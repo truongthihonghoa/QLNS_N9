@@ -5,7 +5,10 @@ class TaiKhoan(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,  related_name='taikhoan')
     ma_nv = models.OneToOneField(
         'employees.NhanVien',
-        on_delete=models.CASCADE,  related_name='taikhoan'
+        on_delete=models.CASCADE,
+        related_name='taikhoan',
+        null=True,
+        blank=True
     )
 
     @property

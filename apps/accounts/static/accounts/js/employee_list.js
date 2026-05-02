@@ -12,8 +12,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const cancelPopup = document.getElementById('confirm-cancel-popup');
     const deactivatePopup = document.getElementById('confirm-delete-popup');
-    const successPopup = document.getElementById('success-popup');
-    const errorPopup = document.getElementById('error-popup');
 
     const addUsername = document.getElementById('add-username');
     const addPassword = document.getElementById('add-password');
@@ -40,34 +38,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showSuccess(message) {
-        const title = document.getElementById('success-popup-title');
-        const content = document.getElementById('success-popup-message');
-        if (title) {
-            title.textContent = 'THÔNG BÁO THÀNH CÔNG';
-        }
-        if (content) {
-            content.textContent = message;
-        }
-        if (successPopup) {
-            successPopup.style.display = 'flex';
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, 'success');
+        } else {
+            alert(message);
         }
     }
 
     function showError(message1, message2) {
-        const title = document.getElementById('error-popup-title');
-        const line1 = document.getElementById('error-popup-message1');
-        const line2 = document.getElementById('error-popup-message2');
-        if (title) {
-            title.textContent = 'THÔNG BÁO LỖI';
-        }
-        if (line1) {
-            line1.textContent = message1;
-        }
-        if (line2) {
-            line2.textContent = message2;
-        }
-        if (errorPopup) {
-            errorPopup.style.display = 'flex';
+        const fullMessage = message1 + (message2 ? ' ' + message2 : '');
+        if (typeof window.showToast === 'function') {
+            window.showToast(fullMessage, 'error');
+        } else {
+            alert(fullMessage);
         }
     }
 
@@ -151,31 +134,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    const successCloseButton = document.getElementById('success-popup-confirm-btn');
-    if (successCloseButton) {
-        successCloseButton.addEventListener('click', function () {
-            if (successPopup) {
-                successPopup.style.display = 'none';
-            }
-        });
-    }
-
-    const errorExitButton = document.getElementById('error-popup-exit-btn');
-    const errorBackButton = document.getElementById('error-popup-back-btn');
-    if (errorExitButton) {
-        errorExitButton.addEventListener('click', function () {
-            if (errorPopup) {
-                errorPopup.style.display = 'none';
-            }
-        });
-    }
-    if (errorBackButton) {
-        errorBackButton.addEventListener('click', function () {
-            if (errorPopup) {
-                errorPopup.style.display = 'none';
-            }
-        });
-    }
 
     const cancelNoButton = document.getElementById('confirm-no-btn');
     const cancelYesButton = document.getElementById('confirm-yes-btn');

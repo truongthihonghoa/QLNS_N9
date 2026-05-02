@@ -6,8 +6,6 @@
 {% block extra_css %}
 <!-- Load CSS cho Popup va Toast -->
 <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
-<link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
-<link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}">
 <!-- FullCalendar CSS -->
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
 <!-- Redesign CSS -->
@@ -219,8 +217,6 @@
 
 <!-- Includes -->
 {% include 'partials/popup_confirm_delete.html' %}
-{% include 'partials/popup_error.html' %}
-{% include 'partials/toast_notification.html' %}
 
 <!-- Scripts -->
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
@@ -740,24 +736,19 @@
             });
     }
 
-    function showToast(message) {
-        const toast = document.getElementById('toast-notification');
-        const toastMsg = document.getElementById('toast-message');
-        if (toast && toastMsg) {
-            toastMsg.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+    function showToast(message, type = 'success') {
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
+        } else {
+            console.warn('Global showToast not found');
         }
     }
 
     function showErrorPopup(title, msg) {
-        const popup = document.getElementById('error-popup');
-        if (popup) {
-            document.getElementById('error-popup-title').textContent = title;
-            document.getElementById('error-popup-message1').textContent = msg;
-            popup.style.display = 'flex';
-            document.getElementById('error-popup-exit-btn').onclick = () => popup.style.display = 'none';
-            document.getElementById('error-popup-back-btn').onclick = () => popup.style.display = 'none';
+        if (typeof window.showToast === 'function') {
+            window.showToast(msg, 'error');
+        } else {
+            alert(msg);
         }
     }
 </script>

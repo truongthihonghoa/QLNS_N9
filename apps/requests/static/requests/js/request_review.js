@@ -60,4 +60,29 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+    // Approve/Reject Action Logic
+    const approveBtn = document.querySelector('.request-approve-btn');
+    const rejectBtn = document.querySelector('.request-reject-btn');
+
+    function showToast(message, type = 'success') {
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
+        } else {
+            alert(message);
+        }
+    }
+
+    if (approveBtn) {
+        approveBtn.addEventListener('click', function() {
+            showToast('Duyệt yêu cầu thành công!');
+            if (detailModal) detailModal.classList.remove('is-visible');
+        });
+    }
+
+    if (rejectBtn) {
+        rejectBtn.addEventListener('click', function() {
+            showToast('Từ chối yêu cầu thành công!', 'info');
+            if (detailModal) detailModal.classList.remove('is-visible');
+        });
+    }
 });

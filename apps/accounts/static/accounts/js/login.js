@@ -65,27 +65,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- Generic Success Popup ---
-    const successPopup = document.getElementById('success-popup');
-    const successPopupTitle = document.getElementById('success-popup-title');
-    const successPopupMessage = document.getElementById('success-popup-message');
-    const successPopupConfirmBtn = document.getElementById('success-popup-confirm-btn');
-
     function showSuccessPopup(title, message) {
         closeForgotPasswordPopup();
-        if (successPopup) {
-            if (successPopupTitle) successPopupTitle.textContent = title;
-            if (successPopupMessage) successPopupMessage.textContent = message;
-            successPopup.style.display = 'flex';
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, 'success');
+        } else {
+            alert(message);
         }
-    }
-
-    function hideSuccessPopup() {
-        if (successPopup) successPopup.style.display = 'none';
-    }
-
-    if (successPopupConfirmBtn) {
-        successPopupConfirmBtn.addEventListener('click', hideSuccessPopup);
     }
 
     // --- Trigger Success Notification ---

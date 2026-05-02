@@ -4,11 +4,7 @@
 {% block title %}Duyệt Yêu Cầu - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
-<link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
-<link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}">
-<link rel="stylesheet" href="{% static 'requests/css/request_approval.css' %}">
-
+    <link rel="stylesheet" href="{% static 'requests/css/request_approval.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -193,16 +189,20 @@
     </div>
 </div>
 
-{% include 'partials/popup_confirm_approve.html' %}
-{% include 'partials/popup_error.html' %}
-{% include 'partials/toast_notification.html' %}
-{% include 'partials/popup_confirm_delete.html' %}
-{% include 'partials/popup_confirm_cancel.html' %}
-{% include 'partials/popup_success.html' %}
 <script>
     let currentRequestId = '';
     let currentStatusFilter = 'all';
     let currentRequestData = {}; // Lưu trữ để sửa
+
+    // Hàm helper an toàn để gọi Toast toàn cục
+    function showToast(message, type = 'success') {
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
+        } else {
+            console.log("Toast:", message);
+            alert(message);
+        }
+    }
 
     function openRequestModal(nvId, nvName, maDk, detailsJson, statusKey) {
     currentRequestId = maDk;
@@ -340,8 +340,23 @@
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
             body: JSON.stringify(data)
         }).then(res => res.json()).then(res => {
-            if(res.success) { showToast(res.message); closeModal('submitRequestModal'); }
-            else showError('Lỗi', res.error);
+            if(res.success) { 
+                if (typeof window.showToast === 'function') {
+                    window.showToast(res.message, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    alert(res.message);
+                    location.reload();
+                }
+                closeModal('submitRequestModal'); 
+            }
+            else {
+                if (typeof window.showToast === 'function') {
+                    window.showToast(res.error, 'error');
+                } else {
+                    alert(res.error);
+                }
+            }
         });
     }
 
@@ -371,10 +386,19 @@ function executeDelete() {
         closeModal('confirm-delete-popup');
 
         if(res.success) {
-            // Hiện popup thành công (thay cho showToast)
-            showPopupSuccess(res.message);
+            if (typeof window.showToast === 'function') {
+                window.showToast(res.message, 'success');
+                setTimeout(() => location.reload(), 1200);
+            } else {
+                alert(res.message);
+                location.reload();
+            }
         } else {
-            showPopupError(res.error);
+            if (typeof window.showToast === 'function') {
+                window.showToast(res.error, 'error');
+            } else {
+                alert(res.error);
+            }
         }
     });
 }
@@ -407,7 +431,11 @@ function executeDelete() {
             const ngay_kt = document.getElementById('req_ngay_kt').value;
             
             if (!ngay_bd || !ngay_kt) {
-                showError('Lỗi', 'Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc');
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc', 'error');
+                } else {
+                    alert('Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc');
+                }
                 return;
             }
             
@@ -416,13 +444,21 @@ function executeDelete() {
             
             // Kiểm tra ngày bắt đầu không được trong quá khứ
             if (startDate < today) {
-                showError('Lỗi', 'Ngày bắt đầu không được trong quá khứ');
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Ngày bắt đầu không được trong quá khứ', 'error');
+                } else {
+                    alert('Ngày bắt đầu không được trong quá khứ');
+                }
                 return;
             }
             
             // Kiểm tra ngày kết thúc không được trước ngày bắt đầu
             if (endDate < startDate) {
-                showError('Lỗi', 'Ngày kết thúc không được trước ngày bắt đầu');
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Ngày kết thúc không được trước ngày bắt đầu', 'error');
+                } else {
+                    alert('Ngày kết thúc không được trước ngày bắt đầu');
+                }
                 return;
             }
             
@@ -434,7 +470,11 @@ function executeDelete() {
             const ngay_lam = document.getElementById('req_ngay_lam').value;
             
             if (!ngay_lam) {
-                showError('Lỗi', 'Vui lòng chọn ngày đăng ký làm');
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Vui lòng chọn ngày đăng ký làm', 'error');
+                } else {
+                    alert('Vui lòng chọn ngày đăng ký làm');
+                }
                 return;
             }
             
@@ -442,7 +482,11 @@ function executeDelete() {
             
             // Kiểm tra ngày làm không được trong quá khứ
             if (workDate < today) {
-                showError('Lỗi', 'Ngày đăng ký làm không được trong quá khứ');
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Ngày đăng ký làm không được trong quá khứ', 'error');
+                } else {
+                    alert('Ngày đăng ký làm không được trong quá khứ');
+                }
                 return;
             }
             
@@ -453,7 +497,11 @@ function executeDelete() {
         
         // Kiểm tra lý do
         if (!data.ly_do || data.ly_do.trim() === '') {
-            showError('Lỗi', 'Vui lòng nhập lý do');
+            if (typeof window.showToast === 'function') {
+                window.showToast('Vui lòng nhập lý do', 'error');
+            } else {
+                alert('Vui lòng nhập lý do');
+            }
             return;
         }
         
@@ -462,8 +510,23 @@ function executeDelete() {
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
             body: JSON.stringify(data)
         }).then(res => res.json()).then(res => {
-            if(res.success) { showToast(res.message); closeModal('submitRequestModal'); }
-            else showError('Lỗi', res.error);
+            if(res.success) { 
+                if (typeof window.showToast === 'function') {
+                    window.showToast(res.message, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    alert(res.message);
+                    location.reload();
+                }
+                closeModal('submitRequestModal'); 
+            }
+            else {
+                if (typeof window.showToast === 'function') {
+                    window.showToast(res.error, 'error');
+                } else {
+                    alert(res.error);
+                }
+            }
         });
     }
 
@@ -480,12 +543,6 @@ function executeDelete() {
         document.body.style.overflow = 'auto';
     }
 
-    function showToast(m) {
-        const t = document.getElementById('toast-notification');
-        document.getElementById('toast-message').textContent = m;
-        t.classList.add('show');
-        setTimeout(() => location.reload(), 1200);
-    }
     function toggleFields() {
     const loai = document.getElementById('req_loai').value;
     const groupNghiPhep = document.getElementById('group_nghi_phep');

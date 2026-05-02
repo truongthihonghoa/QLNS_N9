@@ -19,6 +19,22 @@ from apps.schedules.models import LichLamViec
 
 
 def login_view(request):
+    if request.user.is_authenticated:
+        role = request.session.get('role')
+        if not role:
+            if request.user.is_superuser: role = 'Chủ'
+            elif request.user.is_staff: role = 'Quản lý'
+            else: role = 'Nhân viên'
+            request.session['role'] = role
+
+        if role == 'Nhân viên':
+            try:
+                ma_nv = request.user.taikhoan.ma_nv.ma_nv
+                return redirect('employee_detail', employee_id=ma_nv)
+            except Exception:
+                return redirect('employee_list')
+        return redirect('dashboard')
+
     form = LoginForm()
 
     if request.method == 'POST':
@@ -46,6 +62,13 @@ def login_view(request):
 
             request.session['role'] = role
 
+            if role == 'Nhân viên':
+                try:
+                    ma_nv = user.taikhoan.ma_nv.ma_nv
+                    return redirect('employee_detail', employee_id=ma_nv)
+                except Exception:
+                    return redirect('employee_list')
+
             return redirect('dashboard')
 
         else:
@@ -62,7 +85,7 @@ def login_view(request):
     return render(request, 'accounts/login.html', {'form': form})
 
 
-@login_required(login_url='/accounts/login/') # Kept commented out for easy frontend testing
+@login_required(login_url='/accounts/login/')
 def dashboard_view(request):
     role = request.session.get('role', 'Nhân viên')
     today = timezone.now().date()
@@ -212,6 +235,13 @@ def account_admin_list_view(request):
             'trang_thai_key': trang_thai_key,
         })
 
+    # Lấy tất cả nhân viên để gợi ý (Autocomplete)
+    from apps.employees.models import NhanVien
+    from apps.accounts.models import TaiKhoan
+    
+    all_employees = NhanVien.objects.all().only('ma_nv', 'ho_ten')
+    employees_with_account = list(TaiKhoan.objects.values_list('ma_nv_id', flat=True))
+
     return render(
         request,
         'accounts/admin_list.html',
@@ -219,10 +249,12 @@ def account_admin_list_view(request):
             'account_rows': account_rows,
             'branches': branches,
             'selected_branch': selected_branch,
+            'all_employees': all_employees,
+            'employees_with_account': employees_with_account,
         },
     )
 
-@csrf_exempt
+@login_required(login_url='/accounts/login/')
 @require_http_methods(["POST"])
 def add_admin_account(request):
     if not (request.user.is_superuser or request.user.is_staff):
@@ -233,11 +265,12 @@ def add_admin_account(request):
 
     try:
         from apps.accounts.models import TaiKhoan
-        from apps.employees.models import NhanVien
+        from django.contrib.auth.models import User
 
         username = request.POST.get('username')
         password = request.POST.get('password')
         role = request.POST.get('role')
+        ma_nv = request.POST.get('ma_nv')
 
         if not all([username, password, role]):
             return JsonResponse({
@@ -266,30 +299,11 @@ def add_admin_account(request):
             user.is_staff = True
         user.save()
 
-        # For admin accounts, we need to handle ma_nv differently
-        # Since admin accounts might not have corresponding employees,
-        # we'll create a dummy employee or handle this case
-        try:
-            # Try to find an existing employee or create a dummy one
-            dummy_employee = NhanVien.objects.filter(ho_ten=username).first()
-            if not dummy_employee:
-                # Create a dummy employee for admin account
-                dummy_employee = NhanVien.objects.create(
-                    ho_ten=username,
-                    email=f"{username}@admin.com",
-                    so_dien_thoai="0000000000",
-                    trang_thai='active'
-                )
-
-            # Create TaiKhoan with employee
-            tai_khoan = TaiKhoan.objects.create(
-                user=user,
-                ma_nv=dummy_employee
-            )
-        except Exception as emp_error:
-            # If employee creation fails, we'll skip TaiKhoan creation for now
-            # This is a temporary solution - in production, you should handle this properly
-            print(f"Warning: Could not create TaiKhoan for admin {username}: {str(emp_error)}")
+        # Create TaiKhoan record linked to employee if provided
+        TaiKhoan.objects.create(
+            user=user,
+            ma_nv_id=ma_nv if ma_nv else None
+        )
 
         return JsonResponse({
             'success': True,
@@ -303,7 +317,7 @@ def add_admin_account(request):
         })
 
 
-@csrf_exempt
+@login_required(login_url='/accounts/login/')
 @require_http_methods(["POST"])
 def edit_admin_account(request):
     if not (request.user.is_superuser or request.user.is_staff):
@@ -341,30 +355,6 @@ def edit_admin_account(request):
             user.is_staff = True
         user.save()
 
-        # Update TaiKhoan if exists
-        try:
-            tai_khoan = TaiKhoan.objects.get(user=user)
-            # TaiKhoan doesn't have additional fields to update based on current model
-            pass
-        except TaiKhoan.DoesNotExist:
-            # Create TaiKhoan if it doesn't exist
-            try:
-                from apps.employees.models import NhanVien
-                dummy_employee = NhanVien.objects.filter(ho_ten=username).first()
-                if not dummy_employee:
-                    dummy_employee = NhanVien.objects.create(
-                        ho_ten=username,
-                        email=f"{username}@admin.com",
-                        so_dien_thoai="0000000000",
-                        trang_thai='active'
-                    )
-                TaiKhoan.objects.create(
-                    user=user,
-                    ma_nv=dummy_employee
-                )
-            except Exception as emp_error:
-                print(f"Warning: Could not create TaiKhoan for admin {username}: {str(emp_error)}")
-
         return JsonResponse({
             'success': True,
             'message': 'Cập nhật tài khoản thành công!'
@@ -382,7 +372,7 @@ def edit_admin_account(request):
         })
 
 
-@csrf_exempt
+@login_required(login_url='/accounts/login/')
 @require_http_methods(["POST"])
 def toggle_admin_account_status(request):
     if not (request.user.is_superuser or request.user.is_staff):
@@ -425,7 +415,7 @@ def toggle_admin_account_status(request):
         })
 
 
-@csrf_exempt
+@login_required(login_url='/accounts/login/')
 @require_http_methods(["GET"])
 def get_admin_password(request):
     if not (request.user.is_superuser or request.user.is_staff):

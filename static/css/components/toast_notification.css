@@ -1,20 +1,20 @@
 /* Toast Notification Styling - Bottom Right */
 .toast-notification {
     position: fixed !important;
-    bottom: 20px !important;
-    right: 20px !important;
+    bottom: 30px !important;
+    right: 30px !important;
     background-color: #ffffff !important;
     border-radius: 50px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
-    padding: 12px 28px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12) !important;
+    padding: 14px 28px !important;
     z-index: 10005 !important;
     transform: translateX(150%) !important;
     opacity: 0 !important;
     visibility: hidden;
-    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease !important;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease !important;
     display: flex !important;
     align-items: center !important;
-    border: 1px solid #e0e0e0 !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
 
 .toast-notification.show {
@@ -30,8 +30,8 @@
 }
 
 .toast-message {
-    color: #1a1a1a !important;
-    font-size: 16px !important;
+    color: #2c3e50 !important;
+    font-size: 15px !important;
     font-weight: 600 !important;
     font-family: "Montserrat", sans-serif !important;
     white-space: nowrap !important;
@@ -41,8 +41,17 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    color: #0f6b20 !important;
     font-size: 20px !important;
+}
+
+/* Success State */
+.toast-notification.success .toast-icon {
+    color: #2ecc71 !important;
+}
+
+/* Error State */
+.toast-notification.error .toast-icon {
+    color: #e74c3c !important;
 }
 
 /* Animations slide in from right */

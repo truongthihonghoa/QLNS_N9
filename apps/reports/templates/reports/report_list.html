@@ -483,10 +483,6 @@
 
 </div>
 
-<!-- Toast notification -->
-<div id="toast" class="toast" style="display: none;">
-  <span id="toast-text"></span>
-</div>
 
 {% endblock %}
 
@@ -570,22 +566,14 @@
     });
 
     function showExportToast() {
-        const toast = document.getElementById('toast');
-        const toastText = document.getElementById('toast-text');
-
-        // Show "Exporting..."
-        toastText.innerText = "Đang xuất báo cáo...";
-        toast.style.display = "flex";
-        toast.style.backgroundColor = "#174D17";
-
-        setTimeout(() => {
-            // Show "Success"
-            toastText.innerText = "Xuất báo cáo thành công!";
-
+        if (typeof window.showToast === 'function') {
+            window.showToast("Đang xuất báo cáo...", "info");
             setTimeout(() => {
-                toast.style.display = "none";
-            }, 3000);
-        }, 2000);
+                window.showToast("Xuất báo cáo thành công!", "success");
+            }, 2000);
+        } else {
+            alert("Xuất báo cáo thành công!");
+        }
     }
 </script>
 {% else %}

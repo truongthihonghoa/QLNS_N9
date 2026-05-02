@@ -5,9 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const deletePopupYesBtn = document.getElementById('delete-popup-yes-btn');
     const deleteButtons = document.querySelectorAll('.delete-btn');
     const employeeCards = document.querySelectorAll('.employee-card-modern-row');
-    const successToast = document.getElementById('employee-success-toast');
-    const successToastMessage = document.getElementById('employee-success-toast-message');
-    let successToastTimer = null;
     const branchFilter = document.getElementById('branch-filter-select');
 
     if (branchFilter) {
@@ -35,33 +32,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showSuccessToast(message) {
-        if (!successToast) {
-            return;
-        }
-
-        if (successToastMessage) {
-            successToastMessage.textContent = message;
-        }
-
-        successToast.classList.add('is-visible');
-
-        if (successToastTimer) {
-            window.clearTimeout(successToastTimer);
-        }
-
-        successToastTimer = window.setTimeout(function () {
-            hideSuccessToast();
-        }, SUCCESS_TOAST_AUTO_HIDE_MS);
-    }
-
-    function hideSuccessToast() {
-        if (successToast) {
-            successToast.classList.remove('is-visible');
-        }
-
-        if (successToastTimer) {
-            window.clearTimeout(successToastTimer);
-            successToastTimer = null;
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, 'success');
+        } else {
+            alert(message);
         }
     }
 
@@ -110,7 +84,4 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    if (successToast && successToast.classList.contains('is-visible') && successToastMessage && successToastMessage.textContent.trim()) {
-        showSuccessToast(successToastMessage.textContent.trim());
-    }
 });

@@ -5,7 +5,6 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'employees/css/employee_add.css' %}?v=3.5">
-    <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
 {% endblock %}
 
@@ -48,7 +47,6 @@
     </div>
 </div>
 
-{% include 'partials/popup_error.html' %}
 {% include 'partials/popup_confirm_cancel.html' %}
 
 {% if form.errors %}

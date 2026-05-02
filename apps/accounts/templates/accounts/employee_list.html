@@ -8,8 +8,7 @@
     <link rel="stylesheet" href="{% static 'payroll/css/payroll_list.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -155,8 +154,7 @@
 
 {% include 'partials/popup_confirm_cancel.html' %}
 {% include 'partials/popup_confirm_delete.html' with delete_popup_title='XÁC NHẬN NGỪNG HOẠT ĐỘNG' delete_popup_message_1='Bạn có chắc chắn muốn ngừng hoạt động tài khoản này?' delete_popup_message_2_before='Tài khoản sẽ được cập nhật sang trạng thái' delete_popup_highlight='"Ngừng hoạt động".' %}
-{% include 'partials/popup_success.html' %}
-{% include 'partials/popup_error.html' %}
+{% include 'partials/toast_notification.html' %}
 {% endblock %}
 
 {% block extra_js %}

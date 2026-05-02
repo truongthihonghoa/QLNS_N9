@@ -86,25 +86,11 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => console.error('Error fetching next employee ID:', error));
     }
 
-    const errorPopup = document.getElementById('error-popup');
-    const errorPopupTitle = document.getElementById('error-popup-title');
-    const errorPopupMsg1 = document.getElementById('error-popup-message1');
-    const errorPopupMsg2 = document.getElementById('error-popup-message2');
-    const errorPopupExitBtn = document.getElementById('error-popup-exit-btn');
-    const errorPopupBackBtn = document.getElementById('error-popup-back-btn');
-
     function showErrorPopup(title, msg1, msg2) {
-        if (errorPopup) {
-            errorPopupTitle.textContent = title;
-            errorPopupMsg1.textContent = msg1;
-            errorPopupMsg2.textContent = msg2;
-            errorPopup.style.display = 'flex';
-        }
-    }
-
-    function hideErrorPopup() {
-        if (errorPopup) {
-            errorPopup.style.display = 'none';
+        if (typeof window.showToast === 'function') {
+            window.showToast(msg1, 'error');
+        } else {
+            alert(msg1);
         }
     }
 
@@ -120,24 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const autoShowInvalidInfo = document.getElementById('auto-show-invalid-info-popup');
     if (autoShowInvalidInfo) {
         showErrorPopup('THÔNG BÁO LỖI', 'Thông tin không hợp lệ?', 'Xin vui lòng nhập lại thông tin chính xác!');
-    }
-
-    if (errorPopupExitBtn) {
-        errorPopupExitBtn.addEventListener('click', function() {
-            window.location.href = employeeForm.dataset.employeeListUrl;
-        });
-    }
-
-    if (errorPopupBackBtn) {
-        errorPopupBackBtn.addEventListener('click', hideErrorPopup);
-    }
-
-    if (errorPopup) {
-        errorPopup.addEventListener('click', function(event) {
-            if (event.target === errorPopup) {
-                hideErrorPopup();
-            }
-        });
     }
 
     bindAvatarUpload();

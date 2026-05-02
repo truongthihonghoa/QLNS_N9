@@ -19,42 +19,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Helper function to show messages
     function showMessage(type, message) {
-        // Remove existing messages
-        const existingMessages = document.querySelectorAll('.alert-message');
-        existingMessages.forEach(msg => msg.remove());
-
-        // Create message element
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `alert-message alert-${type}`;
-        messageDiv.textContent = message;
-        messageDiv.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 6px;
-            color: white;
-            font-weight: 500;
-            z-index: 10000;
-            min-width: 300px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            animation: slideIn 0.3s ease;
-        `;
-
-        if (type === 'success') {
-            messageDiv.style.backgroundColor = '#174d17';
-        } else if (type === 'error') {
-            messageDiv.style.backgroundColor = '#dc3545';
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
+        } else {
+            // Fallback if showToast not defined
+            alert(message);
         }
-
-        document.body.appendChild(messageDiv);
-
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-            if (messageDiv.parentNode) {
-                messageDiv.remove();
-            }
-        }, 5000);
     }
 
     // Delete Account - Using Common Delete Confirmation Popup

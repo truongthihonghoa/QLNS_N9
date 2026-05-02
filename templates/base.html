@@ -44,7 +44,11 @@
             {% if request.user.is_superuser or request.user.is_staff %}
                 <a href="{% url 'dashboard' %}" class="nav-item">Tổng quan</a>
             {% endif %}
-            <a href="{% url 'accounts:account_admin_list' %}" class="nav-item">Tài khoản</a>
+            {% if request.user.is_superuser or request.user.is_staff %}
+                <a href="{% url 'accounts:account_admin_list' %}" class="nav-item">Tài khoản</a>
+            {% else %}
+                <a href="{% url 'employee_detail' employee_id=request.user.taikhoan.ma_nv.ma_nv %}" class="nav-item">Tài khoản</a>
+            {% endif %}
             <a href="{% url 'branches:branch_admin' %}" class="nav-item">Chi nhánh</a>
             <a href="{% url 'employee_list' %}" class="nav-item">Nhân Viên</a>
             <a href="{% url 'contract_list' %}" class="nav-item">Hợp Đồng</a>
@@ -70,7 +74,26 @@
     {% include 'partials/toast_notification.html' %}
 
     <script src="{% static 'js/base.js' %}"></script>
-    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/main.js' %}?v=1.1"></script>
+    
+    {% if messages %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for message in messages %}
+                {% if 'success' in message.tags %}
+                    window.showToast("{{ message|escapejs }}", "success");
+                {% elif 'error' in message.tags or 'danger' in message.tags %}
+                    window.showToast("{{ message|escapejs }}", "error");
+                {% elif 'warning' in message.tags %}
+                    window.showToast("{{ message|escapejs }}", "warning");
+                {% else %}
+                    window.showToast("{{ message|escapejs }}", "info");
+                {% endif %}
+            {% endfor %}
+        });
+    </script>
+    {% endif %}
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

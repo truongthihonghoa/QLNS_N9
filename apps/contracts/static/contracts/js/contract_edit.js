@@ -18,36 +18,25 @@ document.addEventListener('DOMContentLoaded', function () {
     const confirmNoBtn = document.getElementById('confirm-no-btn');
     const confirmYesBtn = document.getElementById('confirm-yes-btn');
 
-    const errorPopup = document.getElementById('error-popup');
-    const errorPopupTitle = document.getElementById('error-popup-title');
-    const errorPopupMessage1 = document.getElementById('error-popup-message1');
-    const errorPopupMessage2 = document.getElementById('error-popup-message2');
-    const errorPopupExitBtn = document.getElementById('error-popup-exit-btn');
-    const errorPopupBackBtn = document.getElementById('error-popup-back-btn');
 
     function showErrorPopup(message) {
-        if (errorPopupTitle) errorPopupTitle.textContent = 'THÔNG BÁO LỖI';
-        if (errorPopupMessage1) errorPopupMessage1.textContent = message;
-        if (errorPopupMessage2) errorPopupMessage2.textContent = '';
-        if (errorPopupExitBtn) errorPopupExitBtn.style.display = 'none';
-        if (errorPopupBackBtn) errorPopupBackBtn.textContent = 'Đóng';
-        if (errorPopup) errorPopup.style.display = 'flex';
-    }
-
-    function hideErrorPopup() {
-        if (errorPopup) errorPopup.style.display = 'none';
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, 'error');
+        } else {
+            alert(message);
+        }
     }
 
     function showSuccessPopup(message) {
-        const toast = document.getElementById('toast-success');
-        const toastMessage = document.getElementById('toast-message');
-        if (toast && toastMessage) {
-            toastMessage.textContent = message || 'Cập nhật hợp đồng lao động thành công';
-            toast.classList.add('show');
+        if (typeof window.showToast === 'function') {
+            window.showToast(message || 'Cập nhật hợp đồng lao động thành công', 'success');
             
             setTimeout(() => {
                 window.location.href = contractForm.dataset.contractListUrl;
             }, 2000);
+        } else {
+            alert(message);
+            window.location.href = contractForm.dataset.contractListUrl;
         }
     }
 

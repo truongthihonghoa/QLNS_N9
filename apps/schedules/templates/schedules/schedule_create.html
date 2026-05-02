@@ -6,9 +6,7 @@
 {% block extra_css %}
     <!-- Them tham so phien ban ?v=1.1 de xoa cache trinh duyet -->
     <link rel="stylesheet" href="{% static 'schedules/css/schedule_list.css' %}?v=1.1">
-    <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
 
     <style>
         /* CSS Cải thiện giao diện Form */
@@ -287,8 +285,6 @@
 </div>
 
 {% include 'partials/popup_confirm_cancel.html' %}
-{% include 'partials/popup_error.html' %}
-{% include 'partials/popup_success.html' %}
 {% endblock %}
 
 {% block extra_js %}

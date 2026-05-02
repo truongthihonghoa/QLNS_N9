@@ -130,14 +130,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showToast(message, type = 'success') {
-        const toastText = document.getElementById('toast-text');
-        if (toastText) toastText.textContent = message;
-        if (toast) {
-            toast.className = 'toast ' + type;
-            toast.style.display = 'block';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
         } else {
             alert(message);
         }

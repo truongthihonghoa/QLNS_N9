@@ -20,13 +20,11 @@ const PayrollHelpers = {
     },
 
     // Hiển thị thông báo Toast (nếu cần gọi thủ công)
-    showToast: function(message) {
-        const toast = document.getElementById("toast-notification");
-        const toastMsg = document.getElementById("toast-message");
-        if (toast && toastMsg) {
-            toastMsg.textContent = message;
-            toast.classList.add("show");
-            setTimeout(() => { toast.classList.remove("show"); }, 3000);
+    showToast: function(message, type = 'success') {
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
+        } else {
+            console.warn('Global showToast not found');
         }
     }
 };

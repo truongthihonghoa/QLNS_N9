@@ -58,7 +58,11 @@ function confirmDeletePayroll() {
     })
     .catch(error => {
         console.error('Lỗi xóa:', error);
-        alert('Có lỗi xảy ra khi kết nối máy chủ!');
+        if (typeof window.showToast === 'function') {
+            window.showToast('Có lỗi xảy ra khi kết nối máy chủ!', 'error');
+        } else {
+            alert('Có lỗi xảy ra khi kết nối máy chủ!');
+        }
     });
 }
 

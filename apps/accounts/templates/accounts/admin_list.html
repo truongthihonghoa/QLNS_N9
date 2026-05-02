@@ -8,8 +8,7 @@
     <link rel="stylesheet" href="{% static 'payroll/css/payroll_list.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -249,8 +248,9 @@
         </div>
     </div>
 </div>
-<!-- Include Common Status Toggle Confirmation Popup -->
+{% include 'partials/popup_confirm_cancel.html' %}
 {% include 'partials/popup_confirm_delete.html' with delete_popup_title="NGƯNG TÀI KHOẢN" delete_popup_message_1="Bạn có muốn ngưng hoạt động tài khoản này không?" %}
+{% include 'partials/toast_notification.html' %}
 {% endblock %}
 
 {% block extra_js %}
@@ -278,5 +278,5 @@ window.allEmployees = [
 // Pass employees who already have accounts
 window.employeesWithAccount = {{ employees_with_account|safe }};
 </script>
-<script src="{% static 'accounts/js/admin_list.js' %}"></script>
+<script src="{% static 'accounts/js/admin_list.js' %}?v=1.1"></script>
 {% endblock %}

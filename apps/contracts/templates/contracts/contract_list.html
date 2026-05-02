@@ -5,10 +5,10 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'contracts/css/contract_list.css' %}?v=20260414v">
-    <link rel="stylesheet" href="{% static 'contracts/css/contract_detail.css' %}?v=20260401c">
+    <link rel="stylesheet" href="{% static 'css/components/contract_detail.css' %}?v=20260401c">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}">
     <!-- Thêm Font Awesome để dùng icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 {% endblock %}
@@ -110,20 +110,9 @@
 
 </div>
 
-{% include 'contracts/partials/contract_detail_modal.html' %}
+{% include 'partials/contract_detail_modal.html' %}
 {% include 'partials/popup_confirm_delete.html' with delete_popup_title='XÁC NHẬN XÓA' delete_popup_message_1='Bạn có chắc chắn muốn xóa hợp đồng này?' %}
-<div class="contract-delete-alert-overlay" id="contract-delete-alert">
-    <div class="contract-delete-alert-card">
-        <div class="contract-delete-alert-icon">!</div>
-        <h3 class="contract-delete-alert-title">THÔNG BÁO</h3>
-        <p class="contract-delete-alert-message">Không thể xóa hợp đồng đang có hiệu lực</p>
-        <button type="button" class="contract-delete-alert-btn" id="contract-delete-alert-close">Đóng</button>
-    </div>
-</div>
-<div class="contract-delete-success-toast" id="contract-delete-success-toast">
-    <div class="contract-delete-success-text">Đã xóa hợp đồng lao động thành công</div>
-    <div class="contract-delete-success-icon">&#10003;</div>
-</div>
+{% include 'partials/toast_notification.html' %}
 {% endblock %}
 
 {% block extra_js %}

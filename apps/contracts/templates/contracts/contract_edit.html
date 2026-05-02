@@ -6,9 +6,7 @@
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'contracts/css/contract_form.css' %}?v=20260414p">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}?v=20260414p">
-    <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}?v=20260414k">
+    <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}?v=20260414w">
 {% endblock %}
 
 {% block content %}
@@ -133,8 +131,7 @@
     </div>
 
     {% include 'partials/popup_confirm_cancel.html' with confirm_cancel_message='Bạn có chắc chắn muốn hủy chỉnh sửa hợp đồng này?' %}
-    {% include 'partials/popup_error.html' %}
-    {% include 'partials/toast_success.html' %}
+    {% include 'partials/toast_notification.html' %}
 </div>
 {% endblock %}
 

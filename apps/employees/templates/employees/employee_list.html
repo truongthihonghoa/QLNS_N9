@@ -64,20 +64,6 @@
     <p class="employee-count">Hiển thị {{ employee_count }} nhân viên</p>
 </section>
 
-<div class="employee-success-toast{% if messages %}{% for message in messages %}{% if message.level_tag == 'success' %} is-visible{% endif %}{% endfor %}{% endif %}" id="employee-success-toast" role="status" aria-live="polite">
-    <div class="employee-success-toast-content">
-        <p class="employee-success-toast-message" id="employee-success-toast-message">
-            {% if messages %}
-                {% for message in messages %}
-                    {% if message.level_tag == 'success' %}{{ message|striptags }}{% endif %}
-                {% endfor %}
-            {% endif %}
-        </p>
-    </div>
-    <div class="employee-success-toast-icon">
-        <i class="fa-solid fa-check"></i>
-    </div>
-</div>
 {% endblock %}
 
 {% block extra_js %}

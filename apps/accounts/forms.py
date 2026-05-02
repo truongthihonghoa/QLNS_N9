@@ -121,7 +121,7 @@ class ChangePasswordForm(forms.Form):
 
         # Check if new password is same as old password
         if old_password and new_password == old_password:
-            raise ValidationError('Mật khẩu không hợp lệ, yêu cầu nhập lại')
+            raise ValidationError('Mật khẩu mới không được trùng với mật khẩu cũ')
 
         return new_password
 

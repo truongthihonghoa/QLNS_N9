@@ -5,7 +5,6 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'employees/css/employee_edit.css' %}?v=4.5">
-    <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
 {% endblock %}
 
@@ -59,7 +58,6 @@
     </div>
 </div>
 
-{% include 'partials/popup_error.html' %}
 {% include 'partials/popup_confirm_cancel.html' with confirm_cancel_title='XÁC NHẬN HỦY' confirm_cancel_message='Hệ thống sẽ không lưu các thay đổi hiện tại.<br>Bạn có chắc chắn muốn hủy không?' confirm_cancel_no_label='Không' confirm_cancel_yes_label='Đồng ý' %}
 
 {% if form.errors %}
