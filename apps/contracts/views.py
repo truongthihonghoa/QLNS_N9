@@ -167,12 +167,18 @@ def contract_detail_view(request, contract_id):
         "ngay_bd": hd.ngay_bat_dau.strftime("%d/%m/%Y"),
         "ngay_kt": hd.ngay_ket_thuc.strftime("%d/%m/%Y") if hd.ngay_ket_thuc else "",
         "chuc_vu": nv.chuc_vu,
+        "chuc_vu_dai_dien": rep["chuc_vu"],
         "cccd": nv.cccd,
+        "ngay_sinh": nv.ngay_sinh.strftime("%d/%m/%Y") if nv.ngay_sinh else "",
         "nguoi_dai_dien": rep["ten"],
         "sdt_dai_dien": rep["sdt"],
+        "sdt_nv": nv.sdt,
+        "dia_chi": nv.dia_chi,
+        "dia_diem_lv": hd.ma_chi_nhanh.ten_chi_nhanh if hd.ma_chi_nhanh else "",
         "luong_co_ban": ct.luong_co_ban if ct else 0,
         "luong_theo_gio": ct.luong_theo_gio if ct else 0,
         "so_gio_lam": ct.so_gio_lam if ct else 0,
+        "muc_luong": ct.luong_co_ban if ct else 0,  # For FULLTIME contracts
         "ghi_chu": (ct.ghi_chu if ct else "") or "Không có ghi chú.",
     })
 
