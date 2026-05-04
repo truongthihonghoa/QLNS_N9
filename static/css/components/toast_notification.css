@@ -1,84 +1,64 @@
-.toast-notification {
+#toast-notification.toast-notification {
     position: fixed !important;
-    bottom: 24px !important;
-    right: 24px !important;
-    top: auto !important;
+    /* Cố định ở góc dưới bên phải */
+    bottom: 30px !important;
+    right: 30px !important;
     left: auto !important;
-    z-index: 3000 !important;
-    width: min(390px, calc(100vw - 48px)) !important;
-    min-height: 70px !important;
-    padding: 18px 22px !important;
-    border-radius: 18px !important;
-    background: rgba(255, 255, 255, 0.98) !important;
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12) !important;
-    border: 1px solid rgba(15, 107, 32, 0.08) !important;
+    top: auto !important;
+
+    /* Hiệu ứng trượt từ dưới lên khi ẩn */
+    transform: translateY(20px) !important;
+    z-index: 99999 !important;
+
+    /* Kích thước và Padding */
+    min-width: 280px !important;
+    padding: 12px 25px !important;
+
+    /* Style y chang ảnh mẫu */
+    background: #ffffff !important;
+    border-radius: 10px !important; /* Bo tròn cực mạnh thành hình viên thuốc */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+    border: none !important;
+
+    /* Bố cục: Chữ bên trái, Icon bên phải */
     display: flex !important;
     align-items: center !important;
-    justify-content: center !important;
-    gap: 16px !important;
+    justify-content: space-between !important;
+    gap: 15px !important;
+
+    /* Trạng thái ẩn */
     opacity: 0;
     visibility: hidden;
-    transform: translateY(20px) !important;
-    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease !important;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }
 
-.toast-notification.is-visible {
+/* Khi có class .show sẽ hiện lên tại vị trí gốc */
+#toast-notification.toast-notification.show {
     opacity: 1 !important;
     visibility: visible !important;
     transform: translateY(0) !important;
 }
 
-.toast-notification.success {
-    border-color: rgba(20, 182, 58, 0.15) !important;
-}
-
-.toast-notification.error {
-    border-color: rgba(239, 68, 68, 0.15) !important;
-}
-
-.toast-notification.warning {
-    border-color: rgba(245, 158, 11, 0.15) !important;
-}
-
-.toast-notification.info {
-    border-color: rgba(59, 130, 246, 0.15) !important;
-}
-
-.toast-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 999px;
-    background: #14b63a;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 15px;
-}
-
-.toast-notification.error .toast-icon {
-    background: #ef4444;
-}
-
-.toast-notification.warning .toast-icon {
-    background: #f59e0b;
-}
-
-.toast-notification.info .toast-icon {
-    background: #3b82f6;
-}
-
-.toast-content {
-    flex: 1;
-}
-
+/* Kiểu chữ đậm màu đen */
 .toast-message {
     margin: 0;
-    color: #2f2f2f;
-    font-family: "Montserrat", sans-serif;
-    font-size: 17px;
-    font-weight: 700;
-    line-height: 1.35;
-    text-align: center;
+    color: #000000 !important;
+    font-family: "Segoe UI", Tahoma, sans-serif !important;
+    font-size: 15px !important;
+    font-weight: 700 !important; /* Bold đậm y như mẫu */
+    line-height: 1.4;
+}
+
+/* Icon vòng tròn xanh lá bên phải */
+.toast-icon {
+    width: 30px !important;
+    height: 30px !important;
+    background-color: #2ecc71 !important; /* Màu xanh lá tươi */
+    color: white !important; /* Dấu tích trắng */
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    flex-shrink: 0;
 }

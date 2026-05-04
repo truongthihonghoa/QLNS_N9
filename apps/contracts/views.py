@@ -24,6 +24,20 @@ def clean_money(val):
     except (ValueError, TypeError):
         return 0
 
+def format_number(val):
+    """Định dạng số: nếu là số nguyên thì không hiển thị .0, nếu có thập phân thì giữ nguyên"""
+    if not val:
+        return "0"
+    try:
+        num = float(val)
+        # Nếu là số nguyên, trả về dạng string không có .0
+        if num.is_integer():
+            return str(int(num))
+        # Nếu có phần thập phân, trả về string giữ nguyên
+        return str(num)
+    except (ValueError, TypeError):
+        return "0"
+
 def get_next_ma_hd():
     last_hd = HopDongLaoDong.objects.all().order_by('ma_hd').last()
     if not last_hd:
@@ -259,10 +273,10 @@ def contract_edit_view(request, contract_id):
         "ct": ct,
         "branches": ChiNhanh.objects.all(),
         "positions": HopDongLaoDong.CHUC_VU_CHOICES,
-        "luong_co_ban": ct.luong_co_ban if ct else 0,
-        "luong_theo_gio": ct.luong_theo_gio if ct else 0,
-        "so_gio_lam": ct.so_gio_lam if ct else 0,
-        "thuong": ct.che_do_thuong if ct else 0,
+        "luong_co_ban": format_number(ct.luong_co_ban) if ct else 0,
+        "luong_theo_gio": format_number(ct.luong_theo_gio) if ct else 0,
+        "so_gio_lam": format_number(ct.so_gio_lam) if ct else 0,
+        "thuong": format_number(ct.che_do_thuong) if ct else 0,
         "ghi_chu": ct.ghi_chu if ct else "",
         "ngay_bd_iso": hd.ngay_bat_dau.strftime("%Y-%m-%d") if hd.ngay_bat_dau else "",
         "ngay_kt_iso": hd.ngay_ket_thuc.strftime("%Y-%m-%d") if hd.ngay_ket_thuc else "",

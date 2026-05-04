@@ -10,7 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/globals.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}?v=2026-05-02-2">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     {% block extra_css %}{% endblock %}
@@ -72,6 +74,9 @@
     </div>
 
     {% include 'partials/toast_notification.html' %}
+    {% include 'partials/popup_success.html' %}
+    {% include 'partials/popup_confirm_cancel.html' %}
+    {% include 'partials/popup_error.html' %}
 
     <script src="{% static 'js/base.js' %}"></script>
     <script src="{% static 'js/main.js' %}?v=1.1"></script>

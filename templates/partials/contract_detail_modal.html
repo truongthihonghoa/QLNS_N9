@@ -159,3 +159,146 @@
         </div>
     </div>
 </div>
+
+<script>
+    function showContractDetail(contractId) {
+    // 1. Gọi API từ Django
+    fetch(`/path-to-your-view/${contractId}/`) // Thay đường dẫn URL cho đúng với urls.py của bạn
+        .then(response => response.json())
+        .then(data => {
+            if (data.success === false) {
+                showErrorPopup(data.message);
+                return;
+            }
+
+            // 2. Đổ dữ liệu vào các thẻ HTML dựa trên ID
+            document.getElementById('detail-contract-id').innerText = data.ma_hd;
+            document.getElementById('detail-contract-no-display').innerText = data.ma_hd;
+            document.getElementById('detail-employee-code-display').innerText = data.ma_nv;
+
+            // Bên A
+            document.getElementById('detail-nguoi-dai-dien').innerText = data.nguoi_dai_dien;
+            document.getElementById('detail-phone-ben-a').innerText = data.sdt_dai_dien;
+            document.getElementById('detail-sig-name-a').innerText = data.nguoi_dai_dien;
+
+            // Bên B
+            document.getElementById('detail-ten-nv').innerText = data.ten_nv;
+            document.getElementById('detail-ma-nv').innerText = data.ma_nv;
+            document.getElementById('detail-cccd').innerText = data.cccd;
+            document.getElementById('detail-sig-name-b').innerText = data.ten_nv;
+            // Lưu ý: Các trường như ngày sinh, số điện thoại, địa chỉ NV
+            // bạn cần bổ sung thêm vào JsonResponse ở Backend nếu muốn hiển thị.
+
+            // Điều khoản
+            document.getElementById('detail-loai-hd').innerText = data.loai_hd;
+            document.getElementById('detail-ngay-bd').innerText = data.ngay_bd;
+            document.getElementById('detail-ngay-kt').innerText = data.ngay_kt || '...';
+            document.getElementById('detail-chuc-vu-nv').innerText = data.chuc_vu;
+
+            // Lương & Giờ làm
+            document.getElementById('detail-so-gio-lam').innerText = data.so_gio_lam;
+            document.getElementById('detail-luong-co-ban').innerText = data.luong_co_ban.toLocaleString('vi-VN');
+            document.getElementById('detail-luong-theo-gio').innerText = data.luong_theo_gio.toLocaleString('vi-VN');
+            document.getElementById('detail-ghi-chu').innerText = data.ghi_chu;
+
+            // 3. Hiển thị Modal
+            document.getElementById('contract-detail-popup').style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorPopup('Có lỗi xảy ra khi tải dữ liệu hợp đồng.');
+        });
+}
+
+// Đóng modal
+document.getElementById('contract-detail-close-btn').onclick = function() {
+    showConfirmCancelPopup();
+};
+
+// Hiển thị popup xác nhận hủy
+function showConfirmCancelPopup() {
+    const popup = document.getElementById('confirm-cancel-popup');
+    if (popup) {
+        popup.style.display = 'flex';
+    }
+}
+
+// Hiển thị popup lỗi
+function showErrorPopup(message) {
+    const popup = document.getElementById('error-popup');
+    const title = document.getElementById('error-popup-title');
+    const message1 = document.getElementById('error-popup-message1');
+    const message2 = document.getElementById('error-popup-message2');
+    
+    if (popup && title && message1) {
+        title.textContent = 'THÔNG BÁO LỖI';
+        message1.textContent = message || 'Đã xảy ra lỗi';
+        if (message2) message2.textContent = '';
+        popup.style.display = 'flex';
+    }
+}
+
+// Hiển thị popup thành công
+function showSuccessPopup(message) {
+    const popup = document.getElementById('success-popup');
+    const title = document.getElementById('success-popup-title');
+    const message1 = document.getElementById('success-popup-message1');
+    const message2 = document.getElementById('success-popup-message2');
+    
+    if (popup && title && message1) {
+        title.textContent = 'THÀNH CÔNG';
+        message1.textContent = message || 'Thao tác thành công';
+        if (message2) message2.textContent = '';
+        popup.style.display = 'flex';
+        
+        // Tự động đóng sau 3 giây
+        setTimeout(() => {
+            popup.style.display = 'none';
+        }, 3000);
+    }
+}
+
+// Xử lý các nút trong popup
+document.addEventListener('DOMContentLoaded', function() {
+    // Nút Đồng ý trong popup hủy
+    const confirmYesBtn = document.getElementById('confirm-yes-btn');
+    if (confirmYesBtn) {
+        confirmYesBtn.onclick = function() {
+            document.getElementById('confirm-cancel-popup').style.display = 'none';
+            document.getElementById('contract-detail-popup').style.display = 'none';
+        };
+    }
+    
+    // Nút Không trong popup hủy
+    const confirmNoBtn = document.getElementById('confirm-no-btn');
+    if (confirmNoBtn) {
+        confirmNoBtn.onclick = function() {
+            document.getElementById('confirm-cancel-popup').style.display = 'none';
+        };
+    }
+    
+    // Nút Thoát trong popup lỗi
+    const errorExitBtn = document.getElementById('error-popup-exit-btn');
+    if (errorExitBtn) {
+        errorExitBtn.onclick = function() {
+            document.getElementById('error-popup').style.display = 'none';
+        };
+    }
+    
+    // Nút Quay lại trong popup lỗi
+    const errorBackBtn = document.getElementById('error-popup-back-btn');
+    if (errorBackBtn) {
+        errorBackBtn.onclick = function() {
+            document.getElementById('error-popup').style.display = 'none';
+        };
+    }
+    
+    // Nút OK trong popup thành công
+    const successOkBtn = document.getElementById('success-popup-ok-btn');
+    if (successOkBtn) {
+        successOkBtn.onclick = function() {
+            document.getElementById('success-popup').style.display = 'none';
+        };
+    }
+});
+</script>

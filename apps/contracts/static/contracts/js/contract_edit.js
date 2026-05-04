@@ -199,9 +199,14 @@ document.addEventListener('DOMContentLoaded', function () {
         confirmYesBtn.addEventListener('click', () => window.location.href = contractForm.dataset.contractListUrl);
     }
 
-    // Format giá trị ban đầu
+    // Format giá trị ban đầu - chỉ format các field tiền tệ
     [luongCoBanInput, luongTheoGioInput, thuongInput, mucLuongInput].forEach(input => {
-        if (input && input.value) input.value = formatCurrency(input.value);
+        if (input && input.value) {
+            // Chỉ format nếu input không phải là số giờ làm việc
+            if (input.id !== 'so_gio_lam_toi_thieu') {
+                input.value = formatCurrency(input.value);
+            }
+        }
     });
     
     applyContractTypeRules();
