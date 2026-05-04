@@ -225,12 +225,17 @@ def account_admin_list_view(request):
             'trang_thai_key': trang_thai_key,
         })
 
-    # Lấy tất cả nhân viên để gợi ý (Autocomplete)
+    # Lấy nhân viên chưa có tài khoản để gợi ý (Autocomplete)
     from apps.employees.models import NhanVien
     from apps.accounts.models import TaiKhoan
     
-    all_employees = NhanVien.objects.all().only('ma_nv', 'ho_ten')
-    employees_with_account = list(TaiKhoan.objects.values_list('ma_nv_id', flat=True))
+    # Lấy danh sách mã nhân viên đã có tài khoản
+    employees_with_account_ids = TaiKhoan.objects.values_list('ma_nv_id', flat=True)
+    
+    # Chỉ lấy nhân viên chưa có tài khoản
+    employees_without_account = NhanVien.objects.exclude(
+        ma_nv__in=employees_with_account_ids
+    ).only('ma_nv', 'ho_ten')
 
     return render(
         request,
@@ -239,8 +244,8 @@ def account_admin_list_view(request):
             'account_rows': account_rows,
             'branches': branches,
             'selected_branch': selected_branch,
-            'all_employees': all_employees,
-            'employees_with_account': employees_with_account,
+            'all_employees': employees_without_account,
+            'employees_with_account': employees_with_account_ids,
         },
     )
 

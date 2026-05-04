@@ -275,7 +275,16 @@ window.allEmployees = [
 ];
 
 // Pass employees who already have accounts
-window.employeesWithAccount = {{ employees_with_account|safe }};
+window.employeesWithAccount = [
+    {% for emp_id in employees_with_account %}
+    '{{ emp_id }}'{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+// Debug: Check data
+console.log('All employees count:', window.allEmployees.length);
+console.log('Employees with account count:', window.employeesWithAccount.length);
+console.log('All employees data:', window.allEmployees);
 </script>
 <script src="{% static 'accounts/js/admin_list.js' %}?v=1.1"></script>
 {% endblock %}

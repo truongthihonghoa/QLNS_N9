@@ -116,17 +116,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Autocomplete logic for Add Account
-    const allEmployees = window.allEmployees || [];
-    const employeesWithAccount = window.employeesWithAccount || [];
+    const allEmployees = window.allEmployees || []; // Đã là nhân viên chưa có tài khoản
 
     const addEmpNameInput = document.getElementById('add-employee-name');
     const addEmpIdInput = document.getElementById('add-employee-id');
     const addSuggestionsList = document.getElementById('add-employee-suggestions');
     const addErrorText = document.getElementById('add-account-exists-error');
 
+    // Debug: Check if elements exist
+    console.log('Autocomplete elements:', {
+        addEmpNameInput: !!addEmpNameInput,
+        addSuggestionsList: !!addSuggestionsList,
+        allEmployeesCount: allEmployees.length
+    });
+
     if (addEmpNameInput) {
         addEmpNameInput.addEventListener('input', function() {
             const query = this.value.toLowerCase().trim();
+            console.log('Input query:', query);
+            
             addSuggestionsList.innerHTML = '';
             addErrorText.style.display = 'none';
             addEmpIdInput.value = '';
@@ -136,12 +144,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
+            // Backend đã lọc sẵn nhân viên chưa có tài khoản, chỉ cần filter theo search
             const matches = allEmployees.filter(emp =>
                 emp.ho_ten.toLowerCase().includes(query) ||
                 emp.ma_nv.toLowerCase().includes(query)
             );
+            
+            console.log('Matches found:', matches.length, matches);
 
             if (matches.length > 0) {
+                console.log('Creating dropdown with', matches.length, 'items');
                 matches.forEach(emp => {
                     const div = document.createElement('div');
                     div.className = 'suggestion-item';
@@ -161,8 +173,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     addSuggestionsList.appendChild(div);
                 });
+                console.log('Setting dropdown to display: block');
                 addSuggestionsList.style.display = 'block';
+                console.log('Dropdown style after setting:', addSuggestionsList.style.display);
             } else {
+                console.log('No matches found, hiding dropdown');
                 addSuggestionsList.style.display = 'none';
             }
         });
