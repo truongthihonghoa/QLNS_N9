@@ -1,14 +1,29 @@
-# apps/accounts/models.py
-
+from django.contrib.auth.models import User
 from django.db import models
 
 class TaiKhoan(models.Model):
-    ma_tk = models.CharField(max_length=20, primary_key=True)
-    ten_dang_nhap = models.CharField(max_length=100, unique=True)
-    mat_khau = models.CharField(max_length=255)
-    quyen = models.CharField(max_length=50)
-
+    user = models.OneToOneField(User, on_delete=models.CASCADE,  related_name='taikhoan')
     ma_nv = models.OneToOneField(
         'employees.NhanVien',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='taikhoan',
+        null=True,
+        blank=True
     )
+
+    @property
+    def vai_tro(self):
+        if self.user.is_superuser:
+            return 'Chủ'
+        elif self.user.is_staff:
+            return 'Quản lý'
+        else:
+            return 'Nhân viên'
+
+    @property
+    def ten_dang_nhap(self):
+        return self.user.username
+
+    @property
+    def trang_thai(self):
+        return 'Đang hoạt động' if self.user.is_active else 'Ngừng hoạt động'

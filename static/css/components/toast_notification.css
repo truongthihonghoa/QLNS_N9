@@ -1,47 +1,64 @@
-.toast-notification {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #d4edda; /* Pastel green */
-    color: #333333; /* Dark grey/black */
-    padding: 16px 24px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-width: 300px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 9999;
+#toast-notification.toast-notification {
+    position: fixed !important;
+    /* Cố định ở góc dưới bên phải */
+    bottom: 30px !important;
+    right: 30px !important;
+    left: auto !important;
+    top: auto !important;
+
+    /* Hiệu ứng trượt từ dưới lên khi ẩn */
+    transform: translateY(20px) !important;
+    z-index: 99999 !important;
+
+    /* Kích thước và Padding */
+    min-width: 280px !important;
+    padding: 12px 25px !important;
+
+    /* Style y chang ảnh mẫu */
+    background: #ffffff !important;
+    border-radius: 10px !important; /* Bo tròn cực mạnh thành hình viên thuốc */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+    border: none !important;
+
+    /* Bố cục: Chữ bên trái, Icon bên phải */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 15px !important;
+
+    /* Trạng thái ẩn */
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    pointer-events: none;
-    font-family: 'Montserrat-Bold', sans-serif;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }
 
-.toast-notification.show {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
+/* Khi có class .show sẽ hiện lên tại vị trí gốc */
+#toast-notification.toast-notification.show {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
 }
 
-.toast-content {
-    font-size: 16px;
-    font-weight: 700;
+/* Kiểu chữ đậm màu đen */
+.toast-message {
+    margin: 0;
+    color: #000000 !important;
+    font-family: "Segoe UI", Tahoma, sans-serif !important;
+    font-size: 15px !important;
+    font-weight: 700 !important; /* Bold đậm y như mẫu */
+    line-height: 1.4;
 }
 
+/* Icon vòng tròn xanh lá bên phải */
 .toast-icon {
-    margin-left: 20px;
-    width: 28px;
-    height: 28px;
-    background-color: #28a745;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.toast-icon i {
-    font-size: 16px;
+    width: 30px !important;
+    height: 30px !important;
+    background-color: #2ecc71 !important; /* Màu xanh lá tươi */
+    color: white !important; /* Dấu tích trắng */
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    flex-shrink: 0;
 }

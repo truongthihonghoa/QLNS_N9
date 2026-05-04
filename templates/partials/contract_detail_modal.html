@@ -1,0 +1,304 @@
+<div class="contract-detail-overlay" id="contract-detail-popup">
+    <div class="contract-detail-modal" style="position: relative;">
+        <div class="contract-top-header" style="background: #174d17; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-radius: 12px 12px 0 0;">
+            <div class="top-title" style="font-size: 18px; font-weight: bold; text-transform: uppercase;">Chi tiết hợp đồng lao động</div>
+            <div class="header-actions" style="display: flex; gap: 10px; align-items: center;">
+                <button class="btn-print" type="button" onclick="window.print()" style="padding: 8px 16px; border: none; background: #28a745; color: white; font-weight: bold; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                    <i class="fas fa-print"></i>
+                    In (Xuất)
+                </button>
+                <button type="button" id="contract-detail-close-btn" style="background: #ff4d4d; color: white; border: none; width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" title="Thoát">
+                    <i class="fas fa-times" style="font-size: 18px;"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="contract-tool-bar" style="background: #f8f9fa; padding: 10px 25px; display: flex; align-items: center; border-bottom: 1px solid #ddd;">
+            <span class="contract-code">Mã HD: <strong id="detail-contract-id">...</strong></span>
+        </div>
+
+        <div class="contract-paper" style="background: white; width: min(800px, 92%); margin: 30px auto; padding: 60px 70px; font-family: 'Times New Roman', Times, serif; color: #000; line-height: 1.15; box-shadow: 0 0 20px rgba(0,0,0,0.1);">
+            <div class="paper-header" style="text-align: center; margin-bottom: 30px; width: 100%;">
+                <h4 style="font-size: 16px; font-weight: bold !important; text-transform: uppercase; margin-bottom: 5px; text-align: center; width: 100%;"><b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b></h4>
+                <p style="font-size: 15px; font-weight: bold !important; margin-bottom: 0; text-align: center; width: 100%;"><b>Độc lập - Tự do - Hạnh phúc</b></p>
+                <div style="width: 160px; height: 1.5px; background: black; margin: 8px auto;"></div>
+
+                <h2 style="font-size: 22px; font-weight: bold !important; margin: 25px 0 8px; text-transform: uppercase; text-align: center; width: 100%;"><b>HỢP ĐỒNG LAO ĐỘNG</b></h2>
+                <p style="font-size: 14px; margin-bottom: 20px; text-align: center; width: 100%;">Số: <b id="detail-contract-no-display">...</b> / Mã nhân viên: <b id="detail-employee-code-display">...</b></p>
+            </div>
+
+            <div class="paper-body">
+                <p style="font-style: italic; margin-bottom: 8px;">Căn cứ Bộ luật Lao động số 45/2019/QH14 được Quốc hội nước Cộng hòa xã hội chủ nghĩa Việt Nam thông qua ngày 20/11/2019;</p>
+                <p style="font-style: italic; margin-bottom: 8px;">Căn cứ nhu cầu và khả năng của hai bên.</p>
+                <p style="margin-bottom: 15px;">Chúng tôi, gồm các bên dưới đây:</p>
+
+                <div class="contract-section" style="margin-bottom: 24px;">
+                    <h3 style="font-size: 15px; font-weight: bold !important; text-transform: uppercase; margin-bottom: 12px;"><b>ĐIỀU 1: THÔNG TIN CÁC BÊN</b></h3>
+
+                    <div class="party-info" style="margin-bottom: 15px;">
+                        <strong style="display: block; font-weight: bold !important; text-transform: uppercase; margin-bottom: 10px;"><b>BÊN A: NGƯỜI SỬ DỤNG LAO ĐỘNG</b></strong>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Đại diện:</span>
+                            <span id="detail-nguoi-dai-dien" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
+                        </div>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Chức vụ:</span>
+                            <span id="detail-chuc-vu-dai-dien" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
+                        </div>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Điện thoại:</span>
+                            <span id="detail-phone-ben-a" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
+                        </div>
+                    </div>
+
+                    <div class="party-info">
+                        <strong style="display: block; font-weight: bold !important; text-transform: uppercase; margin-bottom: 10px;"><b>BÊN B: NGƯỜI LAO ĐỘNG</b></strong>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Ông/Bà:</span>
+                            <span id="detail-ten-nv" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
+                        </div>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Mã nhân viên:</span>
+                            <span id="detail-ma-nv" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
+                        </div>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Số CCCD:</span>
+                            <span id="detail-cccd" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
+                        </div>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Ngày sinh:</span>
+                            <span id="detail-ngay-sinh" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
+                        </div>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Số điện thoại:</span>
+                            <span id="detail-phone-ben-b" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
+                        </div>
+                        <div style="display: flex; align-items: baseline; margin-bottom: 6px;">
+                            <span style="white-space: nowrap; font-weight: bold;">Địa chỉ thường trú:</span>
+                            <span id="detail-dia-chi" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contract-section" style="margin-bottom: 24px;">
+                    <h3 style="font-size: 15px; font-weight: bold !important; text-transform: uppercase; margin-bottom: 12px;"><b>ĐIỀU 2: THỜI HẠN VÀ LOẠI HỢP ĐỒNG</b></h3>
+                    <p>1. Loại hợp đồng: <b id="detail-loai-hd">...</b></p>
+                    <p>2. Thời hạn hợp đồng: Từ ngày <b id="detail-ngay-bd">...</b> đến ngày <b id="detail-ngay-kt">...</b>.</p>
+                </div>
+
+                <div class="contract-section" style="margin-bottom: 24px;">
+                    <h3 style="font-size: 15px; font-weight: bold !important; text-transform: uppercase; margin-bottom: 12px;"><b>ĐIỀU 3: VỊ TRÍ, ĐỊA ĐIỂM VÀ TRÁCH NHIỆM</b></h3>
+                    <p>1. Chức vụ chuyên môn: <b id="detail-chuc-vu-nv">...</b>.</p>
+                    <p>2. Địa điểm làm việc: <b id="detail-dia-diem-lv" style="font-weight: normal;">...</b>.</p>
+                    <p>3. Trách nhiệm công việc:</p>
+                    <div style="padding-left: 20px;">
+                        <p>+ Tuân thủ quy định về đồng phục, diện mạo và thái độ phục vụ chuyên nghiệp tại quán.</p>
+                        <p>+ Thực hiện đúng quy trình phục vụ khách hàng, pha chế hoặc thu ngân theo sự phân công.</p>
+                        <p>+ Đảm bảo vệ sinh an toàn thực phẩm và vệ sinh sạch sẽ khu vực làm việc.</p>
+                        <p>+ Bảo quản tài sản, công cụ dụng cụ (máy pha, ly tách...); bồi thường theo giá trị thực tế nếu gây hư hỏng do lỗi chủ quan.</p>
+                        <p>+ Bảo mật thông tin kinh doanh (công thức pha chế, doanh thu).</p>
+                    </div>
+                </div>
+
+                <div class="contract-section" style="margin-bottom: 24px;">
+                    <h3 style="font-size: 15px; font-weight: bold !important; text-transform: uppercase; margin-bottom: 12px;"><b>ĐIỀU 4: THỜI GIAN LÀM VIỆC VÀ NGHỈ NGƠI</b></h3>
+                    <p>1. Số giờ làm tối thiểu/thực tế: <b id="detail-so-gio-lam">...</b> giờ/tháng.</p>
+                    <p>2. Sắp xếp ca làm: Theo bảng phân ca hàng tuần do Quản lý quán thông báo.</p>
+                    <p>3. Chế độ nghỉ ngơi: Nghỉ 02 ngày/tháng (Ngày nghỉ cụ thể phải đăng ký trước 03 ngày và được sự đồng ý của Quản lý).</p>
+                </div>
+
+                <div class="contract-section" style="margin-bottom: 24px;">
+                    <h3 style="font-size: 15px; font-weight: bold !important; text-transform: uppercase; margin-bottom: 12px;"><b>ĐIỀU 5: TIỀN LƯƠNG VÀ PHÚC LỢI</b></h3>
+                    <p>1. Lương cơ bản: <b id="detail-luong-co-ban">...</b> VNĐ/tháng.</p>
+                    <p>2. Lương theo giờ: <b id="detail-luong-theo-gio">...</b> VNĐ/giờ (áp dụng cho số giờ làm thực tế).</p>
+                    <p>3. Chế độ thưởng: Thưởng chuyên cần, thưởng doanh số hoặc thưởng các dịp Lễ, Tết theo quy định riêng của quán.</p>
+                    <p>4. Hình thức trả lương: Chuyển khoản hoặc tiền mặt vào ngày 10 hằng tháng.</p>
+                </div>
+
+                <div class="contract-section" style="margin-bottom: 24px;">
+                    <h3 style="font-size: 15px; font-weight: bold !important; text-transform: uppercase; margin-bottom: 12px;"><b>ĐIỀU 6: ĐIỀU KHOẢN LAO ĐỘNG</b></h3>
+                    <p>1. Bên A thực hiện chế độ bảo hiểm cho Bên B theo quy định pháp luật dựa trên loại hình hợp đồng.</p>
+                    <p>2. Đào tạo & Thỏa thuận khác:</p>
+                    <div style="padding-left: 20px;">
+                        <p>- Bên B cam kết làm việc tối thiểu 06 tháng sau khi được đào tạo nghề/công thức pha chế.</p>
+                        <p>- Mọi sự cố làm thất thoát hàng hóa, nguyên vật liệu hoặc sai sót thu ngân sẽ được khấu trừ trực tiếp vào lương sau khi đối soát.</p>
+                    </div>
+                </div>
+
+                <div class="contract-section" style="margin-bottom: 24px;">
+                    <h3 style="font-size: 15px; font-weight: bold !important; text-transform: uppercase; margin-bottom: 12px;"><b>ĐIỀU 7: CHẤM DỨT HỢP ĐỒNG</b></h3>
+                    <p>1. Thông báo trước: Bên B muốn nghỉ việc phải báo trước ít nhất 07 ngày (với Part-time) hoặc 15 ngày (với Full-time).</p>
+                    <p>2. Lý do chấm dứt: Theo luật định hoặc do vi phạm nội quy quán (tự ý bỏ ca, thái độ khiếm nhã với khách, gian lận tài chính).</p>
+                    <p>3. Khi nghỉ việc, Bên B phải bàn giao đầy đủ đồng phục, tài sản và công việc cho người kế nhiệm.</p>
+                </div>
+
+                <div class="contract-section" style="margin-bottom: 24px;">
+                    <h3 style="font-size: 15px; font-weight: bold !important; text-transform: uppercase; margin-bottom: 12px;"><b>ĐIỀU 8: GHI CHÚ VÀ ĐIỀU KHOẢN THI HÀNH</b></h3>
+                    <div style="display: flex; align-items: baseline; margin-bottom: 8px;">
+                        <span style="white-space: nowrap; font-weight: bold;">Ghi chú:</span>
+                        <span id="detail-ghi-chu" style="margin-left: 8px; font-weight: normal; font-style: normal;"></span>
+                    </div>
+                    <p>Hợp đồng được lập thành 02 bản, mỗi bên giữ 01 bản để thực hiện.</p>
+                </div>
+            </div>
+
+            <div class="paper-footer" style="display: flex; justify-content: space-between; margin-top: 60px;">
+                <div style="width: 45%; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <strong style="font-size: 15px; font-weight: bold !important; text-transform: uppercase;"><b>NGƯỜI LAO ĐỘNG (BÊN B)</b></strong>
+                    <p style="font-style: italic; font-size: 13px; margin-top: 5px; margin-bottom: 0;">(Ký và ghi rõ họ tên)</p>
+                    <div style="margin-top: 15px; font-style: italic; color: #444;">(Đã ký)</div>
+                    <div id="detail-sig-name-b" style="margin-top: 40px; font-weight: bold !important; font-size: 16px; text-transform: uppercase;">...</div>
+                </div>
+                <div style="width: 45%; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <strong style="font-size: 15px; font-weight: bold !important; text-transform: uppercase;"><b>ĐẠI DIỆN BÊN A</b></strong>
+                    <p style="font-style: italic; font-size: 13px; margin-top: 5px; margin-bottom: 0;">(Ký tên, đóng dấu)</p>
+                    <div style="margin-top: 15px; font-style: italic; color: #444;">(Đã ký)</div>
+                    <div id="detail-sig-name-a" style="margin-top: 40px; font-weight: bold !important; font-size: 16px; text-transform: uppercase;">...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showContractDetail(contractId) {
+    // 1. Gọi API từ Django
+    fetch(`/path-to-your-view/${contractId}/`) // Thay đường dẫn URL cho đúng với urls.py của bạn
+        .then(response => response.json())
+        .then(data => {
+            if (data.success === false) {
+                showErrorPopup(data.message);
+                return;
+            }
+
+            // 2. Đổ dữ liệu vào các thẻ HTML dựa trên ID
+            document.getElementById('detail-contract-id').innerText = data.ma_hd;
+            document.getElementById('detail-contract-no-display').innerText = data.ma_hd;
+            document.getElementById('detail-employee-code-display').innerText = data.ma_nv;
+
+            // Bên A
+            document.getElementById('detail-nguoi-dai-dien').innerText = data.nguoi_dai_dien;
+            document.getElementById('detail-phone-ben-a').innerText = data.sdt_dai_dien;
+            document.getElementById('detail-sig-name-a').innerText = data.nguoi_dai_dien;
+
+            // Bên B
+            document.getElementById('detail-ten-nv').innerText = data.ten_nv;
+            document.getElementById('detail-ma-nv').innerText = data.ma_nv;
+            document.getElementById('detail-cccd').innerText = data.cccd;
+            document.getElementById('detail-sig-name-b').innerText = data.ten_nv;
+            // Lưu ý: Các trường như ngày sinh, số điện thoại, địa chỉ NV
+            // bạn cần bổ sung thêm vào JsonResponse ở Backend nếu muốn hiển thị.
+
+            // Điều khoản
+            document.getElementById('detail-loai-hd').innerText = data.loai_hd;
+            document.getElementById('detail-ngay-bd').innerText = data.ngay_bd;
+            document.getElementById('detail-ngay-kt').innerText = data.ngay_kt || '...';
+            document.getElementById('detail-chuc-vu-nv').innerText = data.chuc_vu;
+
+            // Lương & Giờ làm
+            document.getElementById('detail-so-gio-lam').innerText = data.so_gio_lam;
+            document.getElementById('detail-luong-co-ban').innerText = data.luong_co_ban.toLocaleString('vi-VN');
+            document.getElementById('detail-luong-theo-gio').innerText = data.luong_theo_gio.toLocaleString('vi-VN');
+            document.getElementById('detail-ghi-chu').innerText = data.ghi_chu;
+
+            // 3. Hiển thị Modal
+            document.getElementById('contract-detail-popup').style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorPopup('Có lỗi xảy ra khi tải dữ liệu hợp đồng.');
+        });
+}
+
+// Đóng modal
+document.getElementById('contract-detail-close-btn').onclick = function() {
+    showConfirmCancelPopup();
+};
+
+// Hiển thị popup xác nhận hủy
+function showConfirmCancelPopup() {
+    const popup = document.getElementById('confirm-cancel-popup');
+    if (popup) {
+        popup.style.display = 'flex';
+    }
+}
+
+// Hiển thị popup lỗi
+function showErrorPopup(message) {
+    const popup = document.getElementById('error-popup');
+    const title = document.getElementById('error-popup-title');
+    const message1 = document.getElementById('error-popup-message1');
+    const message2 = document.getElementById('error-popup-message2');
+    
+    if (popup && title && message1) {
+        title.textContent = 'THÔNG BÁO LỖI';
+        message1.textContent = message || 'Đã xảy ra lỗi';
+        if (message2) message2.textContent = '';
+        popup.style.display = 'flex';
+    }
+}
+
+// Hiển thị popup thành công
+function showSuccessPopup(message) {
+    const popup = document.getElementById('success-popup');
+    const title = document.getElementById('success-popup-title');
+    const message1 = document.getElementById('success-popup-message1');
+    const message2 = document.getElementById('success-popup-message2');
+    
+    if (popup && title && message1) {
+        title.textContent = 'THÀNH CÔNG';
+        message1.textContent = message || 'Thao tác thành công';
+        if (message2) message2.textContent = '';
+        popup.style.display = 'flex';
+        
+        // Tự động đóng sau 3 giây
+        setTimeout(() => {
+            popup.style.display = 'none';
+        }, 3000);
+    }
+}
+
+// Xử lý các nút trong popup
+document.addEventListener('DOMContentLoaded', function() {
+    // Nút Đồng ý trong popup hủy
+    const confirmYesBtn = document.getElementById('confirm-yes-btn');
+    if (confirmYesBtn) {
+        confirmYesBtn.onclick = function() {
+            document.getElementById('confirm-cancel-popup').style.display = 'none';
+            document.getElementById('contract-detail-popup').style.display = 'none';
+        };
+    }
+    
+    // Nút Không trong popup hủy
+    const confirmNoBtn = document.getElementById('confirm-no-btn');
+    if (confirmNoBtn) {
+        confirmNoBtn.onclick = function() {
+            document.getElementById('confirm-cancel-popup').style.display = 'none';
+        };
+    }
+    
+    // Nút Thoát trong popup lỗi
+    const errorExitBtn = document.getElementById('error-popup-exit-btn');
+    if (errorExitBtn) {
+        errorExitBtn.onclick = function() {
+            document.getElementById('error-popup').style.display = 'none';
+        };
+    }
+    
+    // Nút Quay lại trong popup lỗi
+    const errorBackBtn = document.getElementById('error-popup-back-btn');
+    if (errorBackBtn) {
+        errorBackBtn.onclick = function() {
+            document.getElementById('error-popup').style.display = 'none';
+        };
+    }
+    
+    // Nút OK trong popup thành công
+    const successOkBtn = document.getElementById('success-popup-ok-btn');
+    if (successOkBtn) {
+        successOkBtn.onclick = function() {
+            document.getElementById('success-popup').style.display = 'none';
+        };
+    }
+});
+</script>

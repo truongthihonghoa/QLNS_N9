@@ -1,6 +1,8 @@
-/* Branch Management Styles - Based on Contract Module Standards */
+/* ==========================================================================
+   BRANCH MANAGEMENT STYLES - GÉ CAFE
+   ========================================================================== */
 
-/* Main Container */
+/* --- MAIN CONTAINER --- */
 .branch-management-container {
     display: flex;
     flex-direction: column;
@@ -9,105 +11,68 @@
     padding: 0;
 }
 
-/* Toolbar */
+/* --- TOOLBAR & SEARCH --- */
 .toolbar {
-    display: grid;
-    grid-template-columns: minmax(240px, 420px) 170px;
-    gap: 14px;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background: transparent;
+    gap: 20px;
+    margin-bottom: 20px;
 }
 
 .search-box {
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
 }
 
 .search-box input {
-    width: 100%;
+    flex: 1;
     height: 48px;
-    border: 1px solid #dadce0;
+    padding: 0 16px;
+    border: 1.5px solid #d8dde3;
     border-radius: 10px;
-    padding: 0 18px;
-    background: #ffffff;
-    font: 500 18px "Montserrat", sans-serif;
+    background: #fbfcfd;
+    font: 400 18px "Montserrat", sans-serif;
+    transition: all 0.2s ease;
 }
 
-.btn-search {
-    height: 54px;
-    min-width: 156px;
-    border: none;
+.search-box input:focus {
+    outline: none;
+    border-color: #0f6b20;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(15, 107, 32, 0.1);
+}
+
+/* --- BUTTONS (PRIMARY / SEARCH / DANGER) --- */
+.btn-search, .btn-primary {
+    height: 48px;
+    padding: 0 20px;
+    width: 150px;
     border-radius: 8px;
-    background: rgba(23, 77, 23, 0.87);
+    background: rgb(46, 125, 50);
     color: #fff;
-    font: 700 18px "Montserrat", sans-serif;
-    display: inline-flex;
+    font: 600 16px Arial, sans-serif;
+    display: flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
+    border: none;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    padding: 0 30px;
-}
-
-.btn-search:hover {
-    background: #27682b;
 }
 
 .btn-primary {
-    height: 48px;
-    border: none;
-    border-radius: 8px;
-    background: rgba(23, 77, 23, 0.87);
-    color: #fff;
-    font: 700 20px "Montserrat", sans-serif;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    padding: 0 24px;
-    text-decoration: none;
+    box-shadow: 0 8px 18px rgba(15, 107, 32, 0.18);
 }
 
-.btn-primary:hover {
+.btn-search:hover, .btn-primary:hover {
     background: #27682b;
-}
-
-.btn-secondary {
-    height: 48px;
-    border: 1px solid #dadce0;
-    border-radius: 8px;
-    background: #fff;
-    color: #174d17;
-    font: 700 20px "Montserrat", sans-serif;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    padding: 0 24px;
-    text-decoration: none;
-}
-
-.btn-secondary:hover {
-    background: #f5f5f5;
-}
-
-.branch-view-modal .btn-secondary {
-    border-color: #5fa768;
-    background: #5fa768;
-    color: #ffffff;
-}
-
-.branch-view-modal .btn-secondary:hover {
-    background: #4d9357;
 }
 
 .btn-danger {
     height: 48px;
+    padding: 0 24px;
     border: none;
     border-radius: 8px;
     background: #e53935;
@@ -118,19 +83,16 @@
     justify-content: center;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    padding: 0 24px;
 }
 
 .btn-danger:hover {
     background: #c62828;
 }
 
-/* Table Container */
+/* --- TABLE STYLES --- */
 .branch-table-card {
     margin-top: 18px;
-    background: transparent;
     border-radius: 14px;
-    box-shadow: none;
     overflow: hidden;
 }
 
@@ -147,13 +109,8 @@
     text-align: center;
 }
 
-.branch-table tbody tr:nth-child(odd) {
-    background: #ebe7e4;
-}
-
-.branch-table tbody tr:nth-child(even) {
-    background: rgba(243, 240, 238, 0.93);
-}
+.branch-table tbody tr:nth-child(odd) { background: #ebe7e4; }
+.branch-table tbody tr:nth-child(even) { background: rgba(243, 240, 238, 0.93); }
 
 .branch-table td {
     padding: 22px 14px;
@@ -163,90 +120,66 @@
     vertical-align: middle;
 }
 
-.branch-empty-state {
-    padding: 28px 14px !important;
-    font: 600 18px "Montserrat", sans-serif;
-    color: #5f6b63;
+.branch-table tr.branch-inactive {
+    background-color: #f8d7da !important;
+    color: #721c24;
 }
 
-/* Action Buttons */
+/* --- ACTION BUTTONS (FIX FULL) --- */
 .branch-actions {
+    padding: 10px !important;
+    background: transparent !important;
+}
+
+.action-buttons {
     display: flex;
-    gap: 8px;
     justify-content: center;
     align-items: center;
+    gap: 12px;
 }
 
-.btn-view,
-.btn-edit,
-.btn-delete {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 1px solid #c7b4aa;
-    background: #fff;
-    display: inline-flex;
+.btn-action-ge {
+    background: white !important;
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-    padding: 0;
+    transition: all 0.2s ease !important;
+    font-size: 18px !important;
+    text-decoration: none !important;
+    box-sizing: border-box !important;
 }
 
-.btn-view img,
-.btn-edit img,
-.btn-delete img {
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
+/* Mắt màu xanh #17A2D8 */
+.btn-view-ge {
+    border: 1.5px solid black !important;
 }
-
-.branch-delete-mark {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #8d1f1f;
-    font: 700 28px/1 "Montserrat", sans-serif;
+.btn-view-ge i { color: #17A2D8 !important; }
+.btn-view-ge:hover {
+    background-color: #17A2D8 !important;
+    transform: translateY(-2px);
 }
+.btn-view-ge:hover i { color: white !important; }
 
-.btn-view:hover {
-    transform: translateY(-1px);
-    background: #ede4dc;
+/* Bút màu đen #333 */
+.btn-edit-ge {
+    border: 1.5px solid #333333 !important;
 }
-
-.btn-edit:hover {
-    transform: translateY(-1px);
-    background: #e6f1e6;
-    border-color: #174d17;
+.btn-edit-ge i { color: #333333 !important; }
+.btn-edit-ge:hover {
+    background-color: #333333 !important;
+    transform: translateY(-2px);
 }
+.btn-edit-ge:hover i { color: white !important; }
 
-.btn-delete:hover {
-    transform: translateY(-1px);
-    background: #f3e7e4;
-    border-color: #8d6e63;
-}
-
-.btn-edit:disabled,
-.btn-delete:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-.btn-edit:disabled:hover,
-.btn-delete:disabled:hover {
-    transform: none;
-    background: #fff;
-    border-color: #c7b4aa;
-}
-
-/* Modal Styles */
+/* --- MODAL STYLES --- */
 .branch-modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: flex-start;
@@ -254,7 +187,6 @@
     z-index: 1000;
     overflow-y: auto;
     padding: 158px 0 30px;
-    box-sizing: border-box;
 }
 
 .branch-modal {
@@ -263,214 +195,7 @@
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.16);
     width: min(760px, 95%);
     position: relative;
-    margin-bottom: 20px;
-    overflow: hidden; /* Quan trọng: Đảm bảo bo góc cho cả header/footer bên trong */
-}
-
-.branch-edit-modal {
-    width: min(680px, 95%);
-    background: #edf8ee;
-}
-
-.branch-create-modal {
-    width: min(760px, 95%);
-    background: #f7fbf7;
-}
-
-.branch-create-modal .branch-modal-header {
-    background: #cfe3cf;
-}
-
-.branch-create-modal .branch-modal-header h2 {
-    color: #214f28;
-}
-
-.branch-create-modal .branch-modal-body {
-    background: #f7fbf7;
-}
-
-.branch-create-modal .branch-modal-footer {
-    background: #dcebdc;
-}
-
-.branch-view-modal {
-    background: #edf8ee;
-}
-
-.branch-edit-modal .branch-modal-header {
-    background: #7fb889;
-}
-
-.branch-edit-modal .branch-modal-header h2 {
-    color: #214f28;
-}
-
-.branch-edit-modal .branch-modal-body {
-    background: #edf8ee;
-}
-
-.branch-edit-modal .branch-modal-footer {
-    background: #e3f2e5;
-}
-
-.branch-edit-modal .btn-primary,
-.branch-edit-modal .btn-secondary {
-    min-width: 108px;
-    height: 44px;
-    padding: 0 20px;
-    font-size: 18px;
-}
-
-.branch-view-modal .branch-modal-header {
-    background: #dcefdc;
-}
-
-.branch-view-modal .branch-modal-header h2 {
-    color: #2f6b35;
-}
-
-.branch-view-modal .branch-modal-body {
-    background: #edf8ee;
-    padding-left: 48px;
-}
-
-.branch-view-modal .branch-modal-footer {
-    background: #e3f2e5;
-}
-
-.branch-delete-modal {
-    width: min(560px, 95%);
-    background: #fdf0f0;
-}
-
-.branch-delete-modal .branch-modal-header {
-    background: #efcaca;
-}
-
-.branch-delete-modal .branch-modal-header h2 {
-    color: #7f1d1d;
-    font-size: 28px;
-}
-
-.branch-delete-modal .branch-modal-body {
-    background: #fdf0f0;
-    text-align: center;
-    padding-top: 14px;
-    font-size: 19px;
-    font-weight: 600;
-    line-height: 1.6;
-}
-
-.branch-delete-modal .branch-modal-body::before {
-    content: "";
-    display: block;
-    width: 56px;
-    height: 56px;
-    margin: 0 auto 14px;
-    background: url("/static/images/error_icon.png") center / contain no-repeat;
-}
-
-.branch-delete-modal .branch-modal-footer {
-    background: #f8e4e4;
-}
-
-.branch-confirm-cancel-overlay {
-    z-index: 2100;
-    align-items: center;
-    padding: 0;
-}
-
-.branch-confirm-cancel-box {
-    width: min(560px, calc(100vw - 32px));
-    background: #f3fbf3;
-    border-radius: 28px;
     overflow: hidden;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
-}
-
-.branch-confirm-cancel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 24px;
-    background: #dcefdc;
-}
-
-.branch-confirm-cancel-header h3 {
-    margin: 0;
-    color: #2f6b35;
-    font: 700 28px "Montserrat", sans-serif;
-}
-
-.branch-confirm-cancel-close {
-    width: 48px;
-    height: 48px;
-    border: none;
-    border-radius: 50%;
-    background: #ffffff;
-    color: #111111;
-    font-size: 34px;
-    line-height: 1;
-    cursor: pointer;
-}
-
-.branch-confirm-cancel-body {
-    padding: 22px 28px 28px;
-    text-align: center;
-    background: #f8fff8;
-}
-
-.branch-confirm-cancel-icon {
-    width: 72px;
-    height: 72px;
-    margin: 0 auto 18px;
-    border-radius: 50%;
-    background: #f7de8a;
-    color: #8a6a00;
-    font: 700 32px/72px "Montserrat", sans-serif;
-}
-
-.branch-confirm-cancel-message {
-    margin: 0;
-    color: #17371c;
-    font: 600 19px/1.55 "Montserrat", sans-serif;
-}
-
-.branch-confirm-cancel-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 16px;
-    padding: 20px 24px 22px;
-    background: #edf7ed;
-}
-
-.branch-confirm-cancel-btn {
-    min-width: 134px;
-    height: 52px;
-    border-radius: 12px;
-    border: 1px solid transparent;
-    font: 700 18px "Montserrat", sans-serif;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.branch-confirm-cancel-no {
-    background: #ffffff;
-    border-color: #d7e2d7;
-    color: #3f5e43;
-}
-
-.branch-confirm-cancel-yes {
-    background: #2f7b34;
-    color: #ffffff;
-}
-
-.branch-confirm-cancel-no:hover {
-    background: #dce9dc;
-}
-
-.branch-confirm-cancel-yes:hover {
-    background: #256429;
 }
 
 .branch-modal-header {
@@ -484,31 +209,9 @@
 .branch-modal-header h2 {
     margin: 0;
     font: 700 24px "Montserrat", sans-serif;
-    color: #174d17;
 }
 
-.branch-modal-close {
-    width: 40px;
-    height: 40px;
-    border: none;
-    background: #f2f2f2;
-    border-radius: 50%;
-    font-size: 26px;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s ease;
-}
-
-.branch-modal-close:hover {
-    background: #e8ecef;
-}
-
-.branch-modal-body {
-    padding: 24px 32px 20px;
-}
+.branch-modal-body { padding: 24px 32px 20px; }
 
 .branch-modal-footer {
     padding: 20px 32px 24px;
@@ -518,11 +221,14 @@
     justify-content: flex-end;
 }
 
-/* Form Styles */
-.form-group {
-    margin-bottom: 20px;
-}
+/* Custom Modal Colors */
+.branch-edit-modal { background: #edf8ee; }
+.branch-edit-modal .branch-modal-header { background: #7fb889; }
+.branch-view-modal { background: #edf8ee; }
+.branch-view-modal .branch-modal-header { background: #dcefdc; }
 
+/* --- FORM STYLES --- */
+.form-group { margin-bottom: 20px; }
 .form-group label {
     display: block;
     margin-bottom: 8px;
@@ -530,7 +236,7 @@
     color: #374151;
 }
 
-.form-group input {
+.form-group input, .form-group select {
     width: 100%;
     height: 48px;
     border: 1px solid #dadce0;
@@ -538,140 +244,21 @@
     padding: 0 16px;
     font: 500 16px "Montserrat", sans-serif;
     background: #fff;
-    box-sizing: border-box;
 }
 
-.form-group select {
-    width: 100%;
-    height: 48px;
-    border: 1px solid #dadce0;
-    border-radius: 14px;
-    padding: 0 40px 0 16px;
-    font: 500 16px "Montserrat", sans-serif;
-    background: #fff;
-    box-sizing: border-box;
+#edit-branch-status {
+    font-weight: 600;
+    cursor: pointer;
 }
 
-.form-group input:focus {
-    outline: none;
-    border-color: #174d17;
-    box-shadow: 0 0 0 3px rgba(23, 77, 23, 0.1);
-}
+.status-select-active { background-color: #d4edda !important; color: #155724 !important; }
+.status-select-inactive { background-color: #f8d7da !important; color: #721c24 !important; }
 
-.form-group select:focus {
-    outline: none;
-    border-color: #174d17;
-    box-shadow: 0 0 0 3px rgba(23, 77, 23, 0.1);
-}
-
-
-.branch-form-note {
-    margin: 0 0 24px;
-    font: 500 18px "Montserrat", sans-serif;
-    font-style: italic;
-    color: #7f9784;
-}
-
-.form-error {
-    margin: 8px 0 0;
-    font: 600 14px "Montserrat", sans-serif;
-    color: #c62828;
-}
-
-/* Branch Info Display */
-.branch-info {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.info-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.info-row label {
-    min-width: 120px;
-    font: 600 16px "Montserrat", sans-serif;
-    color: #374151;
-}
-
-.info-row span {
-    font: 500 16px "Montserrat", sans-serif;
-    color: #1a1a1a;
-}
-
-/* Responsive Design */
+/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
-    .toolbar {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-    
-    .search-box {
-        flex-direction: column;
-    }
-    
-    .search-box input {
-        width: 100%;
-    }
-    
-    .btn-search,
-    .btn-primary {
-        width: 100%;
-    }
-    
-    .branch-table {
-        font-size: 16px;
-    }
-    
-    .branch-table th,
-    .branch-table td {
-        padding: 12px 8px;
-    }
-    
-    .branch-actions {
-        flex-direction: column;
-        gap: 4px;
-    }
-    
-    .btn-view,
-    .btn-edit,
-    .btn-delete {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .btn-view img,
-    .btn-edit img,
-    .btn-delete img {
-        width: 16px;
-        height: 16px;
-    }
-
-    .branch-delete-mark {
-        font-size: 22px;
-    }
-    
-    .branch-modal {
-        width: 95%;
-        margin: 20px;
-    }
-    
-    .branch-modal-header,
-    .branch-modal-body,
-    .branch-modal-footer {
-        padding: 16px 20px;
-    }
-    
-    .info-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-    }
-    
-    .info-row label {
-        min-width: auto;
-    }
+    .toolbar { flex-direction: column; }
+    .search-box { width: 100%; }
+    .branch-table { font-size: 16px; }
+    .branch-table th, .branch-table td { padding: 12px 8px; }
+    .action-buttons { gap: 8px; }
 }

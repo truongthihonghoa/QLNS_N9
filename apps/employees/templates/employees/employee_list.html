@@ -4,55 +4,59 @@
 {% block title %}Quản lý nhân viên - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'employees/css/employee_list.css' %}?v=5.0">
+    <link rel="stylesheet" href="{% static 'employees/css/employee_list.css' %}?v=5.7">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 {% endblock %}
 
 {% block content %}
 <section class="employee-page">
+    {% if role != 'Nhân viên' %}
     <form method="get" class="employee-toolbar">
         <label class="employee-search" for="employee-search-input">
-            <img src="{% static 'images/search_icon.png' %}" alt="" aria-hidden="true">
-            <input
-                id="employee-search-input"
-                type="text"
-                name="q"
-                value="{{ search_query }}"
-                placeholder="Nhập tên nhân viên"
-            >
+            <i class="fas fa-search" style="color: #666; opacity: 0.6;"></i>
+            <input id="employee-search-input" type="text" name="q" value="{{ search_query }}" placeholder="Nhập tên nhân viên">
         </label>
         <button type="submit" class="toolbar-btn toolbar-btn-primary">Tìm kiếm</button>
+        <div class="employee-filter-branch">
+            <select name="branch" id="branch-filter-select" class="employee-filter-select">
+                <option value="">Tất cả chi nhánh</option>
+                {% for branch in branches %}
+                    <option value="{{ branch.ma_chi_nhanh }}" {% if current_branch == branch.ma_chi_nhanh %}selected{% endif %}>{{ branch.ten_chi_nhanh }}</option>
+                {% endfor %}
+            </select>
+        </div>
         <a href="{% url 'employee_add' %}" class="toolbar-btn toolbar-btn-add">+ Thêm</a>
     </form>
+    {% endif %}
 
-    <div class="employee-board">
+    <div class="employee-board employee-board-rounded">
         {% if employee_cards %}
-            <div class="employee-grid">
+            <div class="employee-grid-modern-row">
                 {% for employee in employee_cards %}
-                    <article class="employee-card" data-detail-url="{% url 'employee_detail' employee_id=employee.ma_nv %}" tabindex="0" role="link" aria-label="Xem chi tiết {{ employee.ho_ten }}">
-                        <div class="employee-avatar {{ employee.theme_class }}">
-                            {% if employee.image_path %}
-                                <img src="{% static employee.image_path %}" alt="{{ employee.ho_ten }}">
+                    <article class="employee-card-modern-row" data-detail-url="{{ employee.detail_url }}" tabindex="0" role="link" aria-label="Xem chi tiết {{ employee.ho_ten }}">
+                        <div class="employee-avatar-modern-row {{ employee.theme_class }}">
+                            {% if employee.image_url %}
+                                <img src="{{ employee.image_url }}" alt="{{ employee.ho_ten }}">
                             {% else %}
                                 <span>{{ employee.initials }}</span>
                             {% endif %}
                         </div>
-                        <div class="employee-card-body">
-                            <h2 class="employee-name">{{ employee.ho_ten }}</h2>
-                            <p class="employee-meta">Mã NV: {{ employee.ma_nv }}</p>
-                            <p class="employee-meta">Sinh: {{ employee.ngay_sinh|date:'d/m/Y' }}</p>
-                            <p class="employee-meta">SDT: {{ employee.sdt }}</p>
-                        </div>
-                        <div class="employee-card-footer">
-                            <span class="employee-role">{{ employee.chuc_vu }}</span>
+                        <div class="employee-info-modern-row">
+                            <div class="employee-name-modern-row">{{ employee.ho_ten }}</div>
+                            <div class="employee-info-row-modern-row"><i class="fa-solid fa-briefcase"></i> <span>{{ employee.chuc_vu }}</span></div>
+                            <div class="employee-info-row-modern-row"><i class="fa-solid fa-phone"></i> <span>{{ employee.sdt }}</span></div>
+                            <div class="employee-info-row-modern-row"><i class="fa-solid fa-cake-candles"></i> <span>Ngày sinh: {{ employee.ngay_sinh|date:'d/m/Y' }}</span></div>
+                            <div class="employee-info-row-modern-row"><i class="fa-solid fa-id-card"></i> <span>Mã NV: {{ employee.ma_nv|default:"N/A" }}</span></div>
                         </div>
                     </article>
                 {% endfor %}
             </div>
         {% else %}
             <div class="employee-empty-state">
+                <i class="fas fa-search"></i>
                 <h2>Không tìm thấy nhân viên phù hợp</h2>
-                <p>Thử lại với tên, mã nhân viên hoặc số điện thoại khác.</p>
+                <p>Vui lòng kiểm tra lại từ khóa tìm kiếm hoặc tên nhân viên.</p>
             </div>
         {% endif %}
     </div>
@@ -60,9 +64,8 @@
     <p class="employee-count">Hiển thị {{ employee_count }} nhân viên</p>
 </section>
 
-{% include 'partials/popup_confirm_delete.html' with delete_popup_title='XÁC NHẬN XÓA' delete_popup_message_1='Chức năng xóa nhân viên chưa được kết nối dữ liệu.' delete_popup_message_2_before='Hiện tại hệ thống chỉ hiển thị xác nhận cho' delete_popup_highlight='"giao diện mới".' %}
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'employees/js/employee_list.js' %}?v=4.0"></script>
+    <script src="{% static 'employees/js/employee_list.js' %}?v=5.4"></script>
 {% endblock %}

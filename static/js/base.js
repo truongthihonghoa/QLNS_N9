@@ -1,6 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded');
     
+    // Highlight active navigation item
+    const currentPath = window.location.pathname;
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    navItems.forEach(item => {
+        const href = item.getAttribute('href');
+        if (href && currentPath.includes(href.replace(/^\//, ''))) {
+            item.classList.add('active');
+        }
+    });
+    
     // User dropdown functionality
     const userDropdown = document.querySelector('.user-dropdown');
     const userDropdownContent = document.querySelector('.user-dropdown-content');

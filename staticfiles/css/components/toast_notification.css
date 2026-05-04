@@ -1,0 +1,65 @@
+/* Toast Notification Styling - Bottom Right */
+.toast-notification {
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
+    z-index: 10005 !important;
+    
+    /* Layout */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 15px !important;
+    
+    /* Styling */
+    background: #ffffff !important;
+    padding: 12px 30px !important;
+    border-radius: 50px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+    border-left: 6px solid #2ecc71 !important;
+    
+    /* Animation & Visibility */
+    transform: translateX(150%) !important;
+    opacity: 0 !important;
+    visibility: hidden;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+    
+    /* Size */
+    width: auto !important;
+    max-width: 90vw !important;
+    white-space: nowrap !important;
+}
+
+.toast-notification.show {
+    transform: translateX(0) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Types */
+.toast-notification.success { border-left-color: #2ecc71 !important; }
+.toast-notification.error { border-left-color: #e74c3c !important; }
+.toast-notification.warning { border-left-color: #f1c40f !important; }
+.toast-notification.info { border-left-color: #3498db !important; }
+
+.toast-message {
+    color: #333333 !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    font-family: "Montserrat", sans-serif !important;
+    margin: 0 !important;
+}
+
+.toast-icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 22px !important;
+    flex-shrink: 0 !important;
+}
+
+/* Icon Colors */
+.toast-notification.success .toast-icon { color: #2ecc71 !important; }
+.toast-notification.error .toast-icon { color: #e74c3c !important; }
+.toast-notification.warning .toast-icon { color: #f1c40f !important; }
+.toast-notification.info .toast-icon { color: #3498db !important; }

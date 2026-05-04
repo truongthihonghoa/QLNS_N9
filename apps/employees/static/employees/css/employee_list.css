@@ -6,44 +6,84 @@
 
 .employee-toolbar {
     display: grid;
-    grid-template-columns: minmax(320px, 1fr) auto auto;
-    gap: 18px;
+    grid-template-columns: 1fr 120px 260px 110px;
+    gap: 12px;
     align-items: center;
+    margin-bottom: 25px;
 }
 
 .employee-search {
     display: flex;
     align-items: center;
     gap: 10px;
-    min-height: 50px;
+    height: 48px;
     padding: 0 14px;
-    background: #ffffff;
+    background: #ffffff !important; /* Luôn trắng */
     border: 1px solid #d8dfdb;
     border-radius: 10px;
+    transition: all 0.2s ease;
+    cursor: text;
+}
+
+.employee-search:focus-within {
+    border-color: #2f7b34;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background: #ffffff !important; /* Giữ trắng khi focus */
+}
+
+#employee-search-input {
+    width: 100%;
+    height: 48px;
+    border: none;
+    outline: none;
+    background: #ffffff !important; /* Luôn trắng */
+    color: #2b2b2b;
+    font: 500 18px "Montserrat", sans-serif;
+    padding: 0 10px;
+}
+
+/* Xử lý lỗi trình duyệt tự đổ màu xám/vàng khi autofill */
+#employee-search-input:-webkit-autofill,
+#employee-search-input:-webkit-autofill:hover,
+#employee-search-input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+    -webkit-text-fill-color: #2b2b2b !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.employee-filter-select {
+    width: 100%;
+    height: 48px;
+    padding: 0 15px;
+    background: #ffffff;
+    border: 1px solid #d8dfdb;
+    border-radius: 5px;
+    font: 600 16px "Montserrat", sans-serif;
+    color: #333;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 15px) center;
+    transition: all 0.2s ease;
+}
+
+.employee-filter-select:focus {
+    border-color: #2f7b34;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .employee-search img {
     width: 16px;
     height: 16px;
     opacity: 0.62;
-}
-
-.employee-search input {
-    width: 100%;
-    border: 0;
-    background: transparent;
-    font-family: "Montserrat", sans-serif;
-    font-size: 14px;
-    color: #243127;
-}
-
-.employee-search input:focus {
-    outline: none;
+    flex-shrink: 0;
 }
 
 .toolbar-btn {
     min-width: 108px;
-    min-height: 46px;
+    min-height: 48px;
     padding: 0 20px;
     border: 0;
     border-radius: 6px;
@@ -71,25 +111,33 @@
     border-radius: 0;
 }
 
+.employee-board.employee-board-rounded {
+    border-radius: 18px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    padding: 18px;
+}
+
 .employee-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px 18px;
+    gap: 12px 12px;
     align-items: flex-start;
+    justify-content: flex-start;
 }
 
 .employee-card {
-    background: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    padding: 8px 9px 10px;
-    min-height: 262px;
-    flex: 0 0 calc((100% - 72px) / 5);
-    max-width: calc((100% - 72px) / 5);
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 8px 8px 8px;
+    min-height: 180px;
+    flex: 0 0 calc((100% - 60px) / 6);
+    max-width: calc((100% - 60px) / 6);
     display: flex;
     flex-direction: column;
     cursor: pointer;
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    transition: transform 0.18s, box-shadow 0.18s;
+    margin-bottom: 8px;
 }
 
 .employee-card:hover,
@@ -100,16 +148,16 @@
 }
 
 .employee-avatar {
-    width: 80px;
-    height: 120px;
-    margin: 0 auto 10px;
-    border-radius: 0;
+    width: 60px;
+    height: 80px;
+    margin: 0 auto 6px;
+    border-radius: 8px;
+    font-size: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #ffffff;
     font-family: "Montserrat", sans-serif;
-    font-size: 30px;
     font-weight: 700;
     letter-spacing: 1px;
     overflow: hidden;
@@ -150,7 +198,7 @@
     margin: 0 0 5px;
     color: #161616;
     font-family: "Montserrat", sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     line-height: 1.35;
 }
@@ -159,12 +207,12 @@
     margin: 0 0 2px;
     color: #666666;
     font-family: "Montserrat", sans-serif;
-    font-size: 10px;
+    font-size: 9.5px;
     line-height: 1.5;
 }
 
 .employee-card-footer {
-    margin-top: 6px;
+    margin-top: 4px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -174,7 +222,7 @@
     display: inline-flex;
     align-items: center;
     min-height: 20px;
-    padding: 0 8px;
+    padding: 0 7px;
     border-radius: 6px;
     color: #ffffff;
     font-family: "Montserrat", sans-serif;
@@ -202,51 +250,386 @@
     background: #7a8593;
 }
 
+/* THỐNG NHẤT GIAO DIỆN EMPTY STATE VỚI BÊN HỢP ĐỒNG */
 .employee-empty-state {
-    min-height: 360px;
-    display: grid;
-    place-items: center;
-    text-align: center;
-    color: #4b5563;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px !important;
+    background: #fff !important;
+    margin: 20px auto !important;
+    border-radius: 12px !important;
+    border: 1px solid #eef2ef !important;
+    text-align: center !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+    width: 100% !important;
+    max-width: 1400px !important;
+}
+
+/* Hiển thị khi không có kết quả grid */
+.employee-board:not(:has(.employee-grid-modern-row)) .employee-empty-state {
+    display: flex !important;
+}
+
+.employee-empty-state i {
+    font-size: 64px !important;
+    color: #cadbd0 !important;
+    margin-bottom: 20px !important;
+    display: block !important;
 }
 
 .employee-empty-state h2 {
-    margin: 0 0 8px;
-    font-family: "Montserrat", sans-serif;
-    font-size: 28px;
-    font-weight: 700;
+    font: 700 24px "Montserrat", sans-serif !important;
+    color: #2f7b34 !important;
+    margin: 0 0 12px !important;
+    padding: 0 !important;
+    text-transform: none !important;
 }
 
-.employee-empty-state p,
+.employee-empty-state p {
+    font: 500 16px "Montserrat", sans-serif !important;
+    color: #666 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 400px !important;
+    line-height: 1.5 !important;
+}
+
 .employee-count {
-    margin: 0;
+    margin: 10px 0 0;
     font-family: "Montserrat", sans-serif;
     font-size: 12px;
     color: #6b7280;
+    text-align: center;
 }
 
-@media (max-width: 900px) {
-    .employee-toolbar {
-        grid-template-columns: 1fr;
-    }
+.employee-list-horizontal {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
 
-    .toolbar-btn {
-        width: 100%;
-    }
+.employee-card-horizontal {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 16px 18px;
+    min-height: 110px;
+    transition: box-shadow 0.18s, transform 0.18s;
+    cursor: pointer;
+    border: 1px solid #e6e6e6;
+}
+.employee-card-horizontal:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    transform: translateY(-2px);
+}
+.employee-avatar-horizontal {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-right: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+}
+.employee-avatar-horizontal img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.employee-info-horizontal {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.employee-info-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+.employee-name-horizontal {
+    font-size: 17px;
+    font-weight: 700;
+    color: #222;
+    margin: 0;
+}
+.employee-role-horizontal {
+    background: #14b63a;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 2px 10px;
+    margin-left: 4px;
+}
+.employee-info-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+}
+.employee-info-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #444;
+    min-width: 180px;
+}
+.employee-info-row i {
+    color: #888;
+    font-size: 15px;
+    min-width: 16px;
+    text-align: center;
+}
 
-    .employee-grid {
-        gap: 14px;
-    }
+.employee-grid-modern {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 18px;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+.employee-card-modern {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 12px 14px 10px 14px;
+    min-height: 210px;
+    flex: 0 0 calc((100% - 90px) / 6);
+    max-width: calc((100% - 90px) / 6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: box-shadow 0.18s, transform 0.18s;
+    border: 1px solid #e6e6e6;
+    position: relative;
+}
+.employee-card-modern:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    transform: translateY(-2px);
+}
+.employee-avatar-modern {
+    width: 70px;
+    height: 70px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+}
+.employee-avatar-modern img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.employee-info-modern {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+.employee-name-modern {
+    font-size: 15px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 2px;
+    margin-top: 0;
+}
+.employee-info-row-modern {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #444;
+    width: 100%;
+    margin-bottom: 1px;
+}
+.employee-info-row-modern i {
+    color: #888;
+    font-size: 13px;
+    min-width: 15px;
+    text-align: center;
+}
+.employee-grid-modern-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    align-items: stretch;
+    justify-content: flex-start;
+}
+.employee-card-modern-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 12px 18px 12px 12px;
+    min-height: 110px;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    cursor: pointer;
+    border: 1px solid #e6e6e6;
+    transition: box-shadow 0.18s, transform 0.18s;
+    box-sizing: border-box;
+}
+.employee-card-modern-row:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    transform: translateY(-2px);
+}
+.employee-avatar-modern-row {
+    width: 70px;
+    height: 90px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+}
+.employee-avatar-modern-row img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.employee-info-modern-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+    width: 100%;
+}
+.employee-name-modern-row {
+    font-size: 15px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 2px;
+    margin-top: 0;
+}
+.employee-info-row-modern-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #444;
+    width: 100%;
+    margin-bottom: 1px;
+}
+.employee-info-row-modern-row i {
+    color: #888;
+    font-size: 13px;
+    min-width: 15px;
+    text-align: center;
+}
 
-    .employee-card {
-        flex: 0 0 calc((100% - 42px) / 4);
-        max-width: calc((100% - 42px) / 4);
+.employee-success-toast {
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    top: auto !important;
+    left: auto !important;
+    z-index: 3000 !important;
+    width: min(390px, calc(100vw - 48px)) !important;
+    min-height: 70px !important;
+    padding: 18px 22px !important;
+    border-radius: 18px !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12) !important;
+    border: 1px solid rgba(15, 107, 32, 0.08) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 16px !important;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) !important;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease !important;
+}
+
+.employee-success-toast.is-visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}
+
+.employee-success-toast-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: #14b63a;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 15px;
+}
+
+.employee-success-toast-content {
+    flex: 1;
+}
+
+.employee-success-toast-message {
+    margin: 0;
+    color: #2f2f2f;
+    font-family: "Montserrat", sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.35;
+    text-align: center;
+}
+/* 1. Khi màn hình nhỏ hơn 1100px: Chuyển sang 2 cột */
+@media (max-width: 1100px) {
+    .employee-grid-modern-row {
+        /* Chỉnh lại lưới thành 2 cột đều nhau */
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px;
     }
 }
 
-@media (max-width: 640px) {
-    .employee-card {
-        flex: 0 0 calc((100% - 14px) / 2);
-        max-width: calc((100% - 14px) / 2);
+/* 2. Khi màn hình nhỏ hơn 768px (Điện thoại): Chuyển sang 1 cột */
+@media (max-width: 768px) {
+    .employee-grid-modern-row {
+        /* Chỉnh lại lưới thành 1 cột duy nhất */
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+
+    .employee-card-modern-row {
+        /* Bỏ giới hạn chiều rộng để thẻ dãn hết màn hình điện thoại */
+        max-width: 100% !important;
+        padding: 10px;
+    }
+
+    /* Điều chỉnh lại thông báo thành công cho mobile */
+    .employee-success-toast {
+        width: calc(100vw - 24px) !important;
+        bottom: 16px !important;
+        right: 12px !important;
     }
 }

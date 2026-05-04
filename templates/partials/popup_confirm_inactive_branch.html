@@ -1,0 +1,20 @@
+{% load static %}
+<div class="confirm-popup-overlay" id="confirm-inactive-popup" aria-hidden="true">
+    <div class="confirm-popup-box">
+        <img class="mdi-light-alert" src="{% static 'images/confirm_icon.png' %}" alt="Confirm Icon" />
+        <div class="heading">
+            <div class="text-wrapper">{{ confirm_cancel_title|default:"NGƯNG HOẠT ĐỘNG" }}</div>
+        </div>
+        <p class="div">
+            {{ confirm_cancel_message|default:"Bạn muốn ngưng hoạt động chi nhánh" }}
+            <strong id="inactive-branch-name"></strong>?
+        </p>
+        <button class="button-no" type="button" id="inactive-popup-cancel-btn">
+            <div class="text-wrapper-2">{{ confirm_cancel_no_label|default:"Không" }}</div>
+        </button>
+        <button class="button-yes" type="button" id="inactive-popup-confirm-btn">
+            <div class="text-wrapper-3">{{ confirm_cancel_yes_label|default:"Đồng ý" }}</div>
+        </button>
+    </div>
+</div>
+

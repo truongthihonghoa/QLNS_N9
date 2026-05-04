@@ -6,9 +6,9 @@
         </div>
     {% else %}
         <div class="form-group">
-            <label for="{{ form.ma_nv.id_for_label }}">Mã nhân viên <span class="required">*</span></label>
+            <label for="{{ form.ma_nv.id_for_label }}">Mã nhân viên</label>
             {{ form.ma_nv }}
-            {% if form.ma_nv.errors %}<p class="field-error">{{ form.ma_nv.errors|join:', ' }}</p>{% endif %}
+            {% if form.ma_nv.errors %}<p class="field-error">{% for error in form.ma_nv.errors %}{% if 'with this' in error %}Mã nhân viên đã tồn tại{% else %}{{ error }}{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</p>{% endif %}
         </div>
     {% endif %}
     <div class="form-group">
@@ -20,7 +20,7 @@
 
 <div class="form-row">
     <div class="form-group">
-        <label for="{{ form.gioi_tinh.id_for_label }}">Giới tính</label>
+        <label for="{{ form.gioi_tinh.id_for_label }}">Giới tính <span class="required">*</span></label>
         {{ form.gioi_tinh }}
         {% if form.gioi_tinh.errors %}<p class="field-error">{{ form.gioi_tinh.errors|join:', ' }}</p>{% endif %}
     </div>
@@ -35,12 +35,12 @@
     <div class="form-group">
         <label for="{{ form.cccd.id_for_label }}">CCCD <span class="required">*</span></label>
         {{ form.cccd }}
-        {% if form.cccd.errors %}<p class="field-error">{{ form.cccd.errors|join:', ' }}</p>{% endif %}
+        {% if form.cccd.errors %}<p class="field-error">{% for error in form.cccd.errors %}{% if 'with this' in error %}CCCD đã tồn tại{% else %}{{ error }}{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</p>{% endif %}
     </div>
     <div class="form-group">
         <label for="{{ form.sdt.id_for_label }}">Số điện thoại <span class="required">*</span></label>
         {{ form.sdt }}
-        {% if form.sdt.errors %}<p class="field-error">{{ form.sdt.errors|join:', ' }}</p>{% endif %}
+        {% if form.sdt.errors %}<p class="field-error">{% for error in form.sdt.errors %}{% if 'with this' in error %}Số điện thoại đã tồn tại{% else %}{{ error }}{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</p>{% endif %}
     </div>
 </div>
 
@@ -48,7 +48,7 @@
     <div class="form-group">
         <label for="{{ form.tk_ngan_hang.id_for_label }}">Tài khoản ngân hàng <span class="required">*</span></label>
         {{ form.tk_ngan_hang }}
-        {% if form.tk_ngan_hang.errors %}<p class="field-error">{{ form.tk_ngan_hang.errors|join:', ' }}</p>{% endif %}
+        {% if form.tk_ngan_hang.errors %}<p class="field-error">{% for error in form.tk_ngan_hang.errors %}{% if 'with this' in error %}Tài khoản ngân hàng đã tồn tại{% else %}{{ error }}{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</p>{% endif %}
     </div>
     <div class="form-group">
         <label for="{{ form.ma_chi_nhanh.id_for_label }}">Chi nhánh <span class="required">*</span></label>
@@ -64,14 +64,8 @@
         {% if form.chuc_vu.errors %}<p class="field-error">{{ form.chuc_vu.errors|join:', ' }}</p>{% endif %}
     </div>
     <div class="form-group">
-        <label for="{{ form.vi_tri_vl.id_for_label }}">Vị trí việc làm <span class="required">*</span></label>
-        {{ form.vi_tri_vl }}
-        {% if form.vi_tri_vl.errors %}<p class="field-error">{{ form.vi_tri_vl.errors|join:', ' }}</p>{% endif %}
+        <label for="{{ form.dia_chi.id_for_label }}">Địa chỉ</label>
+        {{ form.dia_chi }}
+        {% if form.dia_chi.errors %}<p class="field-error">{{ form.dia_chi.errors|join:', ' }}</p>{% endif %}
     </div>
-</div>
-
-<div class="form-group">
-    <label for="{{ form.dia_chi.id_for_label }}">Địa chỉ</label>
-    {{ form.dia_chi }}
-    {% if form.dia_chi.errors %}<p class="field-error">{{ form.dia_chi.errors|join:', ' }}</p>{% endif %}
 </div>

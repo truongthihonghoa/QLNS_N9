@@ -1,0 +1,351 @@
+/* Layout chung */
+.request-approval-page {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+    /* Toolbar & Search */
+    .toolbar { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 16px; 
+        margin-top: 0px;
+        margin-bottom: 10px;
+        width: 100%; 
+    }
+    
+    /* Hàng 1: Thanh tìm kiếm */
+    .search-row { 
+        display: flex; 
+        gap: 16px; 
+        align-items: center; 
+    }
+    .search-box { display: flex; gap: 8px; flex: 1; }
+    .search-box input { flex: 1; height: 48px; border: 1px solid #dadce0; border-radius: 10px; padding: 0 18px; font: 500 18px "Montserrat", sans-serif; }
+    .btn-search { height: 48px; min-width: 130px; border: none; border-radius: 10px; background: rgba(23, 77, 23, 0.87); color: #fff; font: 700 18px "Montserrat", sans-serif; cursor: pointer; }
+    
+    /* Hàng 2: Các dropdown */
+    .filter-row { 
+        display: flex; 
+        gap: 16px; 
+        align-items: center; 
+        flex-wrap: wrap; 
+        margin-top: 15px;
+    }
+    .filter-select { 
+        height: 48px;
+        border: 1.5px solid #e5e7eb; 
+        border-radius: 8px; 
+        padding: 0 12px 0 16px; 
+        background: #ffffff; 
+        font: 400 16px "Montserrat", sans-serif;
+        cursor: pointer; 
+        outline: none; 
+        min-width: 140px; 
+        max-width: 170px; 
+        text-transform: none;
+        color: black;
+        transition: all 0.2s ease;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 14px;
+        padding-right: 32px;
+    }
+    
+    .filter-select:hover {
+        border-color: #d1d5db;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .filter-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Dropdown chi nhánh và loại đề nghị rộng hơn */
+    #branch-filter, #type-filter {
+        min-width: 200px;
+        max-width: 250px;
+    }
+
+    /* Tabs Trạng thái */
+    .status-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #e0e0e0; padding-bottom: 15px; }
+    .status-tab { padding: 10px 25px; border-radius: 25px; font: 600 16px "Montserrat", sans-serif; color: #5c6c7b; cursor: pointer; transition: all 0.2s ease; background: #f1f1f1; }
+    .status-tab.active { background-color: rgba(23, 77, 23, 0.87); color: white; }
+
+    /* Bảng dữ liệu */
+    .request-table-card { background: transparent; border-radius: 14px; overflow: hidden; }
+    .request-table { width: 100%; border-collapse: collapse; }
+    .request-table th { background: rgba(23, 77, 23, 0.84); color: #fff; font: 500 22px "Montserrat", sans-serif; padding: 16px 14px; text-align: center; font-weight: bold; }
+    .request-table tbody tr:nth-child(odd) { background: #ebe7e4; }
+    .request-table tbody tr:nth-child(even) { background: rgba(243, 240, 238, 0.93); }
+    .request-table td { padding: 22px 14px; text-align: center; font: 400 20px "Montserrat", sans-serif; color: #1a1a1a; vertical-align: middle; }
+    
+    /* Khung không tìm thấy kết quả */
+    #no-results { 
+        background: #ffffff; 
+        color: black;
+        text-align: center; 
+        padding: 50px; 
+        font: 600 20px Montserrat; 
+        border-radius: 0 0 14px 14px;
+        border: 1px solid #e0e0e0;
+        margin-top: 0;
+    }
+
+    /* Badge Trạng thái */
+    .badge { font-size: 18px; font-weight: 500; display: inline-block; text-transform: none; }
+    .badge-pending { color: #d97706 !important; }
+    .badge-approved { color: #15803d !important; }
+    .badge-rejected { color: #d32f2f !important; }
+
+    .btn-detail { background-color: #2f7b34; border: 1px solid #2f7b34; color: #ffffff; padding: 8px 20px; border-radius: 8px; font: 700 16px "Montserrat", sans-serif; cursor: pointer; transition: all 0.2s; }
+    .btn-detail:hover { background-color: #27682b; transform: translateY(-2px); }
+
+    /* Modal Overlay */
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.65); display: none; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(5px); overflow-y: auto; flex-shrink: 0; padding-top: 150px;overflow-y: auto; }
+    .modal-box { background: #fff; border-radius: 20px; width: 95%; max-width: 700px; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3); display: flex; flex-direction: column; position: relative; animation: modalFadeInDown 0.3s ease-out; overflow: hidden; }
+
+    @keyframes modalFadeInDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* Chi tiết trong Modal */
+    .modal-header { background: rgba(23, 77, 23, 0.87); padding: 20px 25px; color: white; display: flex; justify-content: space-between; align-items: center; font-weight: bold;}
+    .modal-body { padding: 30px; font-family: "Montserrat", sans-serif; }
+    .profile-header { text-align: center; margin-bottom: 25px; }
+    .profile-icon { font-size: 60px; color: rgba(23, 77, 23, 0.87); margin-bottom: 10px; display: block; }
+    .profile-name { font-size: 24px; font-weight: 700; color: #1a1a1a; margin: 4px 0; }
+    .profile-id-sub { font-size: 15px; color: #666; font-weight: 500; }
+
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 40px; }
+    .detail-item { border-bottom: 1px solid #f0f0f0; padding-bottom: 10px; }
+    .detail-label { font-weight: 700; color: #174d17; font-size: 16px; }
+    .detail-value { font-weight: 500; color: #333; font-size: 15px; margin-top: 4px; }
+
+    .modal-footer-actions { display: flex; padding: 0 30px 30px; gap: 15px; justify-content: center; }
+    .btn-modal-action { flex: 1; height: 50px; border-radius: 10px; border: none; font: 700 16px "Montserrat", sans-serif; cursor: pointer; transition: all 0.2s; }
+
+/* Modal Overlay - Cải thiện cho Tạo/Chỉnh sửa đề nghị */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+    display: none;
+    overflow-y: auto;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 180px 20px 40px; /* Tăng padding-top để lùi xuống thêm một chút nữa */
+}
+
+/* Modal Box - Tối ưu cho form tạo/chỉnh sửa */
+.modal-box {
+    background: #fff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 800px; /* Tăng cho form rộng hơn */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    animation: modalFadeInDown 0.3s ease-out;
+    overflow: hidden;
+}
+
+/* Modal Header - Đồng bộ với trang */
+.modal-header {
+    background: rgba(23, 77, 23, 0.87);
+    padding: 20px 30px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.modal-header button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.modal-header button:hover {
+    opacity: 1;
+}
+
+/* Modal Body - Cải thiện layout */
+.modal-body {
+    padding: 30px;
+    font-family: "Montserrat", sans-serif;
+    background: #fafafa;
+}
+
+/* Form Labels - Tối ưu */
+.modal-body label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #174d17;
+    font-size: 15px;
+}
+
+/* Form Inputs - Đồng bộ với toolbar */
+.modal-body .filter-select,
+.modal-body input[type="date"],
+.modal-body textarea {
+    width: 100%;
+    height: 48px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0 16px;
+    background: #ffffff;
+    font: 400 16px "Montserrat", sans-serif;
+    color: #374151;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.modal-body .filter-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+    padding-right: 40px;
+}
+
+.modal-body textarea {
+    min-height: 100px;
+    padding: 12px 16px;
+    resize: vertical;
+}
+
+/* Focus Effects */
+.modal-body .filter-select:focus,
+.modal-body input[type="date"]:focus,
+.modal-body textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Hover Effects */
+.modal-body .filter-select:hover,
+.modal-body input[type="date"]:hover,
+.modal-body textarea:hover {
+    border-color: #d1d5db;
+}
+
+/* Form Groups - Cải thiện spacing */
+.modal-body > div {
+    margin-bottom: 20px;
+}
+
+.modal-body > div:last-child {
+    margin-bottom: 0;
+}
+
+/* Flex Layout cho date inputs */
+.modal-body > div[style*="display: flex"] > div {
+    flex: 1;
+}
+
+/* Modal Footer - Tối ưu nút bấm */
+.modal-footer-actions {
+    display: flex;
+    gap: 15px;
+    padding: 0 30px 30px;
+    background: #ffffff;
+}
+
+.btn-modal-action {
+    flex: 1;
+    height: 50px;
+    border-radius: 10px;
+    border: none;
+    font: 700 16px "Montserrat", sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-modal-action[style*="background: transparent"] {
+    background: transparent !important;
+    color: #6b7280 !important;
+    border: 2px solid #e5e7eb !important;
+}
+
+.btn-modal-action[style*="background: transparent"]:hover {
+    background: #f9fafb !important;
+    border-color: #d1d5db !important;
+}
+
+.btn-modal-action[style*="background: #174D17"] {
+    background: #174D17 !important;
+    color: white !important;
+}
+
+.btn-modal-action[style*="background: #174D17"]:hover {
+    background: #14532d !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(23, 77, 23, 0.3);
+}
+
+/* Tăng khoảng cách Label theo hình image_1bdefd.png */
+.detail-grid-v2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px 25px; /* Giãn cách hàng 30px */
+    margin-top: 20px;
+}
+
+.info-label {
+    font-weight: 700;
+    color: #174d17;
+    font-size: 15px;
+    margin-bottom: 12px !important; /* Khoảng cách từ nhãn đến ô nội dung */
+    display: block;
+}
+
+.info-value-box {
+    background-color: #f9f9f9;
+    border: 1.5px solid #ececec;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 16px;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+}
+
+/* Nếu là trường 'Lý do' cho nó chiếm hết 2 cột (Full width) */
+.info-group.full-width {
+    grid-column: span 2;
+    margin-top: 10px;
+}
+
+/* Tùy chỉnh riêng cho trạng thái để nó nổi bật */
+.info-value-box.status-pending { color: #d97706; background: #fffbeb; border-color: #fef3c7; }
+.info-value-box.status-approved { color: #15803d; background: #f0fdf4; border-color: #dcfce7; }
+.info-value-box.status-rejected { color: #dc2626; background: #fef2f2; border-color: #fee2e2; }

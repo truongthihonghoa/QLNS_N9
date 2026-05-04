@@ -6,16 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}GE CAFE HRM{% endblock %}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/globals.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_success.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_error.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}?v=2026-05-02-2">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div class="bg-overlay"></div>
-
     <div class="main-container">
         <header class="header">
             <div class="header-left">
@@ -26,51 +29,42 @@
                 <span class="welcome-message">Xin chào, GÉ CAFE</span>
                 <div class="user-dropdown">
                     <img class="user-avatar" src="{% static 'images/user_avatar.png' %}" alt="User Avatar" />
-                    <div class="user-dropdown-content">
-                        <a href="#" id="logout-link">Đăng xuất</a>
-                    </div>
                 </div>
 
-                <div class="notification-bell" id="notification-bell">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge">3</span>
-                    <div class="notification-dropdown" id="notification-dropdown">
-                        <div class="notification-header">
-                            <h3>Notifications</h3>
-                            <a href="#" class="mark-as-read">Mark all as read</a>
-                        </div>
-                        <div class="notification-list">
-                            <div class="notification-item">
-                                <p class="title">Nhân viên A vừa check-in</p>
-                                <p class="description">Vị trí: Pha chế</p>
-                                <p class="time">15 minutes ago</p>
-                            </div>
-                            <div class="notification-item">
-                                <p class="title">Đơn hàng mới đã được tạo</p>
-                                <p class="description">Bởi: Quản lý B</p>
-                                <p class="time">1 hour ago</p>
-                            </div>
-                            <div class="notification-item">
-                                <p class="title">Ca làm sắp bắt đầu</p>
-                                <p class="description">Ca tối, 18:00 - 22:00</p>
-                                <p class="time">3 hours ago</p>
-                            </div>
-                        </div>
-                    </div>
+                <div class="logout-container">
+                    <form action="{% url 'accounts:logout' %}" method="post" id="logout-form" style="display:none;">
+                        {% csrf_token %}
+                    </form>
+                    <a href="javascript:void(0)" onclick="document.getElementById('logout-form').submit();" class="logout-icon" title="Đăng xuất">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
                 </div>
             </div>
         </header>
 
         <nav class="navigation-bar">
-            <a href="{% url 'dashboard' %}" class="nav-item">Tổng quan</a>
-            <a href="{% url 'account_admin_list' %}" class="nav-item">Tài khoản</a>
+            {% if request.user.is_superuser or request.user.is_staff %}
+                <a href="{% url 'dashboard' %}" class="nav-item">Tổng quan</a>
+            {% endif %}
+            {% if request.user.is_superuser or request.user.is_staff %}
+                <a href="{% url 'accounts:account_admin_list' %}" class="nav-item">Tài khoản</a>
+            {% else %}
+                <a href="{% url 'accounts:account_employee_list'%}" class="nav-item">Tài khoản</a>
+            {% endif %}
             <a href="{% url 'branches:branch_admin' %}" class="nav-item">Chi nhánh</a>
             <a href="{% url 'employee_list' %}" class="nav-item">Nhân Viên</a>
             <a href="{% url 'contract_list' %}" class="nav-item">Hợp Đồng</a>
             <a href="{% url 'schedule_list' %}" class="nav-item">Lịch Làm Việc</a>
-            <a href="{% url 'request_list' %}" class="nav-item">Yêu Cầu</a>
-            <a href="{% url 'payroll_list' %}" class="nav-item">Bảng Lương</a>
-            <a href="{% url 'reports:report_list' %}" class="nav-item">Báo Cáo</a>
+            <a href="{% url 'request_list' %}" class="nav-item">Đề Nghị</a>
+            {% if request.user.is_staff or request.user.is_superuser %}
+                <a href="{% url 'payroll_list' %}" class="nav-item">Bảng Lương</a>
+            {% else %}
+                <a href="{% url 'my_salary' %}" class="nav-item">Lương của tôi</a>
+            {% endif %}
+            <a href="{% url 'attendances:attendance_list' %}" class="nav-item">Chấm công</a>
+            {% if request.user.is_superuser or request.user.is_staff %}
+                <a href="{% url 'reports:report_list' %}" class="nav-item">Báo Cáo</a>
+            {% endif %}
         </nav>
 
         <main class="main-content">
@@ -80,9 +74,31 @@
     </div>
 
     {% include 'partials/toast_notification.html' %}
+    {% include 'partials/popup_success.html' %}
+    {% include 'partials/popup_confirm_cancel.html' %}
+    {% include 'partials/popup_error.html' %}
 
     <script src="{% static 'js/base.js' %}"></script>
-    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/main.js' %}?v=1.1"></script>
+    
+    {% if messages %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for message in messages %}
+                {% if 'success' in message.tags %}
+                    window.showToast("{{ message|escapejs }}", "success");
+                {% elif 'error' in message.tags or 'danger' in message.tags %}
+                    window.showToast("{{ message|escapejs }}", "error");
+                {% elif 'warning' in message.tags %}
+                    window.showToast("{{ message|escapejs }}", "warning");
+                {% else %}
+                    window.showToast("{{ message|escapejs }}", "info");
+                {% endif %}
+            {% endfor %}
+        });
+    </script>
+    {% endif %}
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -4,506 +4,800 @@
 {% block title %}Duyệt Yêu Cầu - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-<style>
-    /* General Page Layout */
-    .request-approval-page {
-        padding: 20px 0;
-        min-height: 100vh;
-    }
-
-    /* Toolbar Styling */
-    .toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-
-    .search-filter-group {
-        display: flex;
-        gap: 15px;
-        align-items: center;
-    }
-
-    .search-box {
-        display: flex;
-        gap: 8px;
-    }
-
-    .search-box input {
-        width: 300px;
-        height: 48px;
-        border: 1px solid #dadce0;
-        border-radius: 10px;
-        padding: 0 18px;
-        background: #ffffff;
-        font: 500 18px "Montserrat", sans-serif;
-    }
-
-    .btn-search {
-        height: 48px;
-        min-width: 120px;
-        border: none;
-        border-radius: 8px;
-        background: rgba(23, 77, 23, 0.87);
-        color: #fff;
-        font: 700 18px "Montserrat", sans-serif;
-        cursor: pointer;
-    }
-
-    .filter-select {
-        height: 48px;
-        border: 1px solid #dadce0;
-        border-radius: 10px;
-        padding: 0 15px;
-        background: #ffffff;
-        font: 500 18px "Montserrat", sans-serif;
-        cursor: pointer;
-        outline: none;
-    }
-
-    /* Status Tabs */
-    .status-tabs {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 25px;
-        border-bottom: 1px solid #e0e0e0;
-        padding-bottom: 15px;
-    }
-
-    .status-tab {
-        padding: 10px 25px;
-        border-radius: 25px;
-        font: 600 16px "Montserrat", sans-serif;
-        color: #5c6c7b;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        background: #f1f1f1;
-    }
-
-    .status-tab.active {
-        background-color: rgba(23, 77, 23, 0.87);
-        color: white;
-    }
-
-    /* Table Styling */
-    .request-table-card {
-        margin-top: 18px;
-        background: transparent;
-        border-radius: 14px;
-        overflow: hidden;
-    }
-
-    .request-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .request-table th {
-        background: rgba(23, 77, 23, 0.84);
-        color: #fff;
-        font: 700 22px "Montserrat", sans-serif;
-        padding: 16px 14px;
-        text-align: center;
-    }
-
-    .request-table tbody tr:nth-child(odd) { background: #ebe7e4; }
-    .request-table tbody tr:nth-child(even) { background: rgba(243, 240, 238, 0.93); }
-
-    .request-table td {
-        padding: 22px 14px;
-        text-align: center;
-        font: 500 20px "Montserrat", sans-serif;
-        color: #1a1a1a;
-        vertical-align: middle;
-    }
-
-    .badge {
-        padding: 6px 15px;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: 700;
-        display: inline-block;
-        text-transform: uppercase;
-    }
-
-    .badge-pending { background-color: #f7de8a; color: #8a6a00; }
-    .badge-approved { background-color: #d4edda; color: #155724; }
-    .badge-rejected { background-color: #f8d7da; color: #721c24; }
-
-    .btn-detail {
-        background-color: #ffffff;
-        border: 1px solid #c7b4aa;
-        color: #174d17;
-        padding: 8px 20px;
-        border-radius: 8px;
-        font: 700 16px "Montserrat", sans-serif;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .btn-detail:hover {
-        background-color: #f5f5f5;
-        transform: translateY(-2px);
-    }
-
-    /* Modal Styling */
-    .modal-overlay {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100vw; height: 100vh;
-        background: rgba(0, 0, 0, 0.5);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        backdrop-filter: blur(4px);
-    }
-
-    .modal-box {
-        background: #fff;
-        border-radius: 24px;
-        width: min(450px, 90%);
-        max-height: 90vh;
-        overflow: hidden;
-        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.16);
-        display: flex;
-        flex-direction: column;
-        position: relative;
-    }
-
-    .modal-header {
-        padding: 20px 25px 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-shrink: 0;
-    }
-
-    .modal-title {
-        font: 700 22px "Montserrat", sans-serif;
-        color: #1a1a1a;
-        margin: 0;
-    }
-
-    .modal-close-btn {
-        background: none;
-        border: none;
-        font-size: 32px;
-        color: #99a4b0;
-        cursor: pointer;
-        line-height: 1;
-    }
-
-    .modal-body {
-        padding: 0 30px 30px;
-        font-family: "Montserrat", sans-serif;
-        overflow-y: auto;
-    }
-
-    /* Profile Section */
-    .profile-header {
-        text-align: center;
-        margin-bottom: 25px;
-    }
-
-    .profile-icon {
-        font-size: 60px;
-        color: #5c6c7b;
-        margin-bottom: 10px;
-        display: block;
-    }
-
-    .profile-name {
-        font-size: 24px;
-        font-weight: 700;
-        color: #1a1a1a;
-        margin: 5px 0;
-    }
-
-    .profile-id-sub {
-        font-size: 16px;
-        color: #5c6c7b;
-        font-weight: 500;
-        margin-bottom: 20px;
-    }
-
-    /* Details List */
-    .detail-list {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        text-align: left;
-    }
-
-    .detail-item {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-    }
-
-    .detail-label {
-        font-weight: 700;
-        color: #1a1a1a;
-        font-size: 16px;
-    }
-
-    .detail-value {
-        font-weight: 500;
-        color: #5c6c7b;
-        font-size: 16px;
-    }
-
-    /* Action Buttons in Modal */
-    .modal-footer-actions {
-        display: flex;
-        margin: 0 30px 30px; /* Padding for buttons */
-        gap: 15px;
-        flex-shrink: 0;
-    }
-
-    .btn-modal-action {
-        flex: 1;
-        height: 50px;
-        border-radius: 12px;
-        border: none;
-        font: 700 18px "Montserrat", sans-serif;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s;
-    }
-
-    .btn-modal-approve { background-color: #28a745; color: white; }
-    .btn-modal-reject { background-color: #dc3545; color: white; }
-
-</style>
+    <link rel="stylesheet" href="{% static 'requests/css/request_approval.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="request-approval-page">
-    <!-- Toolbar -->
     <div class="toolbar">
-        <div class="search-filter-group">
+        <!-- Hàng 1: Thanh tìm kiếm -->
+        <div class="search-row">
             <div class="search-box">
                 <input type="text" id="employee-search" placeholder="Nhập tên nhân viên...">
-                <button type="button" id="btn-search" class="btn-search">Tìm kiếm</button>
             </div>
+            <button type="button" id="btn-search" class="btn-search">Tìm kiếm</button>
+        </div>
+
+        <!-- Hàng 2: Các dropdown -->
+        <div class="filter-row">
+            {% if is_admin %}
+            <select id="branch-filter" class="filter-select">
+                <option value="">Tất cả chi nhánh</option>
+                {% for branch in branches %}<option value="{{ branch.ma_chi_nhanh }}">{{ branch.ten_chi_nhanh }}</option>{% endfor %}
+            </select>
+            {% endif %}
+            <select id="month-filter" class="filter-select">
+                <option value="">Tất cả tháng</option>
+                <option value="1">Tháng 1</option>
+                <option value="2">Tháng 2</option>
+                <option value="3">Tháng 3</option>
+                <option value="4">Tháng 4</option>
+                <option value="5">Tháng 5</option>
+                <option value="6">Tháng 6</option>
+                <option value="7">Tháng 7</option>
+                <option value="8">Tháng 8</option>
+                <option value="9">Tháng 9</option>
+                <option value="10">Tháng 10</option>
+                <option value="11">Tháng 11</option>
+                <option value="12">Tháng 12</option>
+            </select>
+            <input type="number" id="year-filter" class="filter-select" placeholder="Năm" min="2020" max="2030" value="{% now 'Y' %}">
             <select id="type-filter" class="filter-select">
-                {% for type in types %}
-                    <option value="{{ type }}">{{ type }}</option>
-                {% endfor %}
+                <option value="">Tất cả loại đề nghị</option>
+                {% for type in types %}<option value="{{ type }}">{{ type }}</option>{% endfor %}
             </select>
         </div>
-        <div class="stats-badge">
-            <span class="badge badge-pending" id="pending-count-badge" style="font-size: 18px;">0 Yêu cầu chờ duyệt</span>
+    </div>
+
+    <div class="status-tabs" style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; gap: 10px;">
+            <div class="status-tab active" data-status="all">Tất cả</div>
+            <div class="status-tab" data-status="pending">Đang chờ duyệt</div>
+            <div class="status-tab" data-status="approved">Đã duyệt</div>
+            <div class="status-tab" data-status="rejected">Từ chối</div>
         </div>
+        {% if not is_admin %}
+        <button type="button" class="status-tab active" style="background-color: rgba(23, 77, 23, 0.87); border: none; height: auto; margin-bottom: 0;" onclick="openSubmitModal()">
+            <i class="fas fa-plus" style="margin-right: 8px;"></i> Đăng ký đề nghị
+        </button>
+        {% endif %}
     </div>
 
-    <!-- Tabs Trạng thái -->
-    <div class="status-tabs">
-        <div class="status-tab active" data-status="all">Tất cả</div>
-        <div class="status-tab" data-status="pending">Đang chờ duyệt</div>
-        <div class="status-tab" data-status="approved">Đã duyệt</div>
-        <div class="status-tab" data-status="rejected">Từ chối</div>
-    </div>
-
-    <!-- Bảng thông tin -->
     <div class="request-table-card">
         <table class="request-table" id="requestTable">
             <thead>
                 <tr>
                     <th>Mã YC</th>
                     <th>Nhân Viên</th>
-                    <th>Loại Yêu Cầu</th>
+                    <th>Loại Đề Nghị</th>
                     <th>Ngày Đăng Ký</th>
                     <th>Trạng Thái</th>
                     <th>Hành Động</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="schedule-tbody">
                 {% for req in requests_data %}
-                <tr class="request-row"
-                    data-type="{{ req.loai_yc }}"
-                    data-name="{{ req.ten_nv|lower }}"
-                    data-status="{{ req.trang_thai_key }}">
-                    <td style="font-weight: 700;">{{ req.ma_dk }}</td>
+                <tr class="request-row" data-type="{{ req.loai_yc }}" data-name="{{ req.ten_nv|lower }}" data-status="{{ req.trang_thai_key }}" data-branch="{{ req.ma_chi_nhanh }}">
+                    <td>{{ req.ma_dk }}</td>
                     <td>{{ req.ten_nv }}</td>
                     <td>{{ req.loai_yc }}</td>
                     <td>{{ req.ngay_dk }}</td>
                     <td><span class="badge badge-{{ req.trang_thai_key }}">{{ req.trang_thai }}</span></td>
                     <td>
-                        <button type="button" class="btn-detail"
-                            onclick="openRequestModal(
-                                '{{ req.ma_nv }}',
-                                '{{ req.ten_nv }}',
-                                '{{ req.ma_dk }}',
-                                '{{ req.chi_tiet_json|escapejs }}',
-                                '{{ req.trang_thai_key }}'
-                            )">
-                            Xem chi tiết
-                        </button>
+                        <button type="button" class="btn-detail" onclick="openRequestModal('{{ req.ma_nv }}', '{{ req.ten_nv }}', '{{ req.ma_dk }}', '{{ req.chi_tiet_json|escapejs }}', '{{ req.trang_thai_key }}')">Xem chi tiết</button>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-
-        <div id="no-results" style="display: none; text-align: center; padding: 50px; font: 600 20px Montserrat; color: #888;">
-            Không tìm thấy yêu cầu nào phù hợp.
-        </div>
+        <div id="no-results" style="display: none; text-align: center; padding: 50px; font: 600 20px Montserrat; color: #888;">Không tìm thấy yêu cầu phù hợp.</div>
     </div>
 </div>
 
-<!-- Modal Chi tiết yêu cầu -->
+<!-- Modal Chi Tiết Đề Nghị (Thiết kế theo image_1cc345.jpg) -->
 <div id="requestDetailModal" class="modal-overlay">
-    <div class="modal-box">
+    <div class="modal-box" style="max-width: 700px;">
         <div class="modal-header">
-            <h2 class="modal-title">Chi tiết yêu cầu</h2>
-            <button type="button" class="modal-close-btn" onclick="closeModal('requestDetailModal')">&times;</button>
+            <h2 style="font-size: 20px; font-weight: 700; margin: 0; text-transform: uppercase;">CHI TIẾT ĐỀ NGHỊ</h2>
+            <button type="button" onclick="closeModal('requestDetailModal')" style="background:none; border:none; font-size:24px; cursor:pointer; color: white;">&times;</button>
         </div>
-        <div class="modal-body">
-            <div class="profile-header">
-                <i class="fas fa-user-circle profile-icon"></i>
-                <h2 class="profile-name" id="modal-nv-name"></h2>
-                <p class="profile-id-sub" id="modal-nv-id-display"></p>
+
+        <div class="modal-body" style="padding: 30px;">
+            <!-- Phần Header Nhân Viên -->
+            <div class="profile-header" style="text-align: center; margin-bottom: 30px;">
+                <i class="fas fa-user-circle" style="font-size: 70px; color: #174d17; margin-bottom: 10px; display: block;"></i>
+                <h2 class="profile-name" id="modal-nv-name" style="font-size: 26px; font-weight: 700; color: #1a1a1a; margin: 5px 0;"></h2>
+                <p class="profile-id-sub" id="modal-nv-id-display" style="font-size: 16px; color: #666; font-weight: 500;"></p>
             </div>
 
-            <div class="detail-list" id="modal-fields-list"></div>
+            <!-- Lưới hiển thị chi tiết (Dữ liệu JS sẽ đổ vào đây) -->
+            <div id="modal-fields-list" class="detail-grid-v2">
+                <!-- JS sẽ render các item có class 'info-group' vào đây -->
+            </div>
         </div>
-        <div class="modal-footer-actions" id="modal-actions">
-            <button type="button" class="btn-modal-action btn-modal-approve" id="modal-btn-approve">
-                ✔ Duyệt
-            </button>
-            <button type="button" class="btn-modal-action btn-modal-reject" id="modal-btn-reject">
-                ✖ Từ chối
-            </button>
+
+        <div id="modal-footer-content" class="modal-footer-actions" style="padding: 0 30px 30px;">
+            <!-- Nút bấm tự động render qua JS -->
         </div>
     </div>
 </div>
 
-<!-- Modal Lý do từ chối -->
-<div id="rejectReasonModal" class="modal-overlay">
-    <div class="modal-box" style="max-width: 450px;">
-        <div class="modal-header" style="background: #efcaca; padding: 15px 25px;">
-            <h2 style="color: #7f1d1d; font-size: 20px; font-weight: 700;">Lý do từ chối</h2>
-            <button type="button" onclick="closeModal('rejectReasonModal')" style="background:none; border:none; font-size:28px; cursor:pointer;">&times;</button>
+<!-- Modal Form Đăng ký/Sửa -->
+<div id="submitRequestModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 800px;">
+        <div class="modal-header">
+            <h2 id="submit-modal-title">ĐĂNG KÝ ĐỀ NGHỊ</h2>
+            <button type="button" onclick="closeModal('submitRequestModal')" style="background:none; border:none; font-size:24px; cursor:pointer; color: white;">&times;</button>
         </div>
-        <div class="modal-body" style="padding: 20px;">
-            <textarea id="rejectReasonText" style="width: 100%; min-height: 100px; padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none;" placeholder="Vui lòng nhập lý do..."></textarea>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button type="button" class="btn-modal-action" style="background:#e0e0e0; color:#5c6c7b; height: 44px; border-radius: 8px;" onclick="closeModal('rejectReasonModal')">Hủy</button>
-                <button type="button" class="btn-modal-action btn-modal-reject" style="height: 44px; border-radius: 8px;" id="finalRejectBtn">Xác nhận</button>
+
+        <div class="modal-body" style="padding: 30px; box-sizing: border-box; ">
+            <!-- 1. Loại đề nghị (Luôn hiện) -->
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #174d17;">Loại đề nghị</label>
+                <select id="req_loai" class="filter-select" style="width: 100%; min-width: auto; height: 45px;" onchange="toggleFields()">
+                    <option value="Nghỉ phép">Nghỉ phép</option>
+                    <option value="Đăng ký ca làm">Đăng ký ca làm</option>
+                </select>
             </div>
+
+            <!-- 2. Nhóm trường dành cho NGHỈ PHÉP -->
+            <div id="group_nghi_phep">
+                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #174d17;">Ngày bắt đầu</label>
+                        <input type="date" id="req_ngay_bd" class="filter-select" style="width: 100%; min-width: auto; padding: 0 15px; height: 45px;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #174d17;">Ngày kết thúc</label>
+                        <input type="date" id="req_ngay_kt" class="filter-select" style="width: 100%; min-width: auto; padding: 0 15px; height: 45px;">
+                    </div>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #174d17;">Lý do nghỉ</label>
+                    <textarea id="req_ly_do" placeholder="Nhập lý do nghỉ cụ thể..." style="width: 100%; min-height: 100px; padding: 15px; border-radius: 10px; border: 1px solid #dadce0; outline: none; font-family: Montserrat; font-size: 16px; box-sizing: border-box;"></textarea>
+                </div>
+            </div>
+
+            <!-- 3. Nhóm trường dành cho ĐĂNG KÝ CA LÀM -->
+            <div id="group_dang_ky_ca" style="display: none;">
+                <div style="display: flex; gap: 20px;">
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #174d17;">Ngày đăng ký làm</label>
+                        <input type="date" id="req_ngay_lam" class="filter-select" style="width: 100%; height: 48px; padding: 0 15px; border-radius: 10px; border: 1px solid #dadce0; box-sizing: border-box;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #174d17;">Chọn ca làm</label>
+                        <select id="req_ca_lam" class="filter-select" style="width: 100%; height: 56px; border-radius: 10px; border: 1px solid #dadce0; font-family: Montserrat;">
+                            <option value="Ca Sáng (06:00 - 12:00)">Ca Sáng (06:00 - 12:00)</option>
+                            <option value="Ca Chiều (12:00 - 17:00)">Ca Chiều (12:00 - 17:00)</option>
+                            <option value="Ca Tối (17:00 - 22:00)">Ca Tối (17:00 - 22:00)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Nút bấm (Luôn hiện ở cuối Modal) -->
+        <div class="modal-footer-actions" style="padding: 0 30px 30px; display: flex; gap: 15px;">
+            <button type="button" class="btn-modal-action"
+                    style="background:transparent; color:#5c6c7b; border: 1px solid #ddd; flex: 1; height: 50px; border-radius: 12px; font-weight: 700; cursor: pointer;"
+                    onclick="handleCancel()">Hủy</button>
+            <button type="button" id="btn-submit-main" class="btn-modal-action"
+                    style="background: #174D17; color: white; border: none; flex: 1; height: 50px; border-radius: 12px; font-weight: 700; cursor: pointer;"
+                    onclick="submitRequest()">Gửi đề nghị</button>
         </div>
     </div>
 </div>
-
+<!-- Cuối block content -->
+{% include 'partials/popup_confirm_delete.html' %}
+{% include 'partials/popup_confirm_cancel.html' %}
 <script>
     let currentRequestId = '';
     let currentStatusFilter = 'all';
+    let currentRequestData = {}; // Lưu trữ để sửa
 
-    function openRequestModal(nvId, nvName, maDk, detailsJson, statusKey) {
-        currentRequestId = maDk;
-        document.getElementById('modal-nv-name').textContent = nvName;
-        document.getElementById('modal-nv-id-display').textContent = 'Mã nhân viên - ' + nvId;
-
-        const listContainer = document.getElementById('modal-fields-list');
-        listContainer.innerHTML = '';
-
-        // Parse JSON string safely
-        try {
-            const details = JSON.parse(detailsJson);
-            details.forEach(item => {
-                listContainer.innerHTML += `
-                    <div class="detail-item">
-                        <span class="detail-label">${item[0]}:</span>
-                        <span class="detail-value">${item[1]}</span>
-                    </div>
-                `;
-            });
-        } catch (e) {
-            console.error("Error parsing details JSON", e);
+    // Hàm helper an toàn để gọi Toast toàn cục
+    function showToast(message, type = 'success') {
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
+        } else {
+            console.log("Toast:", message);
+            alert(message);
         }
-
-        const actionsDiv = document.getElementById('modal-actions');
-        actionsDiv.style.display = (statusKey === 'pending') ? 'flex' : 'none';
-
-        document.getElementById('requestDetailModal').style.display = 'flex';
     }
 
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function openRequestModal(nvId, nvName, maDk, detailsJson, statusKey) {
+    currentRequestId = maDk;
+    document.getElementById('modal-nv-name').textContent = nvName;
+    document.getElementById('modal-nv-id-display').textContent = 'Mã nhân viên: ' + nvId;
 
-    document.getElementById('modal-btn-approve').onclick = () => {
-        if(confirm('Bạn có chắc chắn muốn duyệt yêu cầu này?')) {
-            alert('Đã duyệt thành công!');
-            location.reload();
+    const listContainer = document.getElementById('modal-fields-list');
+    const footer = document.getElementById('modal-footer-content');
+    listContainer.innerHTML = '';
+
+    try {
+        const details = JSON.parse(detailsJson);
+
+        // Lưu data để dùng cho hàm sửa
+        currentRequestData = {
+            loai: details.find(x => x[0].includes('Loại'))?.[1] || '',
+            ngay_bd: details.find(x => x[0].includes('bắt đầu'))?.[1] || '',
+            ngay_kt: details.find(x => x[0].includes('kết thúc'))?.[1] || '',
+            ly_do: details.find(x => x[0].includes('Lý do'))?.[1] || ''
+        };
+
+        // 1. Nhóm: Loại đề nghị + Trạng thái (Ngang hàng)
+        listContainer.innerHTML += `
+            <div class="info-group">
+                <label class="info-label">Loại đề nghị</label>
+                <div class="info-value-box">${currentRequestData.loai}</div>
+            </div>
+            <div class="info-group">
+                <label class="info-label">Trạng thái</label>
+                <div class="info-value-box status-${statusKey}">
+                    ${statusKey === 'pending' ? 'Đang chờ duyệt' : (statusKey === 'approved' ? 'Đã duyệt' : 'Từ chối')}
+                </div>
+            </div>
+        `;
+
+        // 2. Nhóm: Ngày bắt đầu + Ngày kết thúc (Ngang hàng)
+        listContainer.innerHTML += `
+            <div class="info-group">
+                <label class="info-label">Ngày bắt đầu</label>
+                <div class="info-value-box">${currentRequestData.ngay_bd}</div>
+            </div>
+            <div class="info-group">
+                <label class="info-label">Ngày kết thúc</label>
+                <div class="info-value-box">${currentRequestData.ngay_kt}</div>
+            </div>
+        `;
+
+        // 3. Nhóm: Lý do (Rộng ra - Full width)
+        listContainer.innerHTML += `
+            <div class="info-group full-width" style="margin-top: 10px;">
+                <label class="info-label">Lý do / Nội dung chi tiết</label>
+                <div class="info-value-box" style="min-height: 80px; align-items: flex-start; padding-top: 10px;">
+                    ${currentRequestData.ly_do}
+                </div>
+            </div>
+        `;
+
+    } catch (e) { console.error("Lỗi hiển thị:", e); }
+
+    // --- PHẦN NÚT BẤM --- (Giữ nguyên logic phân quyền của bạn)
+    const isAdmin = {{ is_admin|yesno:"true,false" }};
+    console.log('Modal open - isAdmin:', isAdmin, 'statusKey:', statusKey, 'currentRequestId:', currentRequestId);
+    footer.innerHTML = '';
+    if (isAdmin) {
+        if (statusKey === 'pending') {
+            footer.innerHTML = `
+                <button class="btn-modal-action" style="background:#2f7b34; border: 1px solid #2f7b34; color:white;" onclick="approveRequest('${currentRequestId}')">✔ Duyệt</button>
+                <button class="btn-modal-action" style="background:#dc3545; color:white;" onclick="rejectRequest('${currentRequestId}')">✖ Từ chối</button>
+            `;
+            console.log('Rendered approve/reject buttons for request:', currentRequestId);
+        } else {
+            footer.innerHTML = `<button class="btn-modal-action btn-cancel" style="width:100%;" onclick="closeModal('requestDetailModal')">Đóng</button>`;
         }
-    };
+    } else {
+        if (statusKey === 'pending') {
+            footer.innerHTML = `
+                <button class="btn-modal-action" style="background: transparent; color: #E03131; border: 1.5px solid #F1F1F1; flex: 1; height: 50px; border-radius: 12px; font-weight: 700; cursor: pointer; " onclick="confirmDeleteRequest()">Xóa</button>
+                <button class="btn-modal-action" style="background:#1A4314; color: white; font-weight: bold; " onclick="prepareEdit()">Chỉnh sửa</button>
+            `;
+        } else {
+            footer.innerHTML = `<button class="btn-modal-action btn-cancel" style="width:100%;" onclick="closeModal('requestDetailModal')">Đóng</button>`;
+        }
+    }
 
-    document.getElementById('modal-btn-reject').onclick = () => {
-        document.getElementById('rejectReasonText').value = '';
-        document.getElementById('rejectReasonModal').style.display = 'flex';
-    };
+    document.getElementById('requestDetailModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
 
-    document.getElementById('finalRejectBtn').onclick = () => {
-        const reason = document.getElementById('rejectReasonText').value.trim();
-        if(!reason) return alert('Vui lòng nhập lý do!');
-        alert('Đã từ chối yêu cầu với lý do: ' + reason);
-        location.reload();
-    };
+    // --- HÀM CHUẨN BỊ SỬA ---
+    function prepareEdit() {
+        closeModal('requestDetailModal');
+        document.getElementById('submit-modal-title').textContent = "CẬP NHẬT ĐỀ NGHỊ";
+        const submitBtn = document.getElementById('btn-submit-main');
+        submitBtn.textContent = "Cập nhật thay đổi";
+        submitBtn.onclick = function() { updateRequest(currentRequestId); };
 
-    const typeFilter = document.getElementById('type-filter');
-    const employeeSearch = document.getElementById('employee-search');
-    const statusTabs = document.querySelectorAll('.status-tab');
+        // Điền data cũ (Convert date dd/mm/yyyy -> yyyy-mm-dd)
+        const toISO = (d) => d.split('/').reverse().join('-');
+        const loai = currentRequestData.loai.includes('Ca làm') ? 'Đăng ký ca làm' : currentRequestData.loai;
+        document.getElementById('req_loai').value = loai;
+        
+        // Gọi toggleFields để hiển thị đúng nhóm trường
+        toggleFields();
+        
+        if (loai === 'Nghỉ phép') {
+            document.getElementById('req_ngay_bd').value = toISO(currentRequestData.ngay_bd);
+            document.getElementById('req_ngay_kt').value = toISO(currentRequestData.ngay_kt);
+            document.getElementById('req_ly_do').value = currentRequestData.ly_do;
+        } else if (loai === 'Đăng ký ca làm') {
+            document.getElementById('req_ngay_lam').value = toISO(currentRequestData.ngay_bd);
+            document.getElementById('req_ca_lam').value = currentRequestData.ly_do; // Tên ca lưu trong lý do
+        }
 
+        document.getElementById('submitRequestModal').style.display = 'flex';
+    }
+
+    // --- CÁC HÀM API ---
+    function updateRequest(id) {
+        const loai = document.getElementById('req_loai').value;
+        let data = {
+            loai_yeu_cau: loai
+        };
+        
+        if (loai === 'Nghỉ phép') {
+            data.ngay_bd = document.getElementById('req_ngay_bd').value;
+            data.ngay_kt = document.getElementById('req_ngay_kt').value;
+            data.ly_do = document.getElementById('req_ly_do').value;
+        } else if (loai === 'Đăng ký ca làm') {
+            data.ngay_bd = document.getElementById('req_ngay_lam').value;
+            data.ngay_kt = document.getElementById('req_ngay_lam').value; // Cùng ngày
+            data.ly_do = document.getElementById('req_ca_lam').value;
+        }
+        fetch(`/requests/api/update/${id}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+            body: JSON.stringify(data)
+        }).then(res => res.json()).then(res => {
+            if(res.success) { 
+                if (typeof window.showToast === 'function') {
+                    window.showToast(res.message, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    alert(res.message);
+                    location.reload();
+                }
+                closeModal('submitRequestModal'); 
+            }
+            else {
+                if (typeof window.showToast === 'function') {
+                    window.showToast(res.error, 'error');
+                } else {
+                    alert(res.error);
+                }
+            }
+        });
+    }
+
+    // Biến lưu trữ ID đang thao tác
+let pendingRequestId = null;
+
+// --- XỬ LÝ XÓA ---
+function confirmDeleteRequest() {
+    pendingRequestId = currentRequestId;
+    const popup = document.getElementById('confirm-delete-popup');
+    if (popup) {
+        popup.style.display = 'flex'; // Đảm bảo là flex để căn giữa
+        popup.style.zIndex = '10002'; // Ép nó hiện lên trên cùng
+    } else {
+        console.error("Không tìm thấy element confirm-delete-popup");
+    }
+}
+
+
+function executeDelete() {
+    if (!pendingRequestId) {
+        console.log('No pendingRequestId');
+        return;
+    }
+
+    console.log('Deleting request:', pendingRequestId);
+    
+    fetch(`/requests/api/delete/${pendingRequestId}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+    })
+    .then(res => {
+        console.log('Response status:', res.status);
+        return res.json();
+    })
+    .then(res => {
+        console.log('Response data:', res);
+        
+        // Đóng popup xác nhận
+        closeModal('confirm-delete-popup');
+
+        if(res.success) {
+            if (typeof window.showToast === 'function') {
+                window.showToast(res.message, 'success');
+                setTimeout(() => location.reload(), 1200);
+            } else {
+                alert(res.message);
+                location.reload();
+            }
+        } else {
+            if (typeof window.showToast === 'function') {
+                window.showToast(res.error, 'error');
+            } else {
+                alert(res.error);
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Delete error:', error);
+        closeModal('confirm-delete-popup');
+        if (typeof window.showToast === 'function') {
+            window.showToast('Lỗi hệ thống khi xóa yêu cầu', 'error');
+        } else {
+            alert('Lỗi hệ thống khi xóa yêu cầu');
+        }
+    });
+}
+
+// --- XỬ LÝ HỦY (Khi đang sửa hoặc đang nhập mà nhấn Hủy) ---
+    function handleCancel() {
+        // Hiển thị popup hỏi có chắc chắn muốn hủy không
+        document.getElementById('confirm-cancel-popup').style.display = 'flex';
+    }
+
+    function executeCancel() {
+        // Đóng toàn bộ các modal đang mở
+        closeModal('confirm-cancel-popup');
+        closeModal('requestDetailModal');
+        closeModal('submitRequestModal');
+    }
+
+    function submitRequest() {
+        const loai = document.getElementById('req_loai').value;
+        let data = {
+            loai_yeu_cau: loai
+        };
+        
+        // Validation cho ngày không được trong quá khứ
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set về đầu ngày để so sánh
+        
+        if (loai === 'Nghỉ phép') {
+            const ngay_bd = document.getElementById('req_ngay_bd').value;
+            const ngay_kt = document.getElementById('req_ngay_kt').value;
+            
+            if (!ngay_bd || !ngay_kt) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc', 'error');
+                } else {
+                    alert('Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc');
+                }
+                return;
+            }
+            
+            const startDate = new Date(ngay_bd);
+            const endDate = new Date(ngay_kt);
+            
+            // Kiểm tra ngày bắt đầu không được trong quá khứ
+            if (startDate < today) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Ngày bắt đầu không được trong quá khứ', 'error');
+                } else {
+                    alert('Ngày bắt đầu không được trong quá khứ');
+                }
+                return;
+            }
+            
+            // Kiểm tra ngày kết thúc không được trước ngày bắt đầu
+            if (endDate < startDate) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Ngày kết thúc không được trước ngày bắt đầu', 'error');
+                } else {
+                    alert('Ngày kết thúc không được trước ngày bắt đầu');
+                }
+                return;
+            }
+            
+            data.ngay_bd = ngay_bd;
+            data.ngay_kt = ngay_kt;
+            data.ly_do = document.getElementById('req_ly_do').value;
+            
+        } else if (loai === 'Đăng ký ca làm') {
+            const ngay_lam = document.getElementById('req_ngay_lam').value;
+            
+            if (!ngay_lam) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Vui lòng chọn ngày đăng ký làm', 'error');
+                } else {
+                    alert('Vui lòng chọn ngày đăng ký làm');
+                }
+                return;
+            }
+            
+            const workDate = new Date(ngay_lam);
+            
+            // Kiểm tra ngày làm không được trong quá khứ
+            if (workDate < today) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Ngày đăng ký làm không được trong quá khứ', 'error');
+                } else {
+                    alert('Ngày đăng ký làm không được trong quá khứ');
+                }
+                return;
+            }
+            
+            data.ngay_bd = ngay_lam;
+            data.ngay_kt = ngay_lam; // Cùng ngày
+            data.ly_do = document.getElementById('req_ca_lam').value;
+        }
+        
+        // Kiểm tra lý do
+        if (!data.ly_do || data.ly_do.trim() === '') {
+            if (typeof window.showToast === 'function') {
+                window.showToast('Vui lòng nhập lý do', 'error');
+            } else {
+                alert('Vui lòng nhập lý do');
+            }
+            return;
+        }
+        
+        fetch("{% url 'api_submit_request' %}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+            body: JSON.stringify(data)
+        }).then(res => res.json()).then(res => {
+            if(res.success) { 
+                if (typeof window.showToast === 'function') {
+                    window.showToast(res.message, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    alert(res.message);
+                    location.reload();
+                }
+                closeModal('submitRequestModal'); 
+            }
+            else {
+                if (typeof window.showToast === 'function') {
+                    window.showToast(res.error, 'error');
+                } else {
+                    alert(res.error);
+                }
+            }
+        });
+    }
+
+    function openSubmitModal() {
+        document.getElementById('submit-modal-title').textContent = "ĐĂNG KÝ ĐỀ NGHỊ";
+        document.getElementById('btn-submit-main').textContent = "Gửi đề nghị";
+        document.getElementById('btn-submit-main').onclick = submitRequest;
+        document.getElementById('req_ly_do').value = '';
+        document.getElementById('submitRequestModal').style.display = 'flex';
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    function toggleFields() {
+    const loai = document.getElementById('req_loai').value;
+    const groupNghiPhep = document.getElementById('group_nghi_phep');
+    const groupDangKyCa = document.getElementById('group_dang_ky_ca');
+
+    if (loai === 'Nghỉ phép') {
+        groupNghiPhep.style.display = 'block';
+        groupDangKyCa.style.display = 'none';
+    } else {
+        groupNghiPhep.style.display = 'none';
+        groupDangKyCa.style.display = 'block';
+    }
+}
+
+// Khi nhấn "Sửa" từ danh sách, cần đổ dữ liệu vào đúng trường
+function prepareEditFromData(data) {
+    document.getElementById('req_loai').value = data.loai;
+    toggleFields(); // Cập nhật giao diện ẩn/hiện ngay
+
+    if (data.loai === 'Nghỉ phép') {
+        document.getElementById('req_ngay_bd').value = data.ngay_bd;
+        document.getElementById('req_ngay_kt').value = data.ngay_kt;
+        document.getElementById('req_ly_do').value = data.ly_do;
+    } else {
+        document.getElementById('req_ngay_lam').value = data.ngay_bd;
+        document.getElementById('req_ca_lam').value = data.ly_do; // Tên ca lưu vào lý do
+    }
+}
+
+// Event handlers cho tabs và popup
+document.addEventListener('DOMContentLoaded', function() {
+    // Xử lý click cho tabs trạng thái
+    const statusTabs = document.querySelectorAll('.status-tab[data-status]');
+    statusTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Xóa class active khỏi tất cả tabs
+            statusTabs.forEach(t => t.classList.remove('active'));
+            // Thêm class active vào tab được click
+            this.classList.add('active');
+            
+            // Lấy status và lọc dữ liệu
+            const status = this.getAttribute('data-status');
+            currentStatusFilter = status;
+            filterRequests();
+        });
+    });
+    
+    // Hàm lọc requests theo tất cả các bộ lọc
     function filterRequests() {
-        const selectedType = typeFilter.value;
-        const searchText = employeeSearch.value.toLowerCase().trim();
-        const rows = document.querySelectorAll('.request-row');
+        const rows = document.querySelectorAll('#schedule-tbody tr.request-row');
         let visibleCount = 0;
-        let pendingTotal = 0;
-
+        
+        // Lấy giá trị từ các bộ lọc
+        const statusFilter = currentStatusFilter;
+        const nameFilter = document.getElementById('employee-search').value.toLowerCase();
+        const branchFilter = document.getElementById('branch-filter') ? document.getElementById('branch-filter').value : '';
+        const monthFilter = document.getElementById('month-filter').value;
+        const yearFilter = document.getElementById('year-filter').value;
+        const typeFilter = document.getElementById('type-filter').value;
+        
         rows.forEach(row => {
-            const matchesType = (selectedType === '' || row.dataset.type === selectedType);
-            const matchesSearch = row.dataset.name.includes(searchText);
-            const matchesStatus = (currentStatusFilter === 'all' || row.dataset.status === currentStatusFilter);
-
-            if (row.dataset.status === 'pending') pendingTotal++;
-
-            if (matchType && matchesSearch && matchesStatus) {
+            let shouldShow = true;
+            
+            // Filter theo trạng thái
+            const rowStatus = row.getAttribute('data-status');
+            if (statusFilter !== 'all' && rowStatus !== statusFilter) {
+                shouldShow = false;
+            }
+            
+            // Filter theo tên nhân viên
+            const rowName = row.getAttribute('data-name');
+            if (nameFilter && !rowName.includes(nameFilter)) {
+                shouldShow = false;
+            }
+            
+            // Filter theo loại đề nghị
+            const rowType = row.getAttribute('data-type');
+            if (typeFilter && !rowType.includes(typeFilter)) {
+                shouldShow = false;
+            }
+            
+            // Filter theo chi nhánh
+            if (branchFilter) {
+                const rowBranch = row.getAttribute('data-branch');
+                if (rowBranch && rowBranch !== branchFilter) {
+                    shouldShow = false;
+                }
+            }
+            
+            // Filter theo tháng
+            if (monthFilter) {
+                const rowDateText = row.querySelector('td:nth-child(4)').textContent; // Ngày đăng ký
+                const [day, month, year] = rowDateText.split('/');
+                if (month !== monthFilter.padStart(2, '0')) {
+                    shouldShow = false;
+                }
+            }
+            
+            // Filter theo năm
+            if (yearFilter) {
+                const rowDateText = row.querySelector('td:nth-child(4)').textContent; // Ngày đăng ký
+                const [day, month, year] = rowDateText.split('/');
+                if (year !== yearFilter) {
+                    shouldShow = false;
+                }
+            }
+            
+            // Hiển thị/ẩn dòng
+            if (shouldShow) {
                 row.style.display = '';
                 visibleCount++;
             } else {
                 row.style.display = 'none';
             }
         });
-
-        document.getElementById('pending-count-badge').textContent = `${pendingTotal} Yêu cầu chờ duyệt`;
-        document.getElementById('no-results').style.display = visibleCount === 0 ? 'block' : 'none';
-        document.getElementById('requestTable').style.display = visibleCount === 0 ? 'none' : 'table';
-    }
-
-    statusTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            statusTabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            currentStatusFilter = tab.dataset.status;
-            filterRequests();
-        });
-    });
-
-    typeFilter.addEventListener('change', filterRequests);
-    employeeSearch.addEventListener('input', filterRequests);
-    filterRequests();
-
-    window.onclick = (e) => {
-        if (e.target.classList.contains('modal-overlay')) {
-            e.target.style.display = 'none';
+        
+        // Hiển thị/ẩn thông báo không có kết quả
+        const noResults = document.getElementById('no-results');
+        if (visibleCount === 0) {
+            noResults.style.display = 'block';
+        } else {
+            noResults.style.display = 'none';
         }
-    };
+    }
+    
+    // Lưu hàm filterRequests vào global scope để có thể gọi từ nơi khác
+    window.filterRequests = filterRequests;
+    
+    // Event listeners cho các bộ lọc
+    document.getElementById('employee-search').addEventListener('input', filterRequests);
+    const branchFilter = document.getElementById('branch-filter');
+    if (branchFilter) {
+        branchFilter.addEventListener('change', filterRequests);
+    }
+    document.getElementById('month-filter').addEventListener('change', filterRequests);
+    document.getElementById('year-filter').addEventListener('change', filterRequests);
+    document.getElementById('type-filter').addEventListener('change', filterRequests);
+    
+    // Nút "Không" trong popup xóa
+    const deleteNoBtn = document.getElementById('delete-popup-no-btn');
+    if (deleteNoBtn) {
+        deleteNoBtn.addEventListener('click', function() {
+            closeModal('confirm-delete-popup');
+        });
+    }
+    
+    // Nút "Đồng ý" trong popup xóa
+    const deleteYesBtn = document.getElementById('delete-popup-yes-btn');
+    if (deleteYesBtn) {
+        deleteYesBtn.addEventListener('click', function() {
+            executeDelete();
+        });
+    }
+    
+    // Nút "Không" trong popup hủy
+    const cancelNoBtn = document.getElementById('confirm-no-btn');
+    if (cancelNoBtn) {
+        cancelNoBtn.addEventListener('click', function() {
+            closeModal('confirm-cancel-popup');
+        });
+    }
+    
+    // Nút "Đồng ý" trong popup hủy
+    const cancelYesBtn = document.getElementById('confirm-yes-btn');
+    if (cancelYesBtn) {
+        cancelYesBtn.addEventListener('click', function() {
+            executeCancel();
+        });
+    }
+});
+
+// Hàm duyệt yêu cầu - Global scope
+function approveRequest(requestId) {
+    console.log('approveRequest called with ID:', requestId);
+    console.log('Current user is admin:', {{ is_admin|yesno:"true,false" }});
+    console.log('Request URL:', `/requests/approve/${requestId}/`);
+    
+    fetch(`/requests/approve/${requestId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if (data.success) {
+            closeModal('requestDetailModal');
+            showToast('Đã duyệt yêu cầu thành công');
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            alert("Lỗi: " + (data.error || "Có lỗi xảy ra"));
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        alert("Lỗi hệ thống: " + error.message);
+    });
+}
+
+// Hàm từ chối yêu cầu - Global scope  
+function rejectRequest(requestId) {
+    console.log('rejectRequest called with ID:', requestId);
+    fetch(`/requests/reject/${requestId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeModal('requestDetailModal');
+            showToast('Đã từ chối yêu cầu');
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            alert(data.error || "Có lỗi xảy ra");
+        }
+    })
+    .catch(error => {
+        alert("Lỗi hệ thống");
+        console.error(error);
+    });
+}
 </script>
 {% endblock %}

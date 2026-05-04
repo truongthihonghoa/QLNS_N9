@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'branches/css/branch_form.css' %}">
+<link rel="stylesheet" href="{% static 'css/components/popup_confirm_inactive_branch.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <button type="button" class="branch-back-button" onclick="window.location.href='{% url 'branches:branch_list' %}'">
+        Danh sách chi nhánh
+            </button>
+    <h2>{{ title }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.instance.ma_chi_nhanh %}
+        <div>
+            <label>Mã chi nhánh:</label>
+            <input type="text" value="{{ form.instance.ma_chi_nhanh }}" readonly>
+        </div>
+        {% endif %}
+
+        <div>
+            <label for="{{ form.ten_chi_nhanh.id_for_label }}">Tên chi nhánh:</label>
+            {{ form.ten_chi_nhanh }}
+            {{ form.ten_chi_nhanh.errors }}
+        </div>
+
+        <div>
+            <label for="{{ form.dia_chi.id_for_label }}">Địa chỉ:</label>
+            {{ form.dia_chi }}
+            {{ form.dia_chi.errors }}
+        </div>
+
+        <div>
+            <label for="{{ form.sdt.id_for_label }}">Số điện thoại:</label>
+            {{ form.sdt }}
+            {{ form.sdt.errors }}
+        </div>
+
+        <div>
+            <label for="{{ form.ma_nv_ql.id_for_label }}">Mã quản lý CN:</label>
+            {{ form.ma_nv_ql }}
+            {{ form.ma_nv_ql.errors }}
+        </div>
+
+        <div>
+            <label for="{{ form.trang_thai.id_for_label }}">Trạng thái:</label>
+            {{ form.trang_thai }}
+            {{ form.trang_thai.errors }}
+        </div>
+
+        <div class="form-actions">
+            <a href="{% url 'branches:branch_list' %}" class="btn-cancel">HỦY</a>
+            <button type="submit">LƯU</button>
+        </div>
+    </form>
+</div>
+
+{% include 'partials/popup_confirm_cancel.html' %}
+
+{% if form.instance.ma_chi_nhanh %}
+    {% include 'partials/popup_confirm_inactive_branch.html' %}
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const branchId = "{{ form.instance.ma_chi_nhanh|default:'' }}";
+
+    // Confirm cancel popup (create + edit): clicking "Cancel" shows confirmation.
+    const cancelBtn = document.querySelector('.form-actions .btn-cancel');
+    const cancelPopup = document.getElementById('confirm-cancel-popup');
+    const cancelNoBtn = document.getElementById('confirm-no-btn');
+    const cancelYesBtn = document.getElementById('confirm-yes-btn');
+
+    function openCancelPopup() {
+        if (!cancelPopup) return;
+        cancelPopup.style.display = 'flex';
+        cancelPopup.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeCancelPopup() {
+        if (!cancelPopup) return;
+        cancelPopup.style.display = 'none';
+        cancelPopup.setAttribute('aria-hidden', 'true');
+    }
+
+    if (cancelBtn && cancelPopup && cancelNoBtn && cancelYesBtn) {
+        cancelBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            openCancelPopup();
+        });
+
+        cancelNoBtn.addEventListener('click', function () {
+            // Stay on the current form.
+            closeCancelPopup();
+        });
+
+        cancelYesBtn.addEventListener('click', function () {
+            // Go back to the list page.
+            window.location.href = "{% url 'branches:branch_list' %}";
+        });
+
+        cancelPopup.addEventListener('click', function (event) {
+            if (event.target === cancelPopup) {
+                closeCancelPopup();
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeCancelPopup();
+            }
+        });
+    }
+
+    // Deactivate confirmation popup: edit screen only.
+    if (!branchId) {
+        return;
+    }
+
+    const statusSelect = document.getElementById('id_trang_thai');
+    const branchNameInput = document.getElementById('id_ten_chi_nhanh');
+
+    const popup = document.getElementById('confirm-inactive-popup');
+    const popupCancel = document.getElementById('inactive-popup-cancel-btn');
+    const popupConfirm = document.getElementById('inactive-popup-confirm-btn');
+    const popupBranchName = document.getElementById('inactive-branch-name');
+
+    if (!statusSelect || !popup || !popupCancel || !popupConfirm || !popupBranchName) {
+        return;
+    }
+
+    function openPopup() {
+        const branchName = (branchNameInput && branchNameInput.value ? branchNameInput.value : '').trim();
+        popupBranchName.textContent = branchName ? branchName : '(chưa đặt tên)';
+        popup.style.display = 'flex';
+        popup.setAttribute('aria-hidden', 'false');
+    }
+
+    function closePopup() {
+        popup.style.display = 'none';
+        popup.setAttribute('aria-hidden', 'true');
+    }
+
+    let committedStatus = statusSelect.value;
+
+    statusSelect.addEventListener('change', function () {
+        const next = statusSelect.value;
+
+        if (next === 'inactive' && committedStatus !== 'inactive') {
+            openPopup();
+            return;
+        }
+
+        committedStatus = next;
+    });
+
+    popupCancel.addEventListener('click', function () {
+        statusSelect.value = committedStatus;
+        closePopup();
+    });
+
+    popupConfirm.addEventListener('click', function () {
+        committedStatus = 'inactive';
+        statusSelect.value = 'inactive';
+        closePopup();
+    });
+
+    popup.addEventListener('click', function (event) {
+        if (event.target === popup) {
+            statusSelect.value = committedStatus;
+            closePopup();
+        }
+    });
+});
+</script>
+{% endblock %}
+

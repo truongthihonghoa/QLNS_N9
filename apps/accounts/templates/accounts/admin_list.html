@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quản lý tài khoản Admin - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'accounts/css/employee_list.css' %}">
+    <link rel="stylesheet" href="{% static 'payroll/css/payroll_list.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_confirm_cancel.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/toast_notification.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="account-page">
+    <!-- Cấu trúc giống Bảng Lương: Row 1 (Input + Search + Thêm), Row 2 (Chi nhánh) -->
+    <form method="get" action="." class="top-control-bar">
+        <!-- Hàng 1: Tìm kiếm và các nút chính -->
+        <div class="account-toolbar">
+            <div class="account-search-box">
+                <input type="text" name="q" class="search-input-ge" placeholder="Tìm kiếm admin..." value="{{ request.GET.q|default:'' }}">
+            </div>
+            <button type="submit" class="btn-search">Tìm kiếm</button>
+            {% if request.user.is_superuser or request.user.is_staff %}
+                <button type="button" class="btn-create" data-open-modal="add-account-modal">+ Thêm</button>
+            {% endif %}
+        </div>
+
+        <!-- Hàng 2: Chi nhánh -->
+        <div class="toolbar-row">
+            <div class="dropdown-wrapper">
+                <select class="branch-dropdown" name="branch" onchange="this.form.submit()">
+                    {% for branch in branches %}
+                        <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>{{ branch.ten_chi_nhanh }}</option>
+                    {% empty %}
+                        <option value="" selected>Chưa có chi nhánh đang hoạt động</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </form>
+
+    <div class="account-table-card">
+        <table class="account-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Họ tên</th>
+                    <th>Tên đăng nhập</th>
+                    <th>Quyền</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for account in account_rows %}
+                <tr data-account-id="{{ account.ten_dang_nhap }}" class="account-row" data-status="{{ account.trang_thai_key }}">
+                    <td>{{ account.stt }}</td>
+                    <td>{{ account.ho_ten }}</td>
+                    <td>{{ account.ten_dang_nhap }}</td>
+                    <td>{{ account.quyen }}</td>
+                    <td>
+                        <span class="account-status is-{{ account.trang_thai_key }}">
+                            {{ account.trang_thai }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="account-actions">
+                            <button type="button" class="account-icon-btn account-btn-view" title="Xem chi tiết" data-account-id="{{ account.ten_dang_nhap }}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button type="button" class="account-icon-btn account-btn-edit" title="Chỉnh sửa" data-account-id="{{ account.ten_dang_nhap }}">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <button type="button" class="account-icon-btn js-toggle-account" title="Ngưng/Kích hoạt" data-account-id="{{ account.ten_dang_nhap }}" data-account-name="{{ account.ho_ten }}">
+                                <i class="fas fa-user-slash"></i>
+                            </button>
+                        </div>
+                    </td>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Add Account Modal -->
+<div class="account-modal-overlay" id="add-account-modal">
+    <div class="account-modal account-modal-new">
+        <div class="account-modal-header-new">
+            <div class="back-link-wrapper">
+                <span class="back-link" data-close-modal="add-account-modal">Danh sách tài khoản</span>
+            </div>
+            <h2 class="modal-title-main">| THÊM TÀI KHOẢN</h2>
+            <p class="form-note">* Lưu ý: Mọi thông tin bắt buộc không được để trống.</p>
+        </div>
+
+        <div class="modal-body-new">
+            <form id="add-account-form" class="account-form-new-vertical">
+                <!-- Hàng 1: Tên nhân viên -->
+                <div class="form-group-new">
+                    <label for="add-employee-name">Tên nhân viên <span class="required">*</span></label>
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="add-employee-name" name="employee_name" class="form-input-new" placeholder="Nhập tên nhân viên" autocomplete="off" required>
+                        <input type="hidden" id="add-employee-id" name="ma_nv">
+                        <div id="add-employee-suggestions" class="suggestions-list"></div>
+                    </div>
+                    <p id="add-account-exists-error" class="error-text-small" style="display: none;">Đã có tài khoản</p>
+                </div>
+
+                <!-- Hàng 2: Tên đăng nhập & Mật khẩu -->
+                <div class="form-row-2col">
+                    <div class="form-group-new">
+                        <label for="add-username">Tên đăng nhập <span class="required">*</span></label>
+                        <input type="text" id="add-username" name="username" class="form-input-new" placeholder="Nhập tên đăng nhập" required>
+                    </div>
+
+                    <div class="form-group-new">
+                        <label for="add-password">Mật khẩu <span class="required">*</span></label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="add-password" name="password" class="form-input-new" placeholder="Nhập mật khẩu" required>
+                            <button type="button" class="toggle-password-btn" data-target="add-password">
+                                <i class="fas fa-eye eye-icon-fa"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hàng 3: Nhóm quyền -->
+                <div class="form-group-new">
+                    <label for="add-role">Nhóm quyền người dùng <span class="required">*</span></label>
+                    <select id="add-role" name="role" class="form-input-new form-select-new" required>
+                        <option value="">Chọn nhóm quyền</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Quản lý">Quản lý</option>
+                        <option value="Nhân viên">Nhân viên</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <div class="account-modal-footer-new">
+            <button type="button" class="btn-huy modal-cancel-btn">HỦY</button>
+            <button type="button" class="btn-luu" id="add-account-btn">LƯU</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Account Modal -->
+<div class="account-modal-overlay" id="edit-account-modal">
+    <div class="account-modal account-modal-new">
+        <div class="account-modal-header-new">
+            <div class="back-link-wrapper">
+                <span class="back-link" data-close-modal="edit-account-modal">Danh sách tài khoản</span>
+            </div>
+            <h2 class="modal-title-main">| CHỈNH SỬA TÀI KHOẢN</h2>
+            <p class="form-note">* Lưu ý: Mọi thông tin bắt buộc không được để trống.</p>
+        </div>
+
+        <div class="modal-body-new">
+            <form id="edit-account-form" class="account-form-new-vertical">
+                <!-- Hàng 1: Tên nhân viên -->
+                <div class="form-group-new">
+                    <label for="edit-employee-name">Tên nhân viên <span class="required">*</span></label>
+                    <input type="text" id="edit-employee-name" name="employee_name" class="form-input-new" readonly>
+                    <input type="hidden" id="edit-employee-id" name="ma_nv">
+                </div>
+
+                <!-- Hàng 2: Tên đăng nhập & Mật khẩu -->
+                <div class="form-row-2col">
+                    <div class="form-group-new">
+                        <label for="edit-username">Tên đăng nhập <span class="required">*</span></label>
+                        <input type="text" id="edit-username" name="username" class="form-input-new" readonly>
+                    </div>
+
+                    <div class="form-group-new">
+                        <label for="edit-password">Mật khẩu <span class="required">*</span></label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="edit-password" name="password" class="form-input-new" placeholder="Nhập mật khẩu mới">
+                            <button type="button" class="toggle-password-btn" data-target="edit-password">
+                                <i class="fas fa-eye eye-icon-fa"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hàng 3: Nhóm quyền -->
+                <div class="form-group-new">
+                    <label for="edit-role">Nhóm quyền người dùng <span class="required">*</span></label>
+                    <select id="edit-role" name="role" class="form-input-new form-select-new" required>
+                        <option value="">Chọn nhóm quyền</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Quản lý">Quản lý</option>
+                        <option value="Nhân viên">Nhân viên</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <div class="account-modal-footer-new">
+            <button type="button" class="btn-huy modal-cancel-btn">HỦY</button>
+            <button type="button" class="btn-luu" id="edit-account-btn">LƯU</button>
+        </div>
+    </div>
+</div>
+
+<!-- View Account Modal -->
+<div class="account-modal-overlay" id="view-account-modal">
+    <div class="account-modal account-modal-new">
+        <div class="account-modal-header-new">
+            <div class="back-link-wrapper">
+                <span class="back-link" data-close-modal="view-account-modal">Danh sách tài khoản</span>
+            </div>
+            <h2 class="modal-title-main">| XEM TÀI KHOẢN</h2>
+            <p class="form-note">* Chế độ xem thông tin tài khoản.</p>
+        </div>
+
+        <div class="modal-body-new">
+            <form id="view-account-form" class="account-form-new-vertical">
+                <!-- Hàng 1 -->
+                <div class="form-group-new">
+                    <label for="view-employee-name">Tên nhân viên</label>
+                    <input type="text" id="view-employee-name" class="form-input-new" readonly>
+                </div>
+
+                <!-- Hàng 2 -->
+                <div class="form-row-2col">
+                    <div class="form-group-new">
+                        <label for="view-username">Tên đăng nhập</label>
+                        <input type="text" id="view-username" class="form-input-new" readonly>
+                    </div>
+
+                    <div class="form-group-new">
+                        <label for="view-password">Mật khẩu</label>
+                        <input type="password" id="view-password" class="form-input-new" value="********" readonly>
+                    </div>
+                </div>
+
+                <!-- Hàng 3 -->
+                <div class="form-group-new">
+                    <label for="view-role">Nhóm quyền người dùng</label>
+                    <input type="text" id="view-role" class="form-input-new" readonly>
+                </div>
+            </form>
+        </div>
+
+        <div class="account-modal-footer-new">
+            <button type="button" class="btn-luu" id="view-account-btn" style="width: 200px;">ĐÓNG</button>
+        </div>
+    </div>
+</div>
+{% include 'partials/popup_confirm_cancel.html' %}
+{% include 'partials/popup_confirm_delete.html' with delete_popup_title="NGƯNG TÀI KHOẢN" delete_popup_message_1="Bạn có muốn ngưng hoạt động tài khoản này không?" %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Pass Django data to JavaScript
+window.accountsData = {
+    {% for account in account_rows %}
+    '{{ account.ten_dang_nhap }}': {
+        fullname: '{{ account.ho_ten }}',
+        username: '{{ account.ten_dang_nhap }}',
+        role: '{{ account.quyen }}',
+        status: '{{ account.trang_thai }}',
+        statusKey: '{{ account.trang_thai_key }}'
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+};
+
+// Pass all employees for autocomplete
+window.allEmployees = [
+    {% for emp in all_employees %}
+    { ma_nv: '{{ emp.ma_nv }}', ho_ten: '{{ emp.ho_ten }}' }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+// Pass employees who already have accounts
+window.employeesWithAccount = [
+    {% for emp_id in employees_with_account %}
+    '{{ emp_id }}'{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+// Debug: Check data
+console.log('All employees count:', window.allEmployees.length);
+console.log('Employees with account count:', window.employeesWithAccount.length);
+console.log('All employees data:', window.allEmployees);
+</script>
+<script src="{% static 'accounts/js/admin_list.js' %}?v=1.1"></script>
+{% endblock %}

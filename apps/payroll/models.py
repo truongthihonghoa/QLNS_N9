@@ -10,12 +10,14 @@ class Luong(models.Model):
     )
     chi_nhanh = models.ForeignKey(
         'branches.ChiNhanh',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
     )
 
     # ✅ Tách tháng & năm riêng
-    thang = models.IntegerField()
-    nam = models.IntegerField()
+    thang = models.IntegerField(default=1)
+    nam = models.IntegerField(default=2023)
 
     # ✅ Trạng thái có choice (chuẩn)
     TRANG_THAI_CHOICES = [
@@ -30,17 +32,20 @@ class Luong(models.Model):
     )
 
     # --- Lương ---
-    luong_co_ban = models.FloatField()
-    luong_theo_gio = models.FloatField()
+    luong_co_ban = models.FloatField(default=0)
+    luong_theo_gio = models.FloatField(default=0)
 
-    so_ca_lam = models.FloatField()
-    so_gio_lam = models.FloatField()
+    so_ca_lam = models.FloatField(default=0)
+    so_gio_lam = models.FloatField(default=0)
 
     thuong = models.FloatField(default=0)
     phat = models.FloatField(default=0)
 
     # ✅ Tổng lương (auto)
-    tong_luong = models.FloatField()
+    tong_luong = models.FloatField(default=0)
+
+    # Đánh dấu đã gửi bảng lương cho nhân viên (UI: Chưa gửi/Đã gửi)
+    da_gui = models.BooleanField(default=False)
 
     # --- Thời gian ---
     created_at = models.DateTimeField(auto_now_add=True)

@@ -4,215 +4,580 @@
 {% block title %}Báo cáo Tổng hợp - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'reports/css/reports.css' %}?v=2.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="{% static 'reports/css/reports.css' %}?v=3.1">
+<style>
+    /* Owner Dashboard Specific Styles */
+    .dashboard-owner {
+        padding: 5px;
+        background-color: transparent;
+    }
+
+    .report-title-owner {
+        font-size: 24px;
+        font-weight: 700;
+        color: #000000; /* Black */
+        margin-bottom: 20px;
+    }
+
+    /* Filters Card */
+    .filter-card-owner {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        margin-bottom: 24px;
+        display: flex;
+        align-items: flex-end;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group-owner {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+        min-width: 150px;
+    }
+
+    .filter-group-owner label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #000000;
+    }
+
+    .filter-group-owner select,
+    .filter-group-owner input {
+        height: 44px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 0 12px;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .btn-view-owner {
+        background: #174D17; /* Dark green */
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        height: 44px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .btn-view-owner:hover {
+        background: #0d2e0d;
+    }
+
+    .btn-export-owner {
+        background: white;
+        color: #000000;
+        border: 1px solid #000000;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+
+    /* Stats Cards Row */
+    .stats-row-owner {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .stat-card-owner {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .stat-label-owner {
+        font-size: 14px;
+        color: #000000;
+        margin-bottom: 10px;
+        font-weight: 500;
+    }
+
+    .stat-value-owner {
+        font-size: 32px;
+        font-weight: 700;
+        color: #000000;
+    }
+
+    /* Charts Row */
+    .charts-row-owner {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .chart-card-owner {
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        height: 400px;
+        position: relative;
+    }
+
+    .chart-header-owner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .chart-title-owner {
+        font-size: 18px;
+        font-weight: 700;
+        color: #000000;
+    }
+
+    .chart-month-owner {
+        background: #f5f5f5;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        color: #000000;
+    }
+
+    /* Table Card */
+    .table-card-owner {
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .table-header-owner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .table-title-owner {
+        font-size: 20px;
+        font-weight: 700;
+        color: #000000;
+    }
+
+    .table-count-owner {
+        font-size: 14px;
+        color: #000000;
+    }
+
+    .ge-table-owner {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .ge-table-owner th {
+        background: #174D17; /* Dark green header */
+        color: white;
+        text-align: left;
+        padding: 15px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .ge-table-owner td {
+        padding: 15px;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 15px;
+        color: #000000;
+    }
+
+    .ge-table-owner tr:last-child td {
+        border-bottom: none;
+    }
+
+    .emp-name-owner {
+        font-weight: 700;
+    }
+
+    .val-hours-owner {
+        font-weight: 700;
+    }
+
+    .val-leave-paid {
+        color: #C4A484; /* Brownish gold */
+        font-weight: 700;
+    }
+
+    .val-leave-unpaid {
+        color: #E53935; /* Red */
+        font-weight: 700;
+    }
+
+    /* Legend for Donut */
+    .donut-legend {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: #000000;
+    }
+
+    .legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+    }
+
+    .donut-center-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -10%);
+        text-align: center;
+    }
+
+    .donut-center-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #000000;
+    }
+
+    .donut-center-label {
+        font-size: 12px;
+        color: #000000;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="mn-hnh-bao-cao">
-  <div class="background">
-    <!-- Header Section -->
-    <div class="heading-4">
-      <div class="bo-co-tng-hp"><span class="bocotnghp_span">Báo cáo Tổng hợp</span></div>
+<div class="report-management-container">
+
+    {% if show_dashboard %}
+    <!-- ==================== DASHBOARD (OWNER/STAFF) ==================== -->
+    <div class="dashboard-owner">
+        <form method="GET" action="{% url 'reports:report_list' %}" class="filter-card-owner">
+            <div class="filter-group-owner">
+                <label>Chi nhánh</label>
+                <select name="branch">
+                    <option value="">-- Tất cả chi nhánh --</option>
+                    {% for branch in branches %}
+                        <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>
+                            {{ branch.ten_chi_nhanh }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group-owner">
+                <label>Nhân viên</label>
+                <input type="text" name="q" value="{{ q }}" placeholder="Tìm kiếm theo tên...">
+            </div>
+            <div class="filter-group-owner">
+                <label>Chu kỳ lương</label>
+                <select name="month">
+                    <option value="01/2026" {% if selected_month == "01/2026" %}selected{% endif %}>Tháng 1/2026</option>
+                    <option value="02/2026" {% if selected_month == "02/2026" %}selected{% endif %}>Tháng 2/2026</option>
+                    <option value="03/2026" {% if selected_month == "03/2026" %}selected{% endif %}>Tháng 3/2026</option>
+                    <option value="04/2026" {% if selected_month == "04/2026" %}selected{% endif %}>Tháng 4/2026</option>
+                    <option value="05/2026" {% if selected_month == "05/2026" %}selected{% endif %}>Tháng 5/2026</option>
+                </select>
+            </div>
+            <div class="filter-group-owner">
+                <label>Vị trí làm việc</label>
+                <select name="position">
+                    <option value="">Tất cả</option>
+                    {% for pos in positions %}
+                        <option value="{{ pos }}" {% if selected_position == pos %}selected{% endif %}>{{ pos }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn-view-owner">Xem</button>
+            <button type="button" class="btn-export-owner" onclick="showExportToast()">
+                <i class="fas fa-file-export"></i> Xuất báo cáo
+            </button>
+        </form>
+
+        <!-- Stats Cards -->
+        <div class="stats-row-owner">
+            <div class="stat-card-owner">
+                <div class="stat-label-owner">Tổng nhân viên</div>
+                <div class="stat-value-owner">{{ stats.total_employees }}</div>
+            </div>
+            <div class="stat-card-owner">
+                <div class="stat-label-owner">Tổng giờ làm</div>
+                <div class="stat-value-owner">{{ stats.total_hours|floatformat:1 }}h</div>
+            </div>
+            <div class="stat-card-owner">
+                <div class="stat-label-owner">Ngày nghỉ phép</div>
+                <div class="stat-value-owner" style="color: #F1A661;">{{ stats.paid_leave }}</div>
+            </div>
+            <div class="stat-card-owner">
+                <div class="stat-label-owner">Ngày không phép</div>
+                <div class="stat-value-owner" style="color: #E53935;">{{ stats.unpaid_leave }}</div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="charts-row-owner">
+            <!-- Bar Chart -->
+            <div class="chart-card-owner">
+                <div class="chart-header-owner">
+                    <div class="chart-title-owner">Giờ làm theo chức vụ</div>
+                    <div class="chart-month-owner">Tháng {{ selected_month }}</div>
+                </div>
+                <canvas id="hoursByPositionChart"></canvas>
+            </div>
+
+            <!-- Donut Chart -->
+            <div class="chart-card-owner">
+                <div class="chart-header-owner">
+                    <div class="chart-title-owner">Tình trạng nghỉ</div>
+                </div>
+                <div class="donut-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #C4A484;"></div>
+                        <span>Nghỉ phép</span>
+                        <span style="margin-left: auto; font-weight: 700;">{{ stats.paid_leave }} (0%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #E53935;"></div>
+                        <span>Không phép</span>
+                        <span style="margin-left: auto; font-weight: 700;">{{ stats.unpaid_leave }} (100%)</span>
+                    </div>
+                </div>
+                <div style="height: 300px; margin-top: 20px;">
+                    <canvas id="leaveStatusChart"></canvas>
+                </div>
+                <div class="donut-center-text">
+                    <div class="donut-center-value">{{ stats.unpaid_leave }}</div>
+                    <div class="donut-center-label">ngày</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="table-card-owner">
+            <div class="table-header-owner">
+                <div class="table-title-owner">Chi tiết chấm công</div>
+                <div class="table-count-owner">Hiển thị {{ attendance_details|length }} nhân viên</div>
+            </div>
+            <table class="ge-table-owner">
+                <thead>
+                    <tr>
+                        <th>Mã NV</th>
+                        <th>Tên nhân viên</th>
+                        <th>Chức vụ</th>
+                        <th>Tổng giờ làm</th>
+                        <th>Nghỉ phép</th>
+                        <th>Không phép</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detail in attendance_details %}
+                    <tr>
+                        <td>{{ detail.ma_nv }}</td>
+                        <td class="emp-name-owner">{{ detail.ho_ten }}</td>
+                        <td>{{ detail.chuc_vu }}</td>
+                        <td class="val-hours-owner">{{ detail.tong_gio }}h</td>
+                        <td class="val-leave-paid">{{ detail.nghi_phep }}</td>
+                        <td class="val-leave-unpaid">{{ detail.khong_phep }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 48px; color: #000000;">Không tìm thấy dữ liệu.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Table Container -->
-    <div class="table-wrapper">
-      <div class="table-header-bar">
-        <div class="danh-sch-bo-co-lu"><span class="danhschbocolu_span">DANH SÁCH BÁO CÁO ĐÃ LƯU</span></div>
-      </div>
-    <div class="table">
-        <div class="header">
-          <div class="row">
-            <div class="cell"><div class="m-bc"><span class="mbc_span">Mã báo cáo</span></div></div>
-            <div class="cell_01"><div class="thng-nm"><span class="thngnm_span">Kỳ báo cáo</span></div></div>
-            <div class="cell_02"><div class="ngy-bt-u"><span class="ngybtu_span">Từ ngày</span></div></div>
-            <div class="cell_03"><div class="ngy-kt-thc"><span class="ngyktthc_span">Đến ngày</span></div></div>
-            <div class="cell_04"><div class="tng-nhn-vin"><span class="tngnhnvin_span">Số NV</span></div></div>
-            <div class="cell_05"><div class="tng-gi-lm"><span class="tnggilam_span">Tổng giờ</span></div></div>
-            <div class="cell_06"><div class="trng-thi"><span class="trngthi_span">Trạng thái</span></div></div>
-            <div class="cell_action"><div class="thao-tc"><span class="thaotc_span">Chức năng</span></div></div>
-          </div>
-        </div>
-      </div>
-      <div class="body" id="report-table-body">
-        <!-- Row 1 -->
-        <div class="row_01" data-report-id="BC001" data-status="saved">
-            <div class="data"><div class="bc001"><span class="bc001_span">#BC001</span></div></div>
-            <div class="data_01"><div class="thng-012026"><span class="thng012026_span">01/2026</span></div></div>
-            <div class="data_02"><div class="text-01012026"><span class="f1012026_span">01/01/2026</span></div></div>
-            <div class="data_03"><div class="text-31012026"><span class="f31012026_span">31/01/2026</span></div></div>
-            <div class="data_04"><div class="text-5"><span class="f5_span">5</span></div></div>
-            <div class="data_05"><div class="text-851"><span class="f851_span">851</span></div></div>
-            <div class="data_06"><div class="statussaved"><span class="statussaved_span">Đã lưu</span></div></div>
-            <div class="data_action">
-                <button type="button" class="btn-view" data-report-id="BC001" title="Xem">
-                    <img src="{% static 'images/search_icon.png' %}" alt="Xem">
-                </button>
-                <button type="button" class="btn-edit" data-report-id="BC001" title="Sửa">
-                    <img src="{% static 'images/edit_icon.png' %}" alt="Sửa">
-                </button>
-                <button type="button" class="btn-delete" data-report-id="BC001" title="Xóa">
-                    <img src="{% static 'images/delete_icon.png' %}" alt="Xóa">
-                </button>
-                <button type="button" class="btn-export" data-report-id="BC001" title="Xuất/In">
-                    <img src="{% static 'images/edit_icon.png' %}" alt="Xuất/In">
+    {% else %}
+    <!-- ==================== EXISTING MANAGER VIEW ==================== -->
+    <div class="report-toolbar">
+        <div class="report-row">
+            <form method="GET" action="{% url 'reports:report_list' %}" class="search-row" id="search-form">
+                <input type="hidden" name="branch" value="{{ selected_branch }}">
+                <input type="text" name="q" placeholder="Tìm kiếm báo cáo..." value="{{ q }}">
+            </form>
+
+            <div class="button-group">
+                <button type="submit" form="search-form" class="btn-search-ge">Tìm kiếm</button>
+
+                <button class="btn-create-report" id="btn-create-report">
+                    <i class="fas fa-plus" style="margin-right: 8px;"></i> Tạo báo cáo
                 </button>
             </div>
         </div>
-        <!-- Row 2 -->
-        <div class="row_02" data-report-id="BC002" data-status="draft">
-            <div class="data"><div class="bc002"><span class="bc002_span">#BC002</span></div></div>
-            <div class="data_01"><div class="thng-022026"><span class="thng022026_span">02/2026</span></div></div>
-            <div class="data_02"><div class="text-01022026"><span class="f1022026_span">01/02/2026</span></div></div>
-            <div class="data_03"><div class="text-28022026"><span class="f28022026_span">28/02/2026</span></div></div>
-            <div class="data_04"><div class="text-5_01"><span class="f5_01_span">5</span></div></div>
-            <div class="data_05"><div class="text-768"><span class="f768_span">768</span></div></div>
-            <div class="data_06"><div class="statusdraft"><span class="statusdraft_span">Nháp</span></div></div>
-            <div class="data_action">
-                <button type="button" class="btn-view" data-report-id="BC002" title="Xem">
-                    <img src="{% static 'images/search_icon.png' %}" alt="Xem">
-                </button>
-                <button type="button" class="btn-edit" data-report-id="BC002" title="Sửa">
-                    <img src="{% static 'images/edit_icon.png' %}" alt="Sửa">
-                </button>
-                <button type="button" class="btn-delete" data-report-id="BC002" title="Xóa">
-                    <img src="{% static 'images/delete_icon.png' %}" alt="Xóa">
-                </button>
-                <button type="button" class="btn-export" data-report-id="BC002" title="Xuất/In">
-                    <img src="{% static 'images/edit_icon.png' %}" alt="Xuất/In">
-                </button>
-            </div>
+        <div class="toolbar-row">
+            <form method="GET" action="{% url 'reports:report_list' %}" id="branch-form">
+                <input type="hidden" name="q" value="{{ q }}">
+                <select name="branch" class="dropdown-ge" onchange="this.form.submit()">
+                    <option value="">-- Tất cả chi nhánh --</option>
+                    {% for branch in branches %}
+                        <option value="{{ branch.ma_chi_nhanh }}" {% if selected_branch == branch.ma_chi_nhanh %}selected{% endif %}>
+                            {{ branch.ten_chi_nhanh }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
         </div>
-      </div>
     </div>
-  </div>
+
+    <div class="ge-table-card">
+        <table class="ge-main-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Mã BC</th>
+                    <th>Khoảng thời gian</th>
+                    <th>Ngày tạo</th>
+                    <th>Người tạo</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="report-table-body">
+                {% for bc in baocaos %}
+                <tr data-report-id="{{ bc.ma_bc }}">
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ bc.ma_bc }}</strong></td>
+                    <td>{{ bc.ngay_bd|date:"d/m/Y" }} - {{ bc.ngay_kt|date:"d/m/Y" }}</td>
+                    <td>{{ bc.ngay_tao|date:"d/m/Y" }}</td>
+                    <td>{{ bc.ma_tk.ten_dang_nhap }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button type="button" class="btn-action-ge btn-view-ge" title="Xem"><i class="fas fa-eye"></i></button>
+                            <button type="button" class="btn-action-ge btn-edit-ge" title="Sửa"><i class="fas fa-pen"></i></button>
+                            <button type="button" class="btn-action-ge btn-excel-ge" title="Xuất Excel"><i class="fas fa-file-excel"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 48px; color: #000000;">Chưa có báo cáo nào.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modals for Manager View -->
+    {% include 'reports/partials/modals.html' %}
+    {% endif %}
+
 </div>
 
-<!-- ==================== POPUP TẠO BÁO CÁO ==================== -->
-<div id="popup-create" class="popup-overlay" style="display: none;">
-  <div class="to-bc popup-content">
-    <div class="paragraphbackground popup-header">
-      <div class="heading-5-to-bo-co-tng-hp"><span class="heading5tobocotnghp_span">Tạo Báo Cáo Tổng Hợp</span></div>
-      <button type="button" class="btn-close-popup" id="create-close-btn"><span class="symbol_span">&#xf00d;</span></button>
-    </div>
-    <div class="popup-body">
-      <div class="form-row">
-        <div class="container">
-          <div class="label-ngy-bt-u-"><span class="labelngybtu_span">Ngày bắt đầu</span></div>
-          <div class="input">
-            <input type="date" id="create-start-date" class="text-input">
-          </div>
-        </div>
-        <div class="container">
-          <div class="label-ngy-kt-thc"><span class="labelngyktthc_span">Ngày kết thúc</span></div>
-          <div class="input">
-            <input type="date" id="create-end-date" class="text-input">
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="background_01 popup-footer">
-      <button type="button" class="btn-tong-hop" id="create-tonghop-btn"><span class="tnghp_span">Tổng hợp</span></button>
-      <div class="button-group">
-        <button type="button" class="button" id="create-cancel-btn"><span class="hy_span">Hủy</span></button>
-        <button type="button" class="button_01" id="create-save-btn"><span class="lu_span">Lưu</span></button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ==================== POPUP CHỈNH SỬA BÁO CÁO ==================== -->
-<div id="popup-edit" class="popup-overlay" style="display: none;">
-  <div class="chinh-sua-bc popup-content">
-    <div class="paragraphbackground popup-header">
-      <div class="heading-5-chnh-sa-bo-co-tng-hp"><span class="heading5chnhsabocotnghp_span">Chỉnh sửa báo cáo tổng hợp</span></div>
-      <button type="button" class="btn-close-popup" id="edit-close-btn"><span class="symbol_span">&#xf00d;</span></button>
-    </div>
-    <div class="popup-body">
-      <div class="form-row">
-        <div class="container">
-          <div class="label-ngy-bt-u-"><span class="labelngybtu_span_01">Ngày bắt đầu</span></div>
-          <div class="input">
-            <input type="date" id="edit-start-date" class="text-input">
-          </div>
-        </div>
-        <div class="container">
-          <div class="label-ngy-kt-thc"><span class="labelngyktthc_span_01">Ngày kết thúc</span></div>
-          <div class="input">
-            <input type="date" id="edit-end-date" class="text-input">
-          </div>
-        </div>
-      </div>
-      <div class="border">
-        <div class="table data-table">
-          <div class="header-row">
-            <div class="cell"><div class="m-nv"><span class="mnv_span">Mã NV</span></div></div>
-            <div class="cell_01"><div class="tn-nhn-vin"><span class="tnnhnvin_span">Tên Nhân Viên</span></div></div>
-            <div class="cell_02"><div class="gi-lm-thc-t"><span class="gilmthct_span">Giờ làm</span></div></div>
-            <div class="cell_03"><div class="s-ca-sct"><span class="scasct_span">Số ca</span></div></div>
-            <div class="cell_05"><div class="thng"><span class="thng_span">Thưởng</span></div></div>
-            <div class="cell_06"><div class="pht-i-munvng"><span class="phtimunvng_span">Phạt</span></div></div>
-          </div>
-          <div class="body" id="edit-data-body">
-            <div class="row">
-              <div class="data"><div class="nv001"><span class="nv001_span">NV001</span></div></div>
-              <div class="data_01"><div class="nguyn-vn-a"><span class="nguynvna_span">Nguyễn Văn A</span></div></div>
-              <div class="data_02"><div class="text-176"><span class="f76_span">176</span></div></div>
-              <div class="data_03"><div class="text-15105"><span class="f5105_span">15/10/5</span></div></div>
-              <div class="data_05"><div class="text-500000-"><span class="f00000_span">500,000 ₫</span></div></div>
-              <div class="data_06"><div class="text-0-"><span class="f_span">0 ₫</span></div></div>
-            </div>
-            <div class="row row_01">
-              <div class="data_07"><div class="nv002"><span class="nv002_span">NV002</span></div></div>
-              <div class="data_08"><div class="trn-th-b"><span class="trnthb_span">Trần Thị B</span></div></div>
-              <div class="data_09"><div class="text-160"><span class="f60_span">160</span></div></div>
-              <div class="data_10"><div class="text-10200"><span class="f0200_span">10/20/0</span></div></div>
-              <div class="data_12"><div class="text-200000-"><span class="f00000_span_01">200,000 ₫</span></div></div>
-              <div class="data_13"><div class="text-50000-"><span class="f0000_span">50,000 ₫</span></div></div>
-            </div>
-            <div class="row row_02">
-              <div class="data_14"><div class="nv003"><span class="nv003_span">NV003</span></div></div>
-              <div class="data_15"><div class="l-vn-c"><span class="lvnc_span">Lê Văn C</span></div></div>
-              <div class="data_16"><div class="text-180"><span class="f80_span">180</span></div></div>
-              <div class="data_17"><div class="text-101010"><span class="f01010_span">10/10/10</span></div></div>
-              <div class="data_19"><div class="text-1000000-"><span class="f000000_span">1,000,000 ₫</span></div></div>
-              <div class="data_20"><div class="text-0-_01"><span class="f_01_span">0 ₫</span></div></div>
-            </div>
-            <div class="row row_03">
-              <div class="data_21"><div class="nv004"><span class="nv004_span">NV004</span></div></div>
-              <div class="data_22"><div class="phm-th-d"><span class="phmthd_span">Phạm Thị D</span></div></div>
-              <div class="data_23"><div class="text-165"><span class="f65_span">165</span></div></div>
-              <div class="data_24"><div class="text-12810"><span class="f2810_span">12/8/10</span></div></div>
-              <div class="data_25"><div class="text-300000-"><span class="f00000_span_02">300,000 ₫</span></div></div>
-              <div class="data_26"><div class="text-100000-"><span class="f00000_span_03">100,000 ₫</span></div></div>
-            </div>
-            <div class="row row_04">
-              <div class="data_27"><div class="nv005"><span class="nv005_span">NV005</span></div></div>
-              <div class="data_28"><div class="hoang-vn-e"><span class="hoangvne_span">Hoàng Văn E</span></div></div>
-              <div class="data_29"><div class="text-170"><span class="f70_span">170</span></div></div>
-              <div class="data_30"><div class="text-14124"><span class="f4124_span">14/12/4</span></div></div>
-              <div class="data_31"><div class="text-400000-"><span class="f00000_span_04">400,000 ₫</span></div></div>
-              <div class="data_32"><div class="text-0-_02"><span class="f_02_span">0 ₫</span></div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="background popup-footer">
-      <button type="button" class="button" id="edit-cancel-btn"><span class="hy_span">Hủy</span></button>
-      <button type="button" class="button_01" id="edit-save-btn"><span class="lu_span">Lưu</span></button>
-    </div>
-  </div>
-</div>
-
-<!-- Toast notification -->
-<div id="toast" class="toast" style="display: none;">
-  <span id="toast-text"></span>
-</div>
 
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% if show_dashboard %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Data from server
+        const hoursByPosData = JSON.parse('{{ chart_hours_by_pos|safe }}');
+        const leaveStatusData = JSON.parse('{{ chart_leave_status|safe }}');
+
+        // 1. Bar Chart: Giờ làm theo chức vụ
+        const barCtx = document.getElementById('hoursByPositionChart').getContext('2d');
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: hoursByPosData.map(item => item.label),
+                datasets: [{
+                    label: 'Số giờ làm',
+                    data: hoursByPosData.map(item => item.value),
+                    backgroundColor: '#C4A484', // Brown color from screenshot
+                    borderRadius: 4,
+                    barThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { drawBorder: false, color: '#f0f0f0' },
+                        ticks: { stepSize: 5 }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // 2. Donut Chart: Tình trạng nghỉ
+        const donutCtx = document.getElementById('leaveStatusChart').getContext('2d');
+        const totalLeave = leaveStatusData.reduce((a, b) => a + b.value, 0);
+
+        // Update percentages in legend
+        const legendValueSpans = document.querySelectorAll('.legend-item span[style*="font-weight: 700"]');
+        if (legendValueSpans.length >= 2) {
+            const pVal = leaveStatusData[0].value;
+            const uVal = leaveStatusData[1].value;
+            const pPct = totalLeave > 0 ? Math.round((pVal / totalLeave) * 100) : 0;
+            const uPct = totalLeave > 0 ? (100 - pPct) : 0;
+
+            legendValueSpans[0].innerText = `${pVal} (${pPct}%)`;
+            legendValueSpans[1].innerText = `${uVal} (${uPct}%)`;
+        }
+
+        new Chart(donutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: leaveStatusData.map(item => item.label),
+                datasets: [{
+                    data: leaveStatusData.map(item => item.value),
+                    backgroundColor: leaveStatusData.map(item => item.color),
+                    borderWidth: 0,
+                    cutout: '80%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    });
+
+    function showExportToast() {
+        if (typeof window.showToast === 'function') {
+            window.showToast("Đang xuất báo cáo...", "info");
+            setTimeout(() => {
+                window.showToast("Xuất báo cáo thành công!", "success");
+            }, 2000);
+        } else {
+            alert("Xuất báo cáo thành công!");
+        }
+    }
+</script>
+{% else %}
 <script src="{% static 'reports/js/reports.js' %}"></script>
+<!-- Existing manager scripts -->
+{% endif %}
 {% endblock %}

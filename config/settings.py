@@ -14,7 +14,8 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+import os
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-zgydl66m1*p(klmxyqvot9*eyla9h1a$$9r)j!dv6qkhr_-8qn
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -46,6 +47,8 @@ INSTALLED_APPS = [
     'apps.reports',
     'apps.requests',
     'apps.schedules',
+    'apps.attendances',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -79,12 +82,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
+# KẾT NỐI LẠI VỚI POSTGRESQL (SUPABASE) CỦA NHÓM
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.zuppllveaerdrgtxqtgm',
+        'PASSWORD': 'QLNS_n9123}',
+        'HOST': 'aws-1-ap-northeast-2.pooler.supabase.com',
+        'PORT': '6543',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
 
@@ -113,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Ho_Chi_Minh'
 
 USE_I18N = True
 
@@ -122,10 +131,19 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
-
+LOGIN_URL = '/accounts/login/'
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
+    BASE_DIR / 'apps' / 'accounts' / 'static',
+    BASE_DIR / 'apps' / 'branches' / 'static',
+    BASE_DIR / 'apps' / 'contracts' / 'static',
+    BASE_DIR / 'apps' / 'employees' / 'static',
+    BASE_DIR / 'apps' / 'payroll' / 'static',
+    BASE_DIR / 'apps' / 'reports' / 'static',
+    BASE_DIR / 'apps' / 'requests' / 'static',
+    BASE_DIR / 'apps' / 'schedules' / 'static',
+    BASE_DIR / 'apps' / 'attendances' / 'static',
 ]
 
 # Media files (User uploaded files)

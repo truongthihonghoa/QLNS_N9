@@ -1,170 +1,916 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Lịch Làm Việc - {{ block.super }}{% endblock %}
+{% block title %}Quản lý lịch làm việc - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'schedules/css/schedule_grid.css' %}?v=1.6">
-    <style>
-        .schedule-page {
-            padding-top: 60px;
-        }
+<!-- Load CSS cho Popup va Toast -->
+<link rel="stylesheet" href="{% static 'css/components/popup_confirm_delete.css' %}">
+<!-- FullCalendar CSS -->
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+<!-- Redesign CSS -->
+<link rel="stylesheet" href="{% static 'css/schedules/calendar_redesign.css' %}">
 
-        /* Container bao quanh cả Dropdown và Nút để căn chỉnh cùng nhau */
-        .controls-wrapper {
-            position: absolute;
-            top: -65px;
-            left: 0;
-            display: flex;
-            gap: 15px; /* Khoảng cách giữa dropdown và nút */
-            align-items: center;
-            z-index: 1000;
-        }
+<style>
+    /* Premium overrides */
+    #calendar .fc-header-toolbar {
+        display: none !important;
+        /* We use our custom toolbar for the main calendar */
+    }
 
-        .branch-dropdown {
-            padding: 10px 15px;
-            border-radius: 12px;
-            border: 1px solid #ddd;
-            font-size: 15px;
-            background-color: #ffffff;
-            cursor: pointer;
-            min-width: 250px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            color: #33475b;
-            font-weight: 500;
-        }
+    /* Fix stacking context for modals */
+    .main-content {
+        z-index: auto !important;
+    }
+</style>
 
-        .branch-dropdown:hover {
-            border-color: #406a45;
-        }
-
-        /* Style cho nút Tạo lịch làm việc */
-        .btn-create-schedule {
-            background-color: #406a45;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: none;
-        }
-
-        .btn-create-schedule:hover {
-            background-color: #315235;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-            color: white;
-        }
-
-        .btn-create-schedule i {
-            font-size: 14px;
-        }
-    </style>
 {% endblock %}
 
 {% block content %}
-<section class="schedule-page">
-    <div class="schedule-layout">
-        <div class="schedule-board-card">
-
-            <!-- Vùng điều khiển chứa Dropdown và Nút Tạo lịch -->
-            <div class="controls-wrapper">
-                <div class="branch-filter-container-inline">
-                    <select id="branch-filter" class="branch-dropdown">
-                        {% if branch_options %}
-                            {% for branch in branch_options %}
-                                <option value="{{ branch.MaChiNhanh }}">
-                                    Chi nhánh {{ branch.Ten_Chi_Nhanh }}
-                                </option>
-                            {% endfor %}
-                        {% else %}
-                            <option value="CN001">Chi nhánh Hải Châu</option>
-                            <option value="CN002">Chi nhánh Thanh Khê</option>
-                            <option value="CN003">Chi nhánh Liên Chiểu</option>
-                        {% endif %}
-                    </select>
-                </div>
-
-                <a href="{% url 'schedule_create' %}" class="btn-create-schedule">
-                    <i class="fas fa-plus"></i> Tạo lịch làm việc
-                </a>
-            </div>
-
-            <div class="schedule-board" id="schedule-board"></div>
+<!-- 1. Custom Toolbar (Premium Style) -->
+<div class="odoo-toolbar">
+    <div class="toolbar-left-section" style="display: flex; align-items: center; gap: 20px;">
+        <div class="toolbar-left">
+            {% if is_admin %}
+            <a href="{% url 'schedule_create' %}" class="btn-premium"><i class="fas fa-plus"></i> TẠO LỊCH</a>
+            {% endif %}
         </div>
 
-        <aside class="schedule-sidebar">
-            <div class="calendar-card">
-                <div class="calendar-card-header">
-                    <button type="button" class="calendar-nav-btn" id="prev-week-btn" aria-label="Tuần trước">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <h2 id="calendar-title">Tháng 3 2026</h2>
-                    <button type="button" class="calendar-nav-btn" id="next-week-btn" aria-label="Tuần sau">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-                <p class="calendar-week-range" id="current-week-label">16/3 - 22/3</p>
-                <div class="mini-calendar" id="mini-calendar"></div>
-            </div>
+        <div class="toolbar-nav-group" style="display: flex; align-items: center; gap: 10px;">
+            <div style="display: flex; background: #F3F4F6; border-radius: 50px; padding: 4px;">
+                <button class="btn-premium-nav" onclick="calendar.prev()"><i class="fas fa-chevron-left"></i></button>
 
-            <div class="schedule-note-card">
-                <h3>Ghi chú ca</h3>
-                <div class="schedule-note-list">
-                    <p>Ca sáng: 06:00 - 12:00</p>
-                    <p>Ca chiều: 12:00 - 17:00</p>
-                    <p>Ca tối: 17:00 - 22:00</p>
+                <div class="dropdown" style="position: relative;">
+                    <button class="btn-premium-nav" id="current-view-label"
+                        style="min-width: 80px; text-transform: uppercase;">TUẦN</button>
+                    <div class="dropdown-content" style="min-width: 120px; border-radius: 12px; top: 110%;">
+                        <a href="#" onclick="calendar.changeView('timeGridDay'); return false;">Ngày</a>
+                        <a href="#" onclick="calendar.changeView('timeGridWeek'); return false;">Tuần</a>
+                        <a href="#" onclick="calendar.changeView('dayGridMonth'); return false;">Tháng</a>
+                    </div>
                 </div>
+
+                <button class="btn-premium-nav" onclick="calendar.next()"><i class="fas fa-chevron-right"></i></button>
             </div>
-        </aside>
+            <button class="btn-premium-nav" onclick="calendar.today()"
+                style="padding: 10px 20px !important; background: var(--primary-green) !important; color: white !important;">HÔM
+                NAY</button>
+        </div>
     </div>
-</section>
 
-<div id="shift-detail-modal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="modal-title">Chi tiết ca làm</h2>
-            <button id="modal-close-btn" class="close-btn">&times;</button>
+    <div class="toolbar-right-section" style="display: flex; align-items: center; gap: 25px;">
+        <div class="branch-filter-pill">
+            {% if is_admin %}
+            <select id="branch-filter" onchange="filterCalendar()">
+                <option value="all">TẤT CẢ CHI NHÁNH</option>
+                {% for branch in branches %}
+                <option value="{{ branch.ten_chi_nhanh }}" {% if selected_branch == branch.ten_chi_nhanh %}selected{% endif %}>
+                    {{ branch.ten_chi_nhanh|upper }}
+                </option>
+                {% endfor %}
+            </select>
+            {% else %}
+            <!-- Nhân viên chỉ thấy chi nhánh của mình, không thể chọn -->
+            <select id="branch-filter" disabled>
+                <option value="{{ user_branch.ten_chi_nhanh|upper }}" selected>{{ user_branch.ten_chi_nhanh|upper }}</option>
+            </select>
+            {% endif %}
         </div>
-        <div class="modal-body">
-            <div class="shift-info">
-                <div class="info-item"><strong>Mã lịch:</strong> <span id="modal-schedule-id"></span></div>
-                <div class="info-item"><strong>Ngày làm:</strong> <span id="modal-date"></span></div>
-                <div class="info-item"><strong>Khung giờ:</strong> <span id="modal-shift-time"></span></div>
-                <div class="info-item"><strong>Trạng thái:</strong> <span id="modal-status"></span></div>
-                <div class="info-item"><strong>Ngày tạo:</strong> <span id="modal-created-date"></span></div>
+
+        <div class="toolbar-actions" style="display: flex; align-items: center; gap: 10px;">
+            <div class="search-input-pill">
+                <i class="fas fa-search"></i>
+                <input type="text" id="schedule-search" placeholder="Tìm kiếm tên..." oninput="filterCalendar()">
             </div>
 
-            <h3 class="employee-list-title">Danh sách nhân viên</h3>
-            <div class="employee-table-container">
-                <table class="employee-table">
-                    <thead>
-                        <tr>
-                            <th><input type="checkbox" id="select-all-employees"></th>
-                            <th>Mã NV</th>
-                            <th>Tên Nhân Viên</th>
-                            <th>Vị Trí</th>
-                            <th>Trạng Thái</th>
-                        </tr>
-                    </thead>
-                    <tbody id="modal-employee-list"></tbody>
-                </table>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button id="modal-send-notification-btn" class="modal-btn primary">Gửi Thông Báo</button>
-            <button id="modal-confirm-btn" class="modal-btn">Xác Nhận</button>
+            <button class="btn-premium" onclick="filterCalendar()">
+                <i class="fas fa-search"></i> TÌM KIẾM
+            </button>
+
+            {% if is_admin %}
+            <button class="btn-premium" onclick="handleSendNotifications()"
+                style="background: #28a745 !important; margin-left: 5px;">
+                <i class="fas fa-paper-plane"></i> GỬI THÔNG BÁO
+            </button>
+            {% endif %}
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
-    <script src="{% static 'schedules/js/schedule_grid.js' %}?v=1.5"></script>
+
+
+<div class="schedule-layout">
+    <!-- 2. MAIN CALENDAR AREA -->
+    <div class="calendar-main">
+        <div id="calendar" style="padding: 20px;"></div>
+    </div>
+
+    <!-- 3. SIDEBAR -->
+    <div class="calendar-sidebar">
+        <div class="sidebar-section">
+            <div id="mini-calendar"></div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">
+                <span><i class="fas fa-users"></i> NHÂN VIÊN</span>
+                <button class="btn-outline-green" onclick="selectAllEmployees()">TẤT CẢ</button>
+            </div>
+            <ul class="staff-list" id="attendee-list">
+                <!-- Populated by JS -->
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal Chi tiết sự kiện (Improved Odoo Style - Green Theme) -->
+<div id="eventModal" class="odoo-modal">
+    <div class="odoo-modal-content">
+        <div class="odoo-modal-header">
+            <h3 id="modalTitle">Chi tiết ca làm việc</h3>
+            <span class="odoo-modal-close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="odoo-modal-body">
+            <div class="modal-info-item">
+                <i class="fas fa-calendar-day"></i>
+                <span id="modalDate"></span>
+            </div>
+            <div class="modal-info-item">
+                <i class="fas fa-clock"></i>
+                <span id="modalShift"></span>
+            </div>
+            <div class="modal-info-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span id="modalBranch"></span>
+            </div>
+            <div class="modal-divider"></div>
+            <div id="modalEmployeeList" class="employee-list-container">
+                <!-- Populated by JS -->
+            </div>
+            <div id="modalStatusTag" class="modal-status-tag"></div>
+        </div>
+        <div class="odoo-modal-footer">
+            <a id="btnEditEvent" href="#" class="btn-modal-edit">Chỉnh sửa</a>
+            <button id="btnDeleteEvent" class="btn-modal-delete">Xóa ca làm</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Gửi thông báo (Table View - UC 4.4) -->
+<div id="notificationTableModal" class="odoo-modal">
+    <div class="odoo-modal-content"
+        style="max-width: 900px; width: 95%; border: none; overflow: hidden; border-radius: 20px;">
+        <div class="odoo-modal-header" style="background: var(--primary-green); padding: 25px 30px; border: none;">
+            <h3 style="color: #FFFFFF; font-weight: 800; font-size: 20px; letter-spacing: 0.5px;">GỬI THÔNG BÁO LỊCH LÀM
+                VIỆC</h3>
+            <span class="odoo-modal-close" onclick="closeNotificationModal()"
+                style="color: rgba(255,255,255,0.8);">&times;</span>
+        </div>
+        <div class="odoo-modal-body" style="padding: 0; background: #FFFFFF;">
+            <div class="notification-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px; text-align: center;">
+                                <input type="checkbox" id="selectAllNotifications" onchange="toggleAllCheckboxes(this)">
+                            </th>
+                            <th>NỘI DUNG LỊCH LÀM</th>
+                            <th style="width: 160px; text-align: center;">TRẠNG THÁI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="notificationTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="odoo-modal-footer"
+            style="padding: 25px 30px; background: #F9FAFB; border-top: 1px solid #E5E7EB; justify-content: flex-end;">
+            <button class="btn-modal-delete" onclick="closeNotificationModal()"
+                style="flex: none; min-width: 120px; height: 48px; border-radius: 12px; font-weight: 700;">HUỶ</button>
+            <button id="btnConfirmSend" class="btn-modal-edit btn-confirm-send" onclick="confirmSendNotifications()"
+                style="flex: none; min-width: 240px; height: 48px; border-radius: 12px; font-weight: 800; font-size: 15px;">
+                <i class="fas fa-paper-plane" style="margin-right: 10px;"></i> GỬI THÔNG BÁO (<span
+                    id="selectedCount">0</span>)
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Data -->
+<script id="schedules-data" type="application/json">
+[
+    {% for item in schedules %}
+    {
+        "ma_llv": "{{ item.ma_llv|escapejs }}",
+        "ten_nv": "{{ item.ten_nv|escapejs }}",
+        "chuc_vu": "{{ item.chuc_vu|escapejs }}",
+        "ten_chi_nhanh": "{{ item.ten_chi_nhanh|escapejs }}",
+        "ngay_lam": "{{ item.ngay_lam|escapejs }}",
+        "khung_gio": "{{ item.khung_gio|escapejs }}",
+        "trang_thai": "{{ item.trang_thai|escapejs }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+</script>
+
+<!-- Includes -->
+{% include 'partials/popup_confirm_delete.html' %}
+
+<!-- Scripts -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/vi.js'></script>
+
+<script>
+    let calendar;
+    let miniCalendar;
+    let currentDeleteId = '';
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+        const miniCalendarEl = document.getElementById('mini-calendar');
+        const schedulesData = JSON.parse(document.getElementById('schedules-data').textContent);
+
+        // Prepare Attendees for Sidebar AND Group events by Shift
+        const attendees = {};
+        const shiftGroups = {};
+
+        schedulesData.forEach(function (item) {
+            const parts = item.ngay_lam.split('/');
+            const dateStr = parts[2] + '-' + parts[1].padStart(2, '0') + '-' + parts[0].padStart(2, '0');
+
+            // Normalize normalization to avoid side-by-side splitting
+            const normalizedShift = item.khung_gio.trim().toUpperCase();
+            const normalizedBranch = item.ten_chi_nhanh.trim().toUpperCase();
+            const shiftKey = `${dateStr}_${normalizedShift}_${normalizedBranch}`;
+
+            // Collect unique attendees for sidebar
+            if (!attendees[item.ten_nv]) {
+                attendees[item.ten_nv] = {
+                    name: item.ten_nv,
+                    initials: item.ten_nv.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
+                    color: stringToColor(item.ten_nv)
+                };
+            }
+
+            // Group by Shift
+            if (!shiftGroups[shiftKey]) {
+                shiftGroups[shiftKey] = {
+                    id: item.ma_llv, // Use first one as ID
+                    dateStr: dateStr,
+                    khung_gio: item.khung_gio,
+                    chi_nhanh: item.ten_chi_nhanh,
+                    trang_thai: item.trang_thai,
+                    ngay_lam: item.ngay_lam,
+                    employees: []
+                };
+            }
+            shiftGroups[shiftKey].employees.push({
+                id: item.ma_llv,
+                name: item.ten_nv,
+                chuc_vu: item.chuc_vu,
+                status: item.trang_thai
+            });
+        });
+
+        const events = Object.values(shiftGroups).map(function (group) {
+            let bgColor = '#EBF5FF'; // Default Blue (6-12h)
+            let borderColor = '#3B82F6';
+            let textColor = '#1E40AF';
+
+            if (group.khung_gio.includes('12:00 - 17:00')) {
+                bgColor = '#F0FDF4'; // Green (12-17h)
+                borderColor = '#22C55E';
+                textColor = '#166534';
+            } else if (group.khung_gio.includes('17:00 - 22:00')) {
+                bgColor = '#FFFBEB'; // Yellow/Amber (17-22h)
+                borderColor = '#F59E0B';
+                textColor = '#92400E';
+            }
+
+            const timeParts = group.khung_gio.split(' - ');
+            const startTime = (timeParts[0] || "08:00").trim();
+            const endTime = (timeParts[1] || "12:00").trim();
+
+            let className = 'shift-morning';
+            if (group.khung_gio.includes('12:00 - 17:00')) {
+                className = 'shift-afternoon';
+            } else if (group.khung_gio.includes('17:00 - 22:00')) {
+                className = 'shift-evening';
+            }
+
+            return {
+                id: group.id,
+                title: group.employees.map(e => e.name).join(', '),
+                start: group.dateStr + 'T' + startTime + ':00',
+                end: group.dateStr + 'T' + endTime + ':00',
+                extendedProps: {
+                    employees: group.employees,
+                    ca_lam: group.khung_gio,
+                    trang_thai: group.trang_thai,
+                    chi_nhanh: group.chi_nhanh,
+                    ngay_lam: group.ngay_lam
+                },
+                className: className,
+            };
+        });
+
+        // Initialize Main Calendar
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            locale: 'vi',
+            firstDay: 1,
+            slotMinTime: '06:00:00',
+            slotMaxTime: '23:00:00',
+            scrollTime: '06:00:00',
+            expandRows: true,
+            dayHeaderContent: function (arg) {
+                const dayNames = ['CN', 'THỨ 2', 'THỨ 3', 'THỨ 4', 'THỨ 5', 'THỨ 6', 'THỨ 7'];
+                const dayName = dayNames[arg.date.getDay()];
+                const dayNumber = arg.date.getDate();
+                return {
+                    html: `<div class="header-day-name">${dayName}</div><div class="header-day-number">${dayNumber}</div>`
+                };
+            },
+            slotLabelContent: function (arg) {
+                let hour = arg.date.getHours();
+                let timeStr = (hour < 10 ? '0' + hour : hour) + ':00';
+                return timeStr;
+            },
+            headerToolbar: false, // We use custom toolbar
+            allDaySlot: false,
+            events: events,
+            eventClick: function (info) {
+                showEventDetail(info.event);
+            },
+            height: 'auto',
+            nowIndicator: true,
+            eventContent: function (arg) {
+                // Use filtered employees if available (from sidebar checkbox filtering), otherwise use all employees
+                const emps = arg.event.extendedProps.filteredEmployees || arg.event.extendedProps.employees;
+                const timeStr = arg.event.extendedProps.ca_lam;
+                const branch = arg.event.extendedProps.chi_nhanh;
+
+                // Badge for staff count
+                const badgeHtml = emps.length > 1 ? `<div style="background: var(--primary-green); color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; position: absolute; top: 10px; right: 10px; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">${emps.length}</div>` : '';
+
+                let empsHtml = emps.map((e) => {
+                    return `
+                        <div style="margin-bottom: 10px; display: flex; flex-direction: column;">
+                            <div style="font-weight: 800; font-size: 13px; color: #111827; line-height: 1.2;">${e.name}</div>
+                            <div style="font-size: 10px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1px;">${e.chuc_vu || 'Nhân viên'}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                return {
+                    html: `
+                        <div style="position: relative; height: 100%; display: flex; flex-direction: column; overflow: hidden;">
+                            <div style="font-size: 11px; font-weight: 800; color: #4B5563; margin-bottom: 10px; opacity: 0.8;">${timeStr}</div>
+                            <div style="flex: 1;">${empsHtml}</div>
+                            ${badgeHtml}
+                        </div>
+                    `
+                };
+            },
+
+            datesSet: function (info) {
+                // Update the custom view label in toolbar
+                const label = document.getElementById('current-view-label');
+                if (label) {
+                    if (info.view.type === 'timeGridWeek') label.textContent = 'TUẦN';
+                    else if (info.view.type === 'dayGridMonth') label.textContent = 'THÁNG';
+                    else label.textContent = 'NGÀY';
+                }
+            }
+        });
+
+
+        // Initialize Mini Calendar
+        miniCalendar = new FullCalendar.Calendar(miniCalendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'vi',
+            headerToolbar: {
+                left: 'prev,next',
+                center: 'title',
+                right: ''
+            },
+            dayHeaderContent: function (arg) {
+                const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+                return days[arg.date.getDay()];
+            },
+            height: 'auto',
+            contentHeight: 220,
+            dateClick: function (info) {
+                calendar.gotoDate(info.date);
+            }
+        });
+        calendar.render();
+        miniCalendar.render();
+        populateAttendeeList(attendees);
+    });
+
+
+
+    function populateAttendeeList(attendees) {
+        const list = document.getElementById('attendee-list');
+        list.innerHTML = '';
+        Object.values(attendees).forEach(person => {
+            const li = document.createElement('li');
+            li.className = 'staff-item';
+            li.innerHTML = `
+                <input type="checkbox" class="staff-checkbox" checked onchange="filterCalendar()">
+                <div class="staff-dot" style="background-color: ${person.color}"></div>
+                <span class="staff-name">${person.name}</span>
+            `;
+            list.appendChild(li);
+        });
+    }
+
+    function selectAllEmployees() {
+        const checkboxes = document.querySelectorAll('.staff-checkbox');
+        // Check if all are currently checked
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        
+        // If all checked, uncheck all. Otherwise, check all.
+        checkboxes.forEach(cb => cb.checked = !allChecked);
+        
+        filterCalendar();
+    }
+
+
+    function stringToColor(str) {
+        const colors = ['#714B67', '#00A09D', '#E97451', '#5DADE2', '#48C9B0', '#F4D03F', '#EB984E', '#AF7AC5'];
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return colors[Math.abs(hash) % colors.length];
+    }
+
+    function showEventDetail(event) {
+        closeNotificationModal(); // Close notification modal if open
+        const props = event.extendedProps;
+        const employees = props.employees;
+
+        // Render Employee List
+        const listContainer = document.getElementById('modalEmployeeList');
+        if (listContainer) {
+            listContainer.innerHTML = '';
+
+            employees.forEach((emp, index) => {
+                const names = emp.name.trim().split(' ');
+                let initials = '';
+                if (names.length >= 2) {
+                    initials = names[0][0] + names[names.length - 1][0];
+                } else if (names.length === 1) {
+                    initials = names[0].substring(0, 2);
+                }
+                const initialsText = initials.toUpperCase();
+
+                const empHtml = `
+                    <div class="participant-info" style="margin-bottom: 20px; display: flex; align-items: center; gap: 15px;" data-employee-name="${emp.name}">
+                        <input type="checkbox" class="employee-checkbox" checked onchange="toggleEmployeeInShift('${emp.name}', this.checked)">
+                        <div class="participant-avatar" style="background-color: var(--primary-green);">${initialsText}</div>
+                        <div class="participant-details">
+                            <span class="name">${emp.name}</span>
+                            <span class="role">${emp.chuc_vu || 'Nhân viên'}</span>
+                        </div>
+                    </div>
+                `;
+                listContainer.insertAdjacentHTML('beforeend', empHtml);
+            });
+        }
+
+        document.getElementById('modalDate').textContent = props.ngay_lam;
+        document.getElementById('modalShift').textContent = props.ca_lam;
+        document.getElementById('modalBranch').textContent = props.chi_nhanh;
+
+        // Check if date is in the past to hide Edit/Delete buttons
+        const parts = props.ngay_lam.split('/');
+        const eventDate = new Date(parts[2], parts[1] - 1, parts[0]);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const isPast = eventDate < today;
+
+        const statusTag = document.getElementById('modalStatusTag');
+        if (statusTag) {
+            statusTag.className = 'modal-status-tag';
+            if (props.trang_thai === 'Chờ gửi') {
+                statusTag.textContent = 'Chưa gửi';
+                statusTag.classList.add('status-chua-gui');
+            } else {
+                statusTag.textContent = 'Đã gửi';
+                statusTag.classList.add('status-da-gui');
+            }
+        }
+
+        const editUrl = "{% url 'schedule_edit' 'PLACEHOLDER' %}".replace('PLACEHOLDER', event.id);
+        const btnEdit = document.getElementById('btnEditEvent');
+        const btnDelete = document.getElementById('btnDeleteEvent');
+
+        const isAdmin = {% if is_admin %}true{% else %}false{% endif %};
+
+        if (isPast || !isAdmin) {
+            if (btnEdit) btnEdit.style.display = 'none';
+            if (btnDelete) btnDelete.style.display = 'none';
+        } else {
+            if (btnEdit) {
+                btnEdit.style.display = 'inline-flex';
+                btnEdit.href = editUrl;
+            }
+            if (btnDelete) {
+                btnDelete.style.display = 'inline-flex';
+                btnDelete.onclick = function () {
+                    closeModal();
+                    openDeletePopup(event.id);
+                };
+            }
+        }
+
+        const modal = document.getElementById('eventModal');
+        if (modal) modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('eventModal').style.display = 'none';
+    }
+
+    window.onclick = function (event) {
+        if (event.target == document.getElementById('eventModal')) {
+            closeModal();
+        }
+    }
+
+    function filterCalendar() {
+        const q = document.getElementById('schedule-search').value.toLowerCase();
+        const branchFilter = document.getElementById('branch-filter').value;
+
+        // Get names of checked employees
+        const checkedNames = Array.from(document.querySelectorAll('.staff-item'))
+            .filter(item => item.querySelector('.staff-checkbox').checked)
+            .map(item => item.querySelector('.staff-name').textContent);
+
+        calendar.getEvents().forEach(event => {
+            const employees = event.extendedProps.employees;
+            const branch = event.extendedProps.chi_nhanh;
+
+            // Match search query
+            const searchMatch = q === "" || employees.some(emp => emp.name.toLowerCase().includes(q));
+
+            // Match branch
+            const branchMatch = branchFilter === "all" || branch === branchFilter;
+
+            // Filter employees for this event
+            const filteredEmployees = employees.filter(emp => checkedNames.includes(emp.name));
+            
+            // Update event content based on filtered employees
+            if (searchMatch && branchMatch && filteredEmployees.length > 0) {
+                event.setProp('display', 'auto');
+                
+                // Update event title to show only checked employees
+                event.setProp('title', filteredEmployees.map(e => e.name).join(', '));
+                
+                // Update extended props to reflect filtered employees
+                event.extendedProps.filteredEmployees = filteredEmployees;
+            } else {
+                event.setProp('display', 'none');
+            }
+        });
+        
+        // Force calendar to re-render with updated content
+        calendar.render();
+    }
+
+
+    function clearFilter(type) {
+        let params = new URLSearchParams(window.location.search);
+        if (type === 'branch') params.set('branch', 'all');
+        if (type === 'status') params.set('status', 'all');
+        window.location.href = `?${params.toString()}`;
+    }
+
+    function handleSendNotifications() {
+        closeModal(); // Close detail modal if open
+        const schedulesData = JSON.parse(document.getElementById('schedules-data').textContent);
+        const pendingSchedules = schedulesData.filter(s => s.trang_thai === 'Chờ gửi');
+
+        if (pendingSchedules.length === 0) {
+            return showErrorPopup("Thông báo", "Không tìm thấy ca làm nào ở trạng thái 'Chưa gửi' để gửi thông báo.");
+        }
+
+        // Open modal and populate table
+        const modal = document.getElementById('notificationTableModal');
+        const tableBody = document.getElementById('notificationTableBody');
+        tableBody.innerHTML = '';
+
+        // Group by Date + Shift + Branch to match context
+        const groups = {};
+        schedulesData.forEach(item => {
+            const normalizedShift = item.khung_gio.trim().toUpperCase();
+            const normalizedBranch = item.ten_chi_nhanh.trim().toUpperCase();
+            const key = `${item.ngay_lam}_${normalizedShift}_${normalizedBranch}`;
+
+            if (!groups[key]) {
+                groups[key] = {
+                    ngay: item.ngay_lam,
+                    ca: item.khung_gio,
+                    chi_nhanh: item.ten_chi_nhanh,
+                    trang_thai: item.trang_thai,
+                    employees: [],
+                    ids: []
+                };
+            }
+            groups[key].employees.push(item.ten_nv);
+            groups[key].ids.push(item.ma_llv);
+        });
+
+        Object.values(groups).forEach(group => {
+            const isUnsent = group.trang_thai === 'Chờ gửi';
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td style="text-align: center;">
+                    ${isUnsent ? `<input type="checkbox" class="notif-checkbox" value="${group.ids.join(',')}" onchange="updateSelectedCount()">` : ''}
+                </td>
+                <td>
+                    <div class="notif-info-group">
+                        <span class="notif-main-info">${group.ngay} | ${group.ca}</span>
+                        <span class="notif-sub-info">${group.chi_nhanh}</span>
+                        <span class="notif-staff-list">${group.employees.join(', ')}</span>
+                    </div>
+                </td>
+                <td style="text-align: center;">
+                    <span class="status-badge-${isUnsent ? 'pending' : 'sent'}" 
+                          style="background: ${isUnsent ? '#FEF3C7' : '#F0FDF4'}; 
+                                 color: ${isUnsent ? '#D97706' : '#22C55E'};">
+                        ${isUnsent ? 'CHƯA GỬI' : 'ĐÃ GỬI'}
+                    </span>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        document.getElementById('selectAllNotifications').checked = false;
+        updateSelectedCount();
+        modal.style.display = 'flex';
+    }
+
+    function closeNotificationModal() {
+        document.getElementById('notificationTableModal').style.display = 'none';
+    }
+
+    function toggleAllCheckboxes(masterCb) {
+        const checkboxes = document.querySelectorAll('.notif-checkbox');
+        checkboxes.forEach(cb => cb.checked = masterCb.checked);
+        updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+        const checked = document.querySelectorAll('.notif-checkbox:checked');
+        let totalRecords = 0;
+        checked.forEach(cb => {
+            totalRecords += cb.value.split(',').length;
+        });
+        document.getElementById('selectedCount').textContent = totalRecords;
+
+        const btn = document.getElementById('btnConfirmSend');
+        btn.disabled = totalRecords === 0;
+        btn.style.cursor = totalRecords === 0 ? 'not-allowed' : 'pointer';
+    }
+
+    function confirmSendNotifications() {
+        const checked = document.querySelectorAll('.notif-checkbox:checked');
+        let allSelectedIds = [];
+        checked.forEach(cb => {
+            allSelectedIds = allSelectedIds.concat(cb.value.split(','));
+        });
+
+        if (allSelectedIds.length === 0) return;
+
+        // Visual feedback
+        const btn = document.getElementById('btnConfirmSend');
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG GỬI...';
+        btn.disabled = true;
+
+        fetch('/schedules/send-notification/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ ids: allSelectedIds })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    closeNotificationModal();
+                    showToast("Gửi thông báo thành công");
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                    showErrorPopup("Lỗi", data.error || "Hệ thống lỗi, vui lòng thử lại");
+                }
+            })
+            .catch(err => {
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                showErrorPopup("Lỗi", "Hệ thống lỗi, vui lòng thử lại");
+            });
+    }
+
+    function openDeletePopup(id) {
+        currentDeleteId = id;
+        const popup = document.getElementById('confirm-delete-popup');
+        if (popup) {
+            const msgElem = popup.querySelector('.message-line1');
+            if (msgElem) msgElem.textContent = "Bạn có chắc chắn muốn xóa ca làm này?";
+            popup.style.display = 'flex';
+            document.getElementById('delete-popup-no-btn').onclick = () => popup.style.display = 'none';
+            document.getElementById('delete-popup-yes-btn').onclick = executeDelete;
+        }
+    }
+
+    function executeDelete() {
+        document.getElementById('confirm-delete-popup').style.display = 'none';
+        fetch(`/schedules/delete/${currentDeleteId}/`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast("Đã xóa lịch làm việc thành công");
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showErrorPopup("Lỗi", data.error || "Có lỗi xảy ra");
+                }
+            });
+    }
+
+    function showToast(message, type = 'success') {
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
+        } else {
+            console.warn('Global showToast not found');
+        }
+    }
+
+    function toggleEmployeeInShift(employeeName, isChecked) {
+        // Find the current event that opened the modal
+        const modal = document.getElementById('eventModal');
+        const currentEvent = window.currentEventDetail;
+        
+        if (!currentEvent) return;
+        
+        // Get current employees list
+        const employees = currentEvent.extendedProps.employees;
+        
+        if (isChecked) {
+            // Add employee back to the shift if not already present
+            if (!employees.some(emp => emp.name === employeeName)) {
+                // Find the employee from the original data
+                const schedulesData = JSON.parse(document.getElementById('schedules-data').textContent);
+                const empData = schedulesData.find(item => item.ten_nv === employeeName && 
+                    item.ngay_lam === currentEvent.extendedProps.ngay_lam && 
+                    item.khung_gio === currentEvent.extendedProps.ca_lam);
+                
+                if (empData) {
+                    employees.push({
+                        id: empData.ma_llv,
+                        name: empData.ten_nv,
+                        chuc_vu: empData.chuc_vu,
+                        status: empData.trang_thai
+                    });
+                }
+            }
+        } else {
+            // Remove employee from the shift
+            const index = employees.findIndex(emp => emp.name === employeeName);
+            if (index > -1) {
+                employees.splice(index, 1);
+            }
+        }
+        
+        // Update the event title and display
+        if (employees.length > 0) {
+            currentEvent.setProp('title', employees.map(e => e.name).join(', '));
+            currentEvent.setProp('display', 'auto');
+        } else {
+            // If no employees left, hide the shift or show empty state
+            currentEvent.setProp('title', currentEvent.extendedProps.ca_lam);
+            // Keep the event visible but empty
+        }
+        
+        // Update the modal employee list visual
+        const participantDiv = document.querySelector(`[data-employee-name="${employeeName}"]`);
+        if (participantDiv) {
+            if (!isChecked) {
+                participantDiv.style.opacity = '0.5';
+                participantDiv.style.textDecoration = 'line-through';
+            } else {
+                participantDiv.style.opacity = '1';
+                participantDiv.style.textDecoration = 'none';
+            }
+        }
+        
+        // Show toast notification
+        if (typeof window.showToast === 'function') {
+            window.showToast(
+                isChecked ? `Đã thêm ${employeeName} vào ca làm việc` : `Đã bỏ ${employeeName} khỏi ca làm việc`,
+                'info'
+            );
+        }
+    }
+
+    function showErrorPopup(title, msg) {
+        if (typeof window.showToast === 'function') {
+            window.showToast(msg, 'error');
+        } else {
+            alert(msg);
+        }
+    }
+
+    // Toggle employee in shift function
+    function toggleEmployeeInShift(employeeName, isChecked) {
+        // Find the current event that opened the modal
+        const currentEvent = window.currentEventDetail;
+        
+        if (!currentEvent) {
+            console.error('No current event found');
+            return;
+        }
+        
+        // Get current employees list
+        const employees = currentEvent.extendedProps.employees;
+        
+        if (isChecked) {
+            // Add employee back to the shift if not already present
+            if (!employees.some(emp => emp.name === employeeName)) {
+                // Find the employee from the original data
+                const schedulesData = JSON.parse(document.getElementById('schedules-data').textContent);
+                const empData = schedulesData.find(item => item.ten_nv === employeeName && 
+                    item.ngay_lam === currentEvent.extendedProps.ngay_lam && 
+                    item.khung_gio === currentEvent.extendedProps.ca_lam);
+                
+                if (empData) {
+                    employees.push({
+                        id: empData.ma_llv,
+                        name: empData.ten_nv,
+                        chuc_vu: empData.chuc_vu,
+                        status: empData.trang_thai
+                    });
+                }
+            }
+        } else {
+            // Remove employee from the shift
+            const index = employees.findIndex(emp => emp.name === employeeName);
+            if (index > -1) {
+                employees.splice(index, 1);
+            }
+        }
+        
+        // Update the event title and display
+        if (employees.length > 0) {
+            currentEvent.setProp('title', employees.map(e => e.name).join(', '));
+            currentEvent.setProp('display', 'auto');
+        } else {
+            // If no employees left, show empty state
+            currentEvent.setProp('title', currentEvent.extendedProps.ca_lam);
+        }
+        
+        // Update the modal employee list visual
+        const participantDiv = document.querySelector(`[data-employee-name="${employeeName}"]`);
+        if (participantDiv) {
+            if (!isChecked) {
+                participantDiv.style.opacity = '0.5';
+                participantDiv.style.textDecoration = 'line-through';
+            } else {
+                participantDiv.style.opacity = '1';
+                participantDiv.style.textDecoration = 'none';
+            }
+        }
+        
+        // Show toast notification
+        if (typeof window.showToast === 'function') {
+            window.showToast(
+                isChecked ? `Đã thêm ${employeeName} vào ca làm việc` : `Đã bỏ ${employeeName} khỏi ca làm việc`,
+                'info'
+            );
+        }
+        
+        // Force calendar to re-render the event
+        calendar.refetchEvents();
+    }
+
+    // Override showEventDetail to store current event
+    const originalShowEventDetail = showEventDetail;
+    showEventDetail = function(event) {
+        // Store current event globally for toggle function access
+        window.currentEventDetail = event;
+        
+        // Call original function
+        return originalShowEventDetail(event);
+    };
+</script>
 {% endblock %}

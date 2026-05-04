@@ -1,0 +1,3244 @@
+[
+  {
+    "model": "auth.permission",
+    "pk": 25,
+    "fields": {
+      "name": "Can add tai khoan",
+      "content_type": 7,
+      "codename": "add_taikhoan"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 26,
+    "fields": {
+      "name": "Can change tai khoan",
+      "content_type": 7,
+      "codename": "change_taikhoan"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 27,
+    "fields": {
+      "name": "Can delete tai khoan",
+      "content_type": 7,
+      "codename": "delete_taikhoan"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 28,
+    "fields": {
+      "name": "Can view tai khoan",
+      "content_type": 7,
+      "codename": "view_taikhoan"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 1,
+    "fields": {
+      "name": "Can add log entry",
+      "content_type": 1,
+      "codename": "add_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 2,
+    "fields": {
+      "name": "Can change log entry",
+      "content_type": 1,
+      "codename": "change_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 3,
+    "fields": {
+      "name": "Can delete log entry",
+      "content_type": 1,
+      "codename": "delete_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 4,
+    "fields": {
+      "name": "Can view log entry",
+      "content_type": 1,
+      "codename": "view_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 65,
+    "fields": {
+      "name": "Can add cham cong",
+      "content_type": 17,
+      "codename": "add_chamcong"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 66,
+    "fields": {
+      "name": "Can change cham cong",
+      "content_type": 17,
+      "codename": "change_chamcong"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 67,
+    "fields": {
+      "name": "Can delete cham cong",
+      "content_type": 17,
+      "codename": "delete_chamcong"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 68,
+    "fields": {
+      "name": "Can view cham cong",
+      "content_type": 17,
+      "codename": "view_chamcong"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 9,
+    "fields": {
+      "name": "Can add group",
+      "content_type": 2,
+      "codename": "add_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 10,
+    "fields": {
+      "name": "Can change group",
+      "content_type": 2,
+      "codename": "change_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 11,
+    "fields": {
+      "name": "Can delete group",
+      "content_type": 2,
+      "codename": "delete_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 12,
+    "fields": {
+      "name": "Can view group",
+      "content_type": 2,
+      "codename": "view_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 5,
+    "fields": {
+      "name": "Can add permission",
+      "content_type": 3,
+      "codename": "add_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 6,
+    "fields": {
+      "name": "Can change permission",
+      "content_type": 3,
+      "codename": "change_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 7,
+    "fields": {
+      "name": "Can delete permission",
+      "content_type": 3,
+      "codename": "delete_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 8,
+    "fields": {
+      "name": "Can view permission",
+      "content_type": 3,
+      "codename": "view_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 13,
+    "fields": {
+      "name": "Can add user",
+      "content_type": 4,
+      "codename": "add_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 14,
+    "fields": {
+      "name": "Can change user",
+      "content_type": 4,
+      "codename": "change_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 15,
+    "fields": {
+      "name": "Can delete user",
+      "content_type": 4,
+      "codename": "delete_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 16,
+    "fields": {
+      "name": "Can view user",
+      "content_type": 4,
+      "codename": "view_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 29,
+    "fields": {
+      "name": "Can add chi nhanh",
+      "content_type": 8,
+      "codename": "add_chinhanh"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 30,
+    "fields": {
+      "name": "Can change chi nhanh",
+      "content_type": 8,
+      "codename": "change_chinhanh"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 31,
+    "fields": {
+      "name": "Can delete chi nhanh",
+      "content_type": 8,
+      "codename": "delete_chinhanh"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 32,
+    "fields": {
+      "name": "Can view chi nhanh",
+      "content_type": 8,
+      "codename": "view_chinhanh"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 17,
+    "fields": {
+      "name": "Can add content type",
+      "content_type": 5,
+      "codename": "add_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 18,
+    "fields": {
+      "name": "Can change content type",
+      "content_type": 5,
+      "codename": "change_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 19,
+    "fields": {
+      "name": "Can delete content type",
+      "content_type": 5,
+      "codename": "delete_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 20,
+    "fields": {
+      "name": "Can view content type",
+      "content_type": 5,
+      "codename": "view_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 33,
+    "fields": {
+      "name": "Can add hop dong lao dong",
+      "content_type": 9,
+      "codename": "add_hopdonglaodong"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 34,
+    "fields": {
+      "name": "Can change hop dong lao dong",
+      "content_type": 9,
+      "codename": "change_hopdonglaodong"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 35,
+    "fields": {
+      "name": "Can delete hop dong lao dong",
+      "content_type": 9,
+      "codename": "delete_hopdonglaodong"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 36,
+    "fields": {
+      "name": "Can view hop dong lao dong",
+      "content_type": 9,
+      "codename": "view_hopdonglaodong"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 37,
+    "fields": {
+      "name": "Can add hop dong l d_ct",
+      "content_type": 10,
+      "codename": "add_hopdongld_ct"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 38,
+    "fields": {
+      "name": "Can change hop dong l d_ct",
+      "content_type": 10,
+      "codename": "change_hopdongld_ct"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 39,
+    "fields": {
+      "name": "Can delete hop dong l d_ct",
+      "content_type": 10,
+      "codename": "delete_hopdongld_ct"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 40,
+    "fields": {
+      "name": "Can view hop dong l d_ct",
+      "content_type": 10,
+      "codename": "view_hopdongld_ct"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 41,
+    "fields": {
+      "name": "Can add Nhân viên",
+      "content_type": 11,
+      "codename": "add_nhanvien"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 42,
+    "fields": {
+      "name": "Can change Nhân viên",
+      "content_type": 11,
+      "codename": "change_nhanvien"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 43,
+    "fields": {
+      "name": "Can delete Nhân viên",
+      "content_type": 11,
+      "codename": "delete_nhanvien"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 44,
+    "fields": {
+      "name": "Can view Nhân viên",
+      "content_type": 11,
+      "codename": "view_nhanvien"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 45,
+    "fields": {
+      "name": "Can add luong",
+      "content_type": 12,
+      "codename": "add_luong"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 46,
+    "fields": {
+      "name": "Can change luong",
+      "content_type": 12,
+      "codename": "change_luong"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 47,
+    "fields": {
+      "name": "Can delete luong",
+      "content_type": 12,
+      "codename": "delete_luong"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 48,
+    "fields": {
+      "name": "Can view luong",
+      "content_type": 12,
+      "codename": "view_luong"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 49,
+    "fields": {
+      "name": "Can add bao cao",
+      "content_type": 13,
+      "codename": "add_baocao"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 50,
+    "fields": {
+      "name": "Can change bao cao",
+      "content_type": 13,
+      "codename": "change_baocao"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 51,
+    "fields": {
+      "name": "Can delete bao cao",
+      "content_type": 13,
+      "codename": "delete_baocao"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 52,
+    "fields": {
+      "name": "Can view bao cao",
+      "content_type": 13,
+      "codename": "view_baocao"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 53,
+    "fields": {
+      "name": "Can add bao cao_ct",
+      "content_type": 14,
+      "codename": "add_baocao_ct"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 54,
+    "fields": {
+      "name": "Can change bao cao_ct",
+      "content_type": 14,
+      "codename": "change_baocao_ct"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 55,
+    "fields": {
+      "name": "Can delete bao cao_ct",
+      "content_type": 14,
+      "codename": "delete_baocao_ct"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 56,
+    "fields": {
+      "name": "Can view bao cao_ct",
+      "content_type": 14,
+      "codename": "view_baocao_ct"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 57,
+    "fields": {
+      "name": "Can add yeu cau",
+      "content_type": 15,
+      "codename": "add_yeucau"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 58,
+    "fields": {
+      "name": "Can change yeu cau",
+      "content_type": 15,
+      "codename": "change_yeucau"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 59,
+    "fields": {
+      "name": "Can delete yeu cau",
+      "content_type": 15,
+      "codename": "delete_yeucau"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 60,
+    "fields": {
+      "name": "Can view yeu cau",
+      "content_type": 15,
+      "codename": "view_yeucau"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 61,
+    "fields": {
+      "name": "Can add lich lam viec",
+      "content_type": 16,
+      "codename": "add_lichlamviec"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 62,
+    "fields": {
+      "name": "Can change lich lam viec",
+      "content_type": 16,
+      "codename": "change_lichlamviec"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 63,
+    "fields": {
+      "name": "Can delete lich lam viec",
+      "content_type": 16,
+      "codename": "delete_lichlamviec"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 64,
+    "fields": {
+      "name": "Can view lich lam viec",
+      "content_type": 16,
+      "codename": "view_lichlamviec"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 21,
+    "fields": {
+      "name": "Can add session",
+      "content_type": 6,
+      "codename": "add_session"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 22,
+    "fields": {
+      "name": "Can change session",
+      "content_type": 6,
+      "codename": "change_session"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 23,
+    "fields": {
+      "name": "Can delete session",
+      "content_type": 6,
+      "codename": "delete_session"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 24,
+    "fields": {
+      "name": "Can view session",
+      "content_type": 6,
+      "codename": "view_session"
+    }
+  },
+  {
+    "model": "auth.group",
+    "pk": 1,
+    "fields": {
+      "name": "Chi nhánh Hải Châu",
+      "permissions": []
+    }
+  },
+  {
+    "model": "auth.group",
+    "pk": 2,
+    "fields": {
+      "name": "Chi nhánh Cẩm Lệ",
+      "permissions": []
+    }
+  },
+  {
+    "model": "auth.group",
+    "pk": 3,
+    "fields": {
+      "name": "Chi nhánh Thanh Khê",
+      "permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$v1b7xQahVjZaxUclAqbYMC$oGkO0xbXZ2xwMfyr4+JnovAFb6gSIWAVpWAcjJeVjGQ=",
+      "last_login": null,
+      "is_superuser": true,
+      "username": "Chu",
+      "first_name": "",
+      "last_name": "",
+      "email": "truongthihonghoa.qnm22@gmail.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2026-04-01T09:05:46.761Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$AvuPzvIao6z3gfjP0BRaP1$Zs4Ei1TemaYTSK9WS8Z2x7Gcp10BVmwu4twWQTq13kA=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "ThuyLai",
+      "first_name": "Thị Thúy Lài",
+      "last_name": "Nguyễn",
+      "email": "lai123456@gmail.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2026-04-03T02:03:47.503837Z",
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$QryIdTlBcdg6C0SdhA3F1t$ljDcVIhSNSuQwNn3jXi2OY28ehza0KDjZtJ3Jo0KJYU=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "ThuyNa",
+      "first_name": "Nguyễn Thúy Na",
+      "last_name": "Lê",
+      "email": "nale@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-03T02:03:48.270727Z",
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 4,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$qIyz7eohrBs7WXgUZ3I8sC$bImvI8vewtQ6LCLzNQBr/HZnJc8YlHfRzomPGgbocAo=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "ThanhTai",
+      "first_name": "Thanh Tài",
+      "last_name": "Nguyễn",
+      "email": "nguyenthanhtai@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-03T02:03:48.991851Z",
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 5,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$5Cyx5exoS5WGW3Hr1toiNI$0l9aSrJIzNVypzUj1GwSrlrTYPHpbftxPnEzhNA/bSU=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "Huy",
+      "first_name": "Huy Nguyên",
+      "last_name": "Lê",
+      "email": "lehuynguyen@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-03T02:03:49.719087Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 6,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$glMZ3YxaPsZJDP4KLd6eBp$+jtRTl8BRmGTcjwecFNEFWqk4pC1kb1TTxzAL6HrD7E=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "TamLe",
+      "first_name": "Tâm Lê",
+      "last_name": "Nguyễn",
+      "email": "tamkute@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-03T02:03:50.533405Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 7,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$f1E4NP9DV3N0PVR9cFFveH$KYee52Uz/ySTz7GPn1Z+b1uwu6FSfS97oPASpRtm+/g=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "an.nv",
+      "first_name": "Văn An",
+      "last_name": "Nguyễn",
+      "email": "an.nv@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:38:23.029Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 8,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$fZA3THfs3IYUvsAMJI94le$CoV6aF6L+rWD6NpVO8rWCXYKZH8ycfAdBvfcSiK/zkE=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "mai.lt",
+      "first_name": "Thị Mai",
+      "last_name": "Lê",
+      "email": "mai.lt@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:38:23.450Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 9,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$Ag5HWBPSqMr9CEZLH5tElR$lXHopB+QEX1HQO5Dum3jOEQgI16DFA93R4F89icFuak=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "bao.tq",
+      "first_name": "Quốc Bảo",
+      "last_name": "Trần",
+      "email": "bao.tq@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:38:23.869Z",
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 10,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$rN8cLNgfMGpVLBSUiYhV5a$UUYidXlHqX5oqo349knvS17oKM8PDryKofrzCT18a1Q=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "quan.pm",
+      "first_name": "Minh Quân",
+      "last_name": "Phạm",
+      "email": "quan.pm@gmail.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:38:24.294Z",
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 11,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$m4jAVpgMnMhVxDs1oBZRFg$vFlmSOt+Cc7TMRmfHWDKjHadexBlsWg9RvxaHRjRmMo=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "lan.dt",
+      "first_name": "Thị Lan",
+      "last_name": "Đặng",
+      "email": "lan.dt@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:38:24.696Z",
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 12,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$5xOVaNwAGvr8Vz7AHRf8P6$fG9mlO8mvYszZjiRoqQLwLHVENlgiA4IqPXfMbAD1Gw=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "anh.bd",
+      "first_name": "Đức Anh",
+      "last_name": "Bùi",
+      "email": "anh.bd@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:38:25.086Z",
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 13,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$A1V9NXT4SrGv1DX8TJxp7G$AEP4pYBnkvx+AuBbCsZfamQlw1Jsr1oJ+1I42uMUjFk=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "huy.nq",
+      "first_name": "Quang Huy",
+      "last_name": "Ngô",
+      "email": "huy.nq@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:38:25.498Z",
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 14,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$00nzkdSg85mpgavnBxlj02$zD+U+B5XW0sa1RifUgn4GBPzxohWHEhz0R2kaEDVJi4=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "ngoc.pt",
+      "first_name": "Thị Ngọc",
+      "last_name": "Phan",
+      "email": "ngoc.pt@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:38:25.909Z",
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 15,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$Nrm47ecqztpzemXpcIlRst$vROaajpMjWmQ787+LknMb5CSq7LYIFkpybIQhYFYSVs=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "vy.tk",
+      "first_name": "Khánh Vy",
+      "last_name": "Trịnh",
+      "email": "vy.tk@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:38:26.315Z",
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 16,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$g2MQNykE77w5R9o7IQMCkS$hhlBOfQgGZrEo9alKXnZUsCmtGtCm4Trn/q93UNqDRU=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "bao.hg",
+      "first_name": "Gia Bảo",
+      "last_name": "Hoàng",
+      "email": "bao.hg@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:38:26.706Z",
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 17,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$yNgWY5QRqqLwhAYjfTPyHS$Ks0nLXivqqgMJB/u5f1A71TTNAcz8Jhmitkl4sQtjEw=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "long.nh",
+      "first_name": "Hoàng Long",
+      "last_name": "Nguyễn",
+      "email": "long.nh@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:53:36.992Z",
+      "groups": [
+        2
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 18,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$yEcfVw2yQIktrALtB1nARr$DKsK8CXN3bUNq5IgAY3GMZjR+GfsBe+JHFewj0et0NA=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "ha.ttt",
+      "first_name": "Thị Thu Hà",
+      "last_name": "Trần",
+      "email": "ha.ttt@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:53:37.411Z",
+      "groups": [
+        2
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 19,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$utC2FLjEbsTV3hBfP5vGFl$wTGjExtVfp0Zq/LpKdtM+nQnSJ4fo93PF13H9NRv45o=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "tuan.lm",
+      "first_name": "Minh Tuấn",
+      "last_name": "Lê",
+      "email": "tuan.lm@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:53:37.804Z",
+      "groups": [
+        2
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 20,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$FOAclNm180N81LhDWyJo21$MbhpHsJ7UmJ94AmLa6jEhzVoN4ZXqwYrVUuwLJn+VgA=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "anh.pn",
+      "first_name": "Ngọc Anh",
+      "last_name": "Phạm",
+      "email": "anh.pn@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:53:38.217Z",
+      "groups": [
+        2
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 21,
+    "fields": {
+      "password": "pbkdf2_sha256$1200000$UEFE8WRs3SfACiUtLJENQI$iuqsLTi5jx+OEh58J/cmKYTLLiNYoIs+UDnp/TgB79E=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "dat.vt",
+      "first_name": "Thành Đạt",
+      "last_name": "Võ",
+      "email": "dat.vt@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2026-04-01T10:53:38.614Z",
+      "groups": [
+        2
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 1,
+    "fields": {
+      "app_label": "admin",
+      "model": "logentry"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 2,
+    "fields": {
+      "app_label": "auth",
+      "model": "group"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 3,
+    "fields": {
+      "app_label": "auth",
+      "model": "permission"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 4,
+    "fields": {
+      "app_label": "auth",
+      "model": "user"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 5,
+    "fields": {
+      "app_label": "contenttypes",
+      "model": "contenttype"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 6,
+    "fields": {
+      "app_label": "sessions",
+      "model": "session"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 7,
+    "fields": {
+      "app_label": "accounts",
+      "model": "taikhoan"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 8,
+    "fields": {
+      "app_label": "branches",
+      "model": "chinhanh"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 9,
+    "fields": {
+      "app_label": "contracts",
+      "model": "hopdonglaodong"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 10,
+    "fields": {
+      "app_label": "contracts",
+      "model": "hopdongld_ct"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 11,
+    "fields": {
+      "app_label": "employees",
+      "model": "nhanvien"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 12,
+    "fields": {
+      "app_label": "payroll",
+      "model": "luong"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 13,
+    "fields": {
+      "app_label": "reports",
+      "model": "baocao"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 14,
+    "fields": {
+      "app_label": "reports",
+      "model": "baocao_ct"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 15,
+    "fields": {
+      "app_label": "requests",
+      "model": "yeucau"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 16,
+    "fields": {
+      "app_label": "schedules",
+      "model": "lichlamviec"
+    }
+  },
+  {
+    "model": "contenttypes.contenttype",
+    "pk": 17,
+    "fields": {
+      "app_label": "attendances",
+      "model": "chamcong"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 1,
+    "fields": {
+      "user": 2,
+      "ma_nv": "NV00001"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 2,
+    "fields": {
+      "user": 3,
+      "ma_nv": "NV00002"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 3,
+    "fields": {
+      "user": 9,
+      "ma_nv": "NV00003"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 4,
+    "fields": {
+      "user": 10,
+      "ma_nv": "NV00004"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 5,
+    "fields": {
+      "user": 11,
+      "ma_nv": "NV00005"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 6,
+    "fields": {
+      "user": 12,
+      "ma_nv": "NV00006"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 7,
+    "fields": {
+      "user": 13,
+      "ma_nv": "NV00007"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 8,
+    "fields": {
+      "user": 14,
+      "ma_nv": "NV00008"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 9,
+    "fields": {
+      "user": 15,
+      "ma_nv": "NV00009"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 10,
+    "fields": {
+      "user": 16,
+      "ma_nv": "NV00010"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 11,
+    "fields": {
+      "user": 17,
+      "ma_nv": "NV00011"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 12,
+    "fields": {
+      "user": 18,
+      "ma_nv": "NV00012"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 13,
+    "fields": {
+      "user": 19,
+      "ma_nv": "NV00013"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 14,
+    "fields": {
+      "user": 20,
+      "ma_nv": "NV00014"
+    }
+  },
+  {
+    "model": "accounts.taikhoan",
+    "pk": 15,
+    "fields": {
+      "user": 21,
+      "ma_nv": "NV00015"
+    }
+  },
+  {
+    "model": "branches.chinhanh",
+    "pk": "CN01",
+    "fields": {
+      "ten_chi_nhanh": "Chi nhánh Hải Châu",
+      "dia_chi": "123 Nguyễn Văn Linh, Hải Châu, Đà Nẵng",
+      "sdt": "0966983691",
+      "ma_nv_ql": "NV00001"
+    }
+  },
+  {
+    "model": "branches.chinhanh",
+    "pk": "CN02",
+    "fields": {
+      "ten_chi_nhanh": "Chi nhánh Thanh Khê",
+      "dia_chi": "456 Lê Đình Lý, Thanh Khê, Đà Nẵng",
+      "sdt": "0912345678",
+      "ma_nv_ql": "NV00004"
+    }
+  },
+  {
+    "model": "branches.chinhanh",
+    "pk": "CN03",
+    "fields": {
+      "ten_chi_nhanh": "Chi nhánh Liên Chiểu",
+      "dia_chi": "789 Võ Văn Kiệt, Liên Chiểu, Đà Nẵng",
+      "sdt": "0987654321",
+      "ma_nv_ql": null
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00001",
+    "fields": {
+      "ma_nv": "NV00001",
+      "ma_chi_nhanh": "CN01",
+      "loai_hd": "FULLTIME",
+      "chuc_vu": "PHA_CHE",
+      "ngay_bat_dau": "2026-01-01",
+      "ngay_ket_thuc": "2027-01-01",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00002",
+    "fields": {
+      "ma_nv": "NV00002",
+      "ma_chi_nhanh": "CN01",
+      "loai_hd": "PARTTIME",
+      "chuc_vu": "PHUC_VU",
+      "ngay_bat_dau": "2026-02-01",
+      "ngay_ket_thuc": "2026-08-01",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00003",
+    "fields": {
+      "ma_nv": "NV00003",
+      "ma_chi_nhanh": "CN01",
+      "loai_hd": "FULLTIME",
+      "chuc_vu": "PHUC_VU",
+      "ngay_bat_dau": "2026-03-01",
+      "ngay_ket_thuc": "2027-03-01",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00004",
+    "fields": {
+      "ma_nv": "NV00004",
+      "ma_chi_nhanh": "CN01",
+      "loai_hd": "PARTTIME",
+      "chuc_vu": "QUAN_LY",
+      "ngay_bat_dau": "2026-04-01",
+      "ngay_ket_thuc": "2026-10-01",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00005",
+    "fields": {
+      "ma_nv": "NV00005",
+      "ma_chi_nhanh": "CN01",
+      "loai_hd": "FULLTIME",
+      "chuc_vu": "PHUC_VU",
+      "ngay_bat_dau": "2026-05-01",
+      "ngay_ket_thuc": "2027-05-01",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00006",
+    "fields": {
+      "ma_nv": "NV00006",
+      "ma_chi_nhanh": "CN01",
+      "loai_hd": "PARTTIME",
+      "chuc_vu": "PHA_CHE",
+      "ngay_bat_dau": "2026-06-01",
+      "ngay_ket_thuc": "2026-12-01",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00007",
+    "fields": {
+      "ma_nv": "NV00007",
+      "ma_chi_nhanh": "CN01",
+      "loai_hd": "FULLTIME",
+      "chuc_vu": "PHUC_VU",
+      "ngay_bat_dau": "2026-07-01",
+      "ngay_ket_thuc": "2027-07-01",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00008",
+    "fields": {
+      "ma_nv": "NV00008",
+      "ma_chi_nhanh": "CN01",
+      "loai_hd": "PARTTIME",
+      "chuc_vu": "PHUC_VU",
+      "ngay_bat_dau": "2026-08-01",
+      "ngay_ket_thuc": "2027-02-01",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00009",
+    "fields": {
+      "ma_nv": "NV00009",
+      "ma_chi_nhanh": "CN01",
+      "loai_hd": "FULLTIME",
+      "chuc_vu": "PHUC_VU",
+      "ngay_bat_dau": "2026-09-01",
+      "ngay_ket_thuc": "2027-09-01",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00010",
+    "fields": {
+      "ma_nv": "NV00010",
+      "ma_chi_nhanh": "CN01",
+      "loai_hd": "PARTTIME",
+      "chuc_vu": "PHA_CHE",
+      "ngay_bat_dau": "2026-10-01",
+      "ngay_ket_thuc": "2027-04-01",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00011",
+    "fields": {
+      "ma_nv": "NV00011",
+      "ma_chi_nhanh": "CN02",
+      "loai_hd": "FULLTIME",
+      "chuc_vu": "PHA_CHE",
+      "ngay_bat_dau": "2026-01-15",
+      "ngay_ket_thuc": "2027-01-15",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00012",
+    "fields": {
+      "ma_nv": "NV00012",
+      "ma_chi_nhanh": "CN02",
+      "loai_hd": "PARTTIME",
+      "chuc_vu": "PHUC_VU",
+      "ngay_bat_dau": "2026-02-10",
+      "ngay_ket_thuc": "2026-08-10",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00013",
+    "fields": {
+      "ma_nv": "NV00013",
+      "ma_chi_nhanh": "CN02",
+      "loai_hd": "FULLTIME",
+      "chuc_vu": "PHUC_VU",
+      "ngay_bat_dau": "2026-03-01",
+      "ngay_ket_thuc": "2027-03-01",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00014",
+    "fields": {
+      "ma_nv": "NV00014",
+      "ma_chi_nhanh": "CN02",
+      "loai_hd": "PARTTIME",
+      "chuc_vu": "PHUC_VU",
+      "ngay_bat_dau": "2026-03-15",
+      "ngay_ket_thuc": "2026-09-15",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdonglaodong",
+    "pk": "HD00015",
+    "fields": {
+      "ma_nv": "NV00015",
+      "ma_chi_nhanh": "CN02",
+      "loai_hd": "FULLTIME",
+      "chuc_vu": "PHA_CHE",
+      "ngay_bat_dau": "2026-04-01",
+      "ngay_ket_thuc": "2027-04-01",
+      "trang_thai": "CON_HAN"
+    }
+  },
+  {
+    "model": "contracts.hopdongld_ct",
+    "pk": "HD00001",
+    "fields": {
+      "luong_co_ban": 3480000.0,
+      "luong_theo_gio": 0.0,
+      "so_gio_lam": 174.0,
+      "che_do_thuong": 300000.0,
+      "dieu_khoan": "Cam kết làm 6 tháng",
+      "trach_nhiem": "Pha chế đồ uống",
+      "ghi_chu": ""
+    }
+  },
+  {
+    "model": "contracts.hopdongld_ct",
+    "pk": "HD00002",
+    "fields": {
+      "luong_co_ban": 0.0,
+      "luong_theo_gio": 20000.0,
+      "so_gio_lam": 80.0,
+      "che_do_thuong": 100000.0,
+      "dieu_khoan": "Theo nội quy",
+      "trach_nhiem": "Phục vụ khách",
+      "ghi_chu": ""
+    }
+  },
+  {
+    "model": "contracts.hopdongld_ct",
+    "pk": "HD00003",
+    "fields": {
+      "luong_co_ban": 3480000.0,
+      "luong_theo_gio": 0.0,
+      "so_gio_lam": 174.0,
+      "che_do_thuong": 150000.0,
+      "dieu_khoan": "Theo nội quy",
+      "trach_nhiem": "Giữ xe",
+      "ghi_chu": ""
+    }
+  },
+  {
+    "model": "contracts.hopdongld_ct",
+    "pk": "HD00004",
+    "fields": {
+      "luong_co_ban": 0.0,
+      "luong_theo_gio": 30000.0,
+      "so_gio_lam": 100.0,
+      "che_do_thuong": 200000.0,
+      "dieu_khoan": "Theo nội quy",
+      "trach_nhiem": "Quản lý ca",
+      "ghi_chu": ""
+    }
+  },
+  {
+    "model": "contracts.hopdongld_ct",
+    "pk": "HD00005",
+    "fields": {
+      "luong_co_ban": 3480000.0,
+      "luong_theo_gio": 0.0,
+      "so_gio_lam": 174.0,
+      "che_do_thuong": 200000.0,
+      "dieu_khoan": "Theo nội quy",
+      "trach_nhiem": "Phục vụ",
+      "ghi_chu": ""
+    }
+  },
+  {
+    "model": "contracts.hopdongld_ct",
+    "pk": "HD00006",
+    "fields": {
+      "luong_co_ban": 0.0,
+      "luong_theo_gio": 25000.0,
+      "so_gio_lam": 90.0,
+      "che_do_thuong": 120000.0,
+      "dieu_khoan": "Theo nội quy",
+      "trach_nhiem": "Pha chế",
+      "ghi_chu": ""
+    }
+  },
+  {
+    "model": "contracts.hopdongld_ct",
+    "pk": "HD00007",
+    "fields": {
+      "luong_co_ban": 3480000.0,
+      "luong_theo_gio": 0.0,
+      "so_gio_lam": 174.0,
+      "che_do_thuong": 150000.0,
+      "dieu_khoan": "Theo nội quy",
+      "trach_nhiem": "Giữ xe",
+      "ghi_chu": ""
+    }
+  },
+  {
+    "model": "contracts.hopdongld_ct",
+    "pk": "HD00008",
+    "fields": {
+      "luong_co_ban": 0.0,
+      "luong_theo_gio": 20000.0,
+      "so_gio_lam": 85.0,
+      "che_do_thuong": 90000.0,
+      "dieu_khoan": "Theo nội quy",
+      "trach_nhiem": "Phục vụ",
+      "ghi_chu": ""
+    }
+  },
+  {
+    "model": "contracts.hopdongld_ct",
+    "pk": "HD00009",
+    "fields": {
+      "luong_co_ban": 3480000.0,
+      "luong_theo_gio": 0.0,
+      "so_gio_lam": 174.0,
+      "che_do_thuong": 200000.0,
+      "dieu_khoan": "Theo nội quy",
+      "trach_nhiem": "Phục vụ",
+      "ghi_chu": ""
+    }
+  },
+  {
+    "model": "contracts.hopdongld_ct",
+    "pk": "HD00010",
+    "fields": {
+      "luong_co_ban": 0.0,
+      "luong_theo_gio": 25000.0,
+      "so_gio_lam": 80.0,
+      "che_do_thuong": 120000.0,
+      "dieu_khoan": "Theo nội quy",
+      "trach_nhiem": "Pha chế",
+      "ghi_chu": ""
+    }
+  },
+  {
+    "model": "contracts.hopdongld_ct",
+    "pk": "HD00012",
+    "fields": {
+      "luong_co_ban": 0.0,
+      "luong_theo_gio": 22000.0,
+      "so_gio_lam": 80.0,
+      "che_do_thuong": 100000.0,
+      "dieu_khoan": "Theo nội quy chi nhánh",
+      "trach_nhiem": "Phục vụ bàn",
+      "ghi_chu": "Hợp đồng CN02 - Trần Thị Thu Hà"
+    }
+  },
+  {
+    "model": "contracts.hopdongld_ct",
+    "pk": "HD00013",
+    "fields": {
+      "luong_co_ban": 3200000.0,
+      "luong_theo_gio": 0.0,
+      "so_gio_lam": 174.0,
+      "che_do_thuong": 150000.0,
+      "dieu_khoan": "Nội quy bãi xe",
+      "trach_nhiem": "Giữ xe chi nhánh",
+      "ghi_chu": "Hợp đồng CN02 - Lê Minh Tuấn"
+    }
+  },
+  {
+    "model": "contracts.hopdongld_ct",
+    "pk": "HD00014",
+    "fields": {
+      "luong_co_ban": 0.0,
+      "luong_theo_gio": 20000.0,
+      "so_gio_lam": 90.0,
+      "che_do_thuong": 100000.0,
+      "dieu_khoan": "Theo nội quy chi nhánh",
+      "trach_nhiem": "Phục vụ",
+      "ghi_chu": "Hợp đồng CN02 - Phạm Ngọc Anh"
+    }
+  },
+  {
+    "model": "contracts.hopdongld_ct",
+    "pk": "HD00015",
+    "fields": {
+      "luong_co_ban": 3500000.0,
+      "luong_theo_gio": 0.0,
+      "so_gio_lam": 174.0,
+      "che_do_thuong": 200000.0,
+      "dieu_khoan": "Theo nội quy chi nhánh",
+      "trach_nhiem": "Pha chế",
+      "ghi_chu": "Hợp đồng CN02 - Võ Thành Đạt"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00001",
+    "fields": {
+      "ho_ten": "Trần Thị Thúy Lài",
+      "ngay_sinh": "2002-01-02",
+      "cccd": "049033894038",
+      "sdt": "0327788989",
+      "chuc_vu": "Quản lý",
+      "dia_chi": "123 Ngũ Hành Sơn, Đà Nẵng",
+      "gioi_tinh": "Nữ",
+      "tk_ngan_hang": "Vietcombank-11028493",
+      "ma_chi_nhanh": "CN01"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00002",
+    "fields": {
+      "ho_ten": "Lê Nguyễn Thúy Na",
+      "ngay_sinh": "2005-01-22",
+      "cccd": "049305006070",
+      "sdt": "0367890264",
+      "chuc_vu": "Phục Vụ",
+      "dia_chi": "33 Lý Thái Tổ, Đà Nẵng",
+      "gioi_tinh": "Nữ",
+      "tk_ngan_hang": "Vietinbank-11348343",
+      "ma_chi_nhanh": "CN01"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00003",
+    "fields": {
+      "ho_ten": "Trần Quốc Bảo",
+      "ngay_sinh": "1999-09-11",
+      "cccd": "023456789012",
+      "sdt": "0987654321",
+      "chuc_vu": "Giữ xe",
+      "dia_chi": "Quảng Nam",
+      "gioi_tinh": "Nam",
+      "tk_ngan_hang": "Techcombank-0234567891",
+      "ma_chi_nhanh": "CN01"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00004",
+    "fields": {
+      "ho_ten": "Phạm Minh Quân",
+      "ngay_sinh": "1998-03-15",
+      "cccd": "034567890123",
+      "sdt": "0932123456",
+      "chuc_vu": "Quản lý",
+      "dia_chi": "TP.HCM",
+      "gioi_tinh": "Nam",
+      "tk_ngan_hang": "ACB-0345678912",
+      "ma_chi_nhanh": "CN01"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00005",
+    "fields": {
+      "ho_ten": "Đặng Thị Lan",
+      "ngay_sinh": "2002-10-20",
+      "cccd": "045678901234",
+      "sdt": "0978123456",
+      "chuc_vu": "Phục vụ",
+      "dia_chi": "Đà Nẵng",
+      "gioi_tinh": "Nữ",
+      "tk_ngan_hang": "Sacombank-0456789123",
+      "ma_chi_nhanh": "CN01"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00006",
+    "fields": {
+      "ho_ten": "Bùi Đức Anh",
+      "ngay_sinh": "1997-08-08",
+      "cccd": "056789012345",
+      "sdt": "0909123456",
+      "chuc_vu": "Pha chế",
+      "dia_chi": "Hải Phòng",
+      "gioi_tinh": "Nam",
+      "tk_ngan_hang": "MB Bank-0567891234",
+      "ma_chi_nhanh": "CN01"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00007",
+    "fields": {
+      "ho_ten": "Ngô Quang Huy",
+      "ngay_sinh": "1996-04-25",
+      "cccd": "067890123456",
+      "sdt": "0945123456",
+      "chuc_vu": "Giữ xe",
+      "dia_chi": "Đà Lạt",
+      "gioi_tinh": "Nam",
+      "tk_ngan_hang": "VPBank-0678901234",
+      "ma_chi_nhanh": "CN01"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00008",
+    "fields": {
+      "ho_ten": "Phan Thị Ngọc",
+      "ngay_sinh": "2003-01-18",
+      "cccd": "078901234567",
+      "sdt": "0967123456",
+      "chuc_vu": "Phục vụ",
+      "dia_chi": "Nha Trang",
+      "gioi_tinh": "Nữ",
+      "tk_ngan_hang": "Agribank-0789012345",
+      "ma_chi_nhanh": "CN01"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00009",
+    "fields": {
+      "ho_ten": "Trịnh Khánh Vy",
+      "ngay_sinh": "2001-02-02",
+      "cccd": "089012345678",
+      "sdt": "0911123456",
+      "chuc_vu": "Phục vụ",
+      "dia_chi": "TP.HCM",
+      "gioi_tinh": "Nữ",
+      "tk_ngan_hang": "VietinBank-0890123456",
+      "ma_chi_nhanh": "CN01"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00010",
+    "fields": {
+      "ho_ten": "Hoàng Gia Bảo",
+      "ngay_sinh": "1995-12-30",
+      "cccd": "090123456789",
+      "sdt": "0988123456",
+      "chuc_vu": "Pha chế",
+      "dia_chi": "Cần Thơ",
+      "gioi_tinh": "Nam",
+      "tk_ngan_hang": "Techcombank-0901234567",
+      "ma_chi_nhanh": "CN01"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00011",
+    "fields": {
+      "ho_ten": "Nguyễn Hoàng Long",
+      "ngay_sinh": "1999-01-14",
+      "cccd": "101234567890",
+      "sdt": "0912233445",
+      "chuc_vu": "Pha chế",
+      "dia_chi": "Đà Nẵng",
+      "gioi_tinh": "Nam",
+      "tk_ngan_hang": "Vietcombank-1012345678",
+      "ma_chi_nhanh": "CN02"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00012",
+    "fields": {
+      "ho_ten": "Trần Thị Thu Hà",
+      "ngay_sinh": "2000-07-22",
+      "cccd": "112345678901",
+      "sdt": "0987766554",
+      "chuc_vu": "Phục vụ",
+      "dia_chi": "Huế",
+      "gioi_tinh": "Nữ",
+      "tk_ngan_hang": "BIDV-1122334455",
+      "ma_chi_nhanh": "CN02"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00013",
+    "fields": {
+      "ho_ten": "Lê Minh Tuấn",
+      "ngay_sinh": "1998-09-09",
+      "cccd": "123456789012",
+      "sdt": "0933445566",
+      "chuc_vu": "Giữ xe",
+      "dia_chi": "Quảng Nam",
+      "gioi_tinh": "Nam",
+      "tk_ngan_hang": "Techcombank-1231231231",
+      "ma_chi_nhanh": "CN02"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00014",
+    "fields": {
+      "ho_ten": "Phạm Ngọc Anh",
+      "ngay_sinh": "2001-12-18",
+      "cccd": "134567890123",
+      "sdt": "0977554433",
+      "chuc_vu": "Phục vụ",
+      "dia_chi": "TP.HCM",
+      "gioi_tinh": "Nữ",
+      "tk_ngan_hang": "ACB-1341341341",
+      "ma_chi_nhanh": "CN02"
+    }
+  },
+  {
+    "model": "employees.nhanvien",
+    "pk": "NV00015",
+    "fields": {
+      "ho_ten": "Võ Thành Đạt",
+      "ngay_sinh": "1997-03-30",
+      "cccd": "145678901234",
+      "sdt": "0909988776",
+      "chuc_vu": "Pha chế",
+      "dia_chi": "Đà Nẵng",
+      "gioi_tinh": "Nam",
+      "tk_ngan_hang": "Sacombank-1451451451",
+      "ma_chi_nhanh": "CN02"
+    }
+  },
+  {
+    "model": "payroll.luong",
+    "pk": "ML00001",
+    "fields": {
+      "nhan_vien": "NV00001",
+      "chi_nhanh": "CN01",
+      "thang": 2,
+      "nam": 2026,
+      "trang_thai": "Dang cho duyet",
+      "luong_co_ban": 3480000.0,
+      "luong_theo_gio": 0.0,
+      "so_ca_lam": 3.0,
+      "so_gio_lam": 16.9,
+      "thuong": 300000.0,
+      "phat": 0.0,
+      "tong_luong": 3780000.0,
+      "created_at": "2026-04-01T15:44:43.419Z",
+      "updated_at": "2026-04-01T15:44:43.419Z"
+    }
+  },
+  {
+    "model": "payroll.luong",
+    "pk": "ML00002",
+    "fields": {
+      "nhan_vien": "NV00002",
+      "chi_nhanh": "CN01",
+      "thang": 2,
+      "nam": 2026,
+      "trang_thai": "Dang cho duyet",
+      "luong_co_ban": 0.0,
+      "luong_theo_gio": 20000.0,
+      "so_ca_lam": 3.0,
+      "so_gio_lam": 16.35,
+      "thuong": 100000.0,
+      "phat": 35000.0,
+      "tong_luong": 392000.0,
+      "created_at": "2026-04-01T15:44:43.427Z",
+      "updated_at": "2026-04-01T15:44:43.427Z"
+    }
+  },
+  {
+    "model": "payroll.luong",
+    "pk": "ML00003",
+    "fields": {
+      "nhan_vien": "NV00003",
+      "chi_nhanh": "CN01",
+      "thang": 2,
+      "nam": 2026,
+      "trang_thai": "Dang cho duyet",
+      "luong_co_ban": 3480000.0,
+      "luong_theo_gio": 0.0,
+      "so_ca_lam": 2.0,
+      "so_gio_lam": 10.0,
+      "thuong": 150000.0,
+      "phat": 0.0,
+      "tong_luong": 3630000.0,
+      "created_at": "2026-04-01T15:44:43.435Z",
+      "updated_at": "2026-04-01T15:44:43.435Z"
+    }
+  },
+  {
+    "model": "payroll.luong",
+    "pk": "ML00004",
+    "fields": {
+      "nhan_vien": "NV00004",
+      "chi_nhanh": "CN01",
+      "thang": 2,
+      "nam": 2026,
+      "trang_thai": "Dang cho duyet",
+      "luong_co_ban": 0.0,
+      "luong_theo_gio": 30000.0,
+      "so_ca_lam": 3.0,
+      "so_gio_lam": 15.6,
+      "thuong": 200000.0,
+      "phat": 17000.0,
+      "tong_luong": 651000.0,
+      "created_at": "2026-04-01T15:44:43.441Z",
+      "updated_at": "2026-04-01T15:44:43.441Z"
+    }
+  },
+  {
+    "model": "payroll.luong",
+    "pk": "ML00005",
+    "fields": {
+      "nhan_vien": "NV00005",
+      "chi_nhanh": "CN01",
+      "thang": 2,
+      "nam": 2026,
+      "trang_thai": "Dang cho duyet",
+      "luong_co_ban": 3480000.0,
+      "luong_theo_gio": 0.0,
+      "so_ca_lam": 2.0,
+      "so_gio_lam": 12.0,
+      "thuong": 200000.0,
+      "phat": 0.0,
+      "tong_luong": 3680000.0,
+      "created_at": "2026-04-01T15:44:43.448Z",
+      "updated_at": "2026-04-01T15:44:43.448Z"
+    }
+  },
+  {
+    "model": "payroll.luong",
+    "pk": "ML00006",
+    "fields": {
+      "nhan_vien": "NV00006",
+      "chi_nhanh": "CN01",
+      "thang": 2,
+      "nam": 2026,
+      "trang_thai": "Dang cho duyet",
+      "luong_co_ban": 0.0,
+      "luong_theo_gio": 25000.0,
+      "so_ca_lam": 2.0,
+      "so_gio_lam": 11.55,
+      "thuong": 120000.0,
+      "phat": 25000.0,
+      "tong_luong": 383750.0,
+      "created_at": "2026-04-01T15:44:43.457Z",
+      "updated_at": "2026-04-01T15:44:43.457Z"
+    }
+  },
+  {
+    "model": "payroll.luong",
+    "pk": "ML00007",
+    "fields": {
+      "nhan_vien": "NV00007",
+      "chi_nhanh": "CN01",
+      "thang": 2,
+      "nam": 2026,
+      "trang_thai": "Dang cho duyet",
+      "luong_co_ban": 3480000.0,
+      "luong_theo_gio": 0.0,
+      "so_ca_lam": 2.0,
+      "so_gio_lam": 10.0,
+      "thuong": 150000.0,
+      "phat": 0.0,
+      "tong_luong": 3630000.0,
+      "created_at": "2026-04-01T15:44:43.464Z",
+      "updated_at": "2026-04-01T15:44:43.464Z"
+    }
+  },
+  {
+    "model": "payroll.luong",
+    "pk": "ML00008",
+    "fields": {
+      "nhan_vien": "NV00008",
+      "chi_nhanh": "CN01",
+      "thang": 2,
+      "nam": 2026,
+      "trang_thai": "Dang cho duyet",
+      "luong_co_ban": 0.0,
+      "luong_theo_gio": 20000.0,
+      "so_ca_lam": 3.0,
+      "so_gio_lam": 14.75,
+      "thuong": 90000.0,
+      "phat": 25000.0,
+      "tong_luong": 360000.0,
+      "created_at": "2026-04-01T15:44:43.472Z",
+      "updated_at": "2026-04-01T15:44:43.472Z"
+    }
+  },
+  {
+    "model": "payroll.luong",
+    "pk": "ML00009",
+    "fields": {
+      "nhan_vien": "NV00009",
+      "chi_nhanh": "CN01",
+      "thang": 2,
+      "nam": 2026,
+      "trang_thai": "Dang cho duyet",
+      "luong_co_ban": 3480000.0,
+      "luong_theo_gio": 0.0,
+      "so_ca_lam": 2.0,
+      "so_gio_lam": 12.0,
+      "thuong": 200000.0,
+      "phat": 0.0,
+      "tong_luong": 3680000.0,
+      "created_at": "2026-04-01T15:44:43.479Z",
+      "updated_at": "2026-04-01T15:44:43.479Z"
+    }
+  },
+  {
+    "model": "payroll.luong",
+    "pk": "ML00010",
+    "fields": {
+      "nhan_vien": "NV00010",
+      "chi_nhanh": "CN01",
+      "thang": 2,
+      "nam": 2026,
+      "trang_thai": "Dang cho duyet",
+      "luong_co_ban": 0.0,
+      "luong_theo_gio": 25000.0,
+      "so_ca_lam": 2.0,
+      "so_gio_lam": 9.4,
+      "thuong": 120000.0,
+      "phat": 35000.0,
+      "tong_luong": 320000.0,
+      "created_at": "2026-04-01T15:44:43.488Z",
+      "updated_at": "2026-04-01T15:44:43.488Z"
+    }
+  },
+  {
+    "model": "payroll.luong",
+    "pk": "ML00011",
+    "fields": {
+      "nhan_vien": "NV00012",
+      "chi_nhanh": "CN02",
+      "thang": 2,
+      "nam": 2026,
+      "trang_thai": "Dang cho duyet",
+      "luong_co_ban": 0.0,
+      "luong_theo_gio": 22000.0,
+      "so_ca_lam": 3.0,
+      "so_gio_lam": 16.6,
+      "thuong": 100000.0,
+      "phat": 20000.0,
+      "tong_luong": 445200.00000000006,
+      "created_at": "2026-04-01T15:44:43.497Z",
+      "updated_at": "2026-04-01T15:44:43.497Z"
+    }
+  },
+  {
+    "model": "payroll.luong",
+    "pk": "ML00012",
+    "fields": {
+      "nhan_vien": "NV00013",
+      "chi_nhanh": "CN02",
+      "thang": 2,
+      "nam": 2026,
+      "trang_thai": "Dang cho duyet",
+      "luong_co_ban": 3200000.0,
+      "luong_theo_gio": 0.0,
+      "so_ca_lam": 2.0,
+      "so_gio_lam": 10.0,
+      "thuong": 150000.0,
+      "phat": 0.0,
+      "tong_luong": 3350000.0,
+      "created_at": "2026-04-01T15:44:43.504Z",
+      "updated_at": "2026-04-01T15:44:43.504Z"
+    }
+  },
+  {
+    "model": "payroll.luong",
+    "pk": "ML00013",
+    "fields": {
+      "nhan_vien": "NV00014",
+      "chi_nhanh": "CN02",
+      "thang": 2,
+      "nam": 2026,
+      "trang_thai": "Dang cho duyet",
+      "luong_co_ban": 0.0,
+      "luong_theo_gio": 20000.0,
+      "so_ca_lam": 2.0,
+      "so_gio_lam": 9.8,
+      "thuong": 100000.0,
+      "phat": 12000.0,
+      "tong_luong": 284000.0,
+      "created_at": "2026-04-01T15:44:43.512Z",
+      "updated_at": "2026-04-01T15:44:43.512Z"
+    }
+  },
+  {
+    "model": "payroll.luong",
+    "pk": "ML00014",
+    "fields": {
+      "nhan_vien": "NV00015",
+      "chi_nhanh": "CN02",
+      "thang": 2,
+      "nam": 2026,
+      "trang_thai": "Dang cho duyet",
+      "luong_co_ban": 3500000.0,
+      "luong_theo_gio": 0.0,
+      "so_ca_lam": 3.0,
+      "so_gio_lam": 17.8,
+      "thuong": 200000.0,
+      "phat": 0.0,
+      "tong_luong": 3700000.0,
+      "created_at": "2026-04-01T15:44:43.520Z",
+      "updated_at": "2026-04-01T15:44:43.520Z"
+    }
+  },
+  {
+    "model": "reports.baocao",
+    "pk": "BC001",
+    "fields": {
+      "ngay_bd": "2026-02-01",
+      "ngay_kt": "2026-02-28",
+      "ngay_tao": "2026-04-01",
+      "ma_chi_nhanh_id": "CN01",
+      "ma_tk": 1
+    }
+  },
+  {
+    "model": "reports.baocao",
+    "pk": "BC002",
+    "fields": {
+      "ngay_bd": "2026-02-01",
+      "ngay_kt": "2026-02-28",
+      "ngay_tao": "2026-04-01",
+      "ma_chi_nhanh_id": "CN01",
+      "ma_tk": 4
+    }
+  },
+  {
+    "model": "reports.baocao",
+    "pk": "BC003",
+    "fields": {
+      "ngay_bd": "2026-02-01",
+      "ngay_kt": "2026-02-28",
+      "ngay_tao": "2026-04-01",
+      "ma_chi_nhanh_id": "CN02",
+      "ma_tk": 1
+    }
+  },
+  {
+    "model": "reports.baocao",
+    "pk": "BC004",
+    "fields": {
+      "ngay_bd": "2026-02-01",
+      "ngay_kt": "2026-02-28",
+      "ngay_tao": "2026-04-01",
+      "ma_chi_nhanh_id": "CN01",
+      "ma_tk": 4
+    }
+  },
+  {
+    "model": "requests.yeucau",
+    "pk": "NP_NV00001_20261226",
+    "fields": {
+      "loai_yeu_cau": "Nghỉ phép",
+      "ngay_bd": "2026-12-26",
+      "ngay_kt": "2026-12-27",
+      "ly_do": "Đi khám sức khỏe",
+      "trang_thai": "Chờ duyệt",
+      "ma_nv": "NV00001"
+    }
+  },
+  {
+    "model": "requests.yeucau",
+    "pk": "NP_NV00002_20260410",
+    "fields": {
+      "loai_yeu_cau": "Nghỉ phép",
+      "ngay_bd": "2026-04-10",
+      "ngay_kt": "2026-04-12",
+      "ly_do": "Về quê có việc gia đình",
+      "trang_thai": "Chờ duyệt",
+      "ma_nv": "NV00002"
+    }
+  },
+  {
+    "model": "requests.yeucau",
+    "pk": "NP_NV00005_20260520",
+    "fields": {
+      "loai_yeu_cau": "Nghỉ phép",
+      "ngay_bd": "2026-05-20",
+      "ngay_kt": "2026-05-20",
+      "ly_do": "Giải quyết việc cá nhân",
+      "trang_thai": "Chờ duyệt",
+      "ma_nv": "NV00005"
+    }
+  },
+  {
+    "model": "requests.yeucau",
+    "pk": "NP_NV00003_20260912",
+    "fields": {
+      "loai_yeu_cau": "Nghỉ phép",
+      "ngay_bd": "2026-09-12",
+      "ngay_kt": "2026-09-14",
+      "ly_do": "Bị sốt xuất huyết",
+      "trang_thai": "Chờ duyệt",
+      "ma_nv": "NV00003"
+    }
+  },
+  {
+    "model": "requests.yeucau",
+    "pk": "NP_NV00007_20261210",
+    "fields": {
+      "loai_yeu_cau": "Nghỉ phép",
+      "ngay_bd": "2026-12-10",
+      "ngay_kt": "2026-12-12",
+      "ly_do": "Nghỉ bù lễ",
+      "trang_thai": "Chờ duyệt",
+      "ma_nv": "NV00007"
+    }
+  },
+  {
+    "model": "requests.yeucau",
+    "pk": "DK_NV00004_20260208",
+    "fields": {
+      "loai_yeu_cau": "Đăng ký ca làm",
+      "ngay_bd": "2026-02-08",
+      "ngay_kt": "2026-02-08",
+      "ly_do": "Đăng ký ca sáng (06:00 - 12:00)",
+      "trang_thai": "Chờ duyệt",
+      "ma_nv": "NV00004"
+    }
+  },
+  {
+    "model": "requests.yeucau",
+    "pk": "DK_NV00001_20260208",
+    "fields": {
+      "loai_yeu_cau": "Đăng ký ca làm",
+      "ngay_bd": "2026-02-08",
+      "ngay_kt": "2026-02-08",
+      "ly_do": "Đăng ký ca chiều (12:00 - 17:00)",
+      "trang_thai": "Chờ duyệt",
+      "ma_nv": "NV00001"
+    }
+  },
+  {
+    "model": "requests.yeucau",
+    "pk": "DK_NV00012_20260208",
+    "fields": {
+      "loai_yeu_cau": "Đăng ký ca làm",
+      "ngay_bd": "2026-02-08",
+      "ngay_kt": "2026-02-08",
+      "ly_do": "Đăng ký ca tối (17:00 - 22:00)",
+      "trang_thai": "Chờ duyệt",
+      "ma_nv": "NV00012"
+    }
+  },
+  {
+    "model": "requests.yeucau",
+    "pk": "DK_NV00008_20260209",
+    "fields": {
+      "loai_yeu_cau": "Đăng ký ca làm",
+      "ngay_bd": "2026-02-09",
+      "ngay_kt": "2026-02-09",
+      "ly_do": "Đăng ký ca chiều (12:00 - 17:00)",
+      "trang_thai": "Chờ duyệt",
+      "ma_nv": "NV00008"
+    }
+  },
+  {
+    "model": "requests.yeucau",
+    "pk": "DK_NV00002_20260210",
+    "fields": {
+      "loai_yeu_cau": "Đăng ký ca làm",
+      "ngay_bd": "2026-02-10",
+      "ngay_kt": "2026-02-10",
+      "ly_do": "Đăng ký ca chiều (12:00 - 17:00)",
+      "trang_thai": "Chờ duyệt",
+      "ma_nv": "NV00002"
+    }
+  },
+  {
+    "model": "requests.yeucau",
+    "pk": "DK_NV00005_20260211",
+    "fields": {
+      "loai_yeu_cau": "Đăng ký ca làm",
+      "ngay_bd": "2026-02-11",
+      "ngay_kt": "2026-02-11",
+      "ly_do": "Đăng ký ca tối (17:00 - 22:00)",
+      "trang_thai": "Chờ duyệt",
+      "ma_nv": "NV00005"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00003_20240601",
+    "fields": {
+      "ngay_lam": "2024-06-01",
+      "ca_lam": "06:00 - 12:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca sáng",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00003"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00005_20240601",
+    "fields": {
+      "ngay_lam": "2024-06-01",
+      "ca_lam": "12:00 - 17:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca chiều",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00005"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00008_20240601",
+    "fields": {
+      "ngay_lam": "2024-06-01",
+      "ca_lam": "17:00 - 22:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca tối",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00008"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00001_20240602",
+    "fields": {
+      "ngay_lam": "2024-06-02",
+      "ca_lam": "06:00 - 12:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca sáng",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00001"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00003_20240602",
+    "fields": {
+      "ngay_lam": "2024-06-02",
+      "ca_lam": "12:00 - 17:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca chiều",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00003"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00009_20240602",
+    "fields": {
+      "ngay_lam": "2024-06-02",
+      "ca_lam": "17:00 - 22:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca tối",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00009"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00007_20240603",
+    "fields": {
+      "ngay_lam": "2024-06-03",
+      "ca_lam": "06:00 - 12:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca sáng",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00007"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00004_20240603",
+    "fields": {
+      "ngay_lam": "2024-06-03",
+      "ca_lam": "12:00 - 17:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca chiều",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00004"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00002_20240603",
+    "fields": {
+      "ngay_lam": "2024-06-03",
+      "ca_lam": "17:00 - 22:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca tối",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00002"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00005_20240604",
+    "fields": {
+      "ngay_lam": "2024-06-04",
+      "ca_lam": "06:00 - 12:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca sáng",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00005"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00008_20240604",
+    "fields": {
+      "ngay_lam": "2024-06-04",
+      "ca_lam": "12:00 - 17:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca chiều",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00008"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00001_20240604",
+    "fields": {
+      "ngay_lam": "2024-06-04",
+      "ca_lam": "17:00 - 22:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca tối",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00001"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00009_20240605",
+    "fields": {
+      "ngay_lam": "2024-06-05",
+      "ca_lam": "06:00 - 12:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca sáng",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00009"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00001_20240605",
+    "fields": {
+      "ngay_lam": "2024-06-05",
+      "ca_lam": "12:00 - 17:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca chiều",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00001"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00003_20240605",
+    "fields": {
+      "ngay_lam": "2024-06-05",
+      "ca_lam": "17:00 - 22:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca tối",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00003"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00004_20240606",
+    "fields": {
+      "ngay_lam": "2024-06-06",
+      "ca_lam": "06:00 - 12:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca sáng",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00004"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00007_20240606",
+    "fields": {
+      "ngay_lam": "2024-06-06",
+      "ca_lam": "12:00 - 17:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca chiều",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00007"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00006_20240606",
+    "fields": {
+      "ngay_lam": "2024-06-06",
+      "ca_lam": "17:00 - 22:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca tối",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00006"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00005_20240607",
+    "fields": {
+      "ngay_lam": "2024-06-07",
+      "ca_lam": "06:00 - 12:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca sáng",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00005"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00002_20240607",
+    "fields": {
+      "ngay_lam": "2024-06-07",
+      "ca_lam": "12:00 - 17:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca chiều",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00002"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00001_20240607",
+    "fields": {
+      "ngay_lam": "2024-06-07",
+      "ca_lam": "17:00 - 22:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca tối",
+      "ma_chi_nhanh": "CN01",
+      "ma_nv": "NV00001"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00011_20240601",
+    "fields": {
+      "ngay_lam": "2024-06-01",
+      "ca_lam": "06:00 - 12:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca sáng",
+      "ma_chi_nhanh": "CN02",
+      "ma_nv": "NV00011"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00012_20240601",
+    "fields": {
+      "ngay_lam": "2024-06-01",
+      "ca_lam": "12:00 - 17:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca chiều",
+      "ma_chi_nhanh": "CN02",
+      "ma_nv": "NV00012"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00013_20240601",
+    "fields": {
+      "ngay_lam": "2024-06-01",
+      "ca_lam": "17:00 - 22:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca tối",
+      "ma_chi_nhanh": "CN02",
+      "ma_nv": "NV00013"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00014_20240602",
+    "fields": {
+      "ngay_lam": "2024-06-02",
+      "ca_lam": "06:00 - 12:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca sáng",
+      "ma_chi_nhanh": "CN02",
+      "ma_nv": "NV00014"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00015_20240602",
+    "fields": {
+      "ngay_lam": "2024-06-02",
+      "ca_lam": "12:00 - 17:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca chiều",
+      "ma_chi_nhanh": "CN02",
+      "ma_nv": "NV00015"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00011_20240602",
+    "fields": {
+      "ngay_lam": "2024-06-02",
+      "ca_lam": "17:00 - 22:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca tối",
+      "ma_chi_nhanh": "CN02",
+      "ma_nv": "NV00011"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00012_20240603",
+    "fields": {
+      "ngay_lam": "2024-06-03",
+      "ca_lam": "06:00 - 12:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca sáng",
+      "ma_chi_nhanh": "CN02",
+      "ma_nv": "NV00012"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00013_20240603",
+    "fields": {
+      "ngay_lam": "2024-06-03",
+      "ca_lam": "12:00 - 17:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca chiều",
+      "ma_chi_nhanh": "CN02",
+      "ma_nv": "NV00013"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00014_20240603",
+    "fields": {
+      "ngay_lam": "2024-06-03",
+      "ca_lam": "17:00 - 22:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca tối",
+      "ma_chi_nhanh": "CN02",
+      "ma_nv": "NV00014"
+    }
+  },
+  {
+    "model": "schedules.lichlamviec",
+    "pk": "LLV_NV00015_20240604",
+    "fields": {
+      "ngay_lam": "2024-06-04",
+      "ca_lam": "06:00 - 12:00",
+      "trang_thai": "Đã xếp lịch",
+      "ngay_tao": "2026-04-01",
+      "ghi_chu": "Ca sáng",
+      "ma_chi_nhanh": "CN02",
+      "ma_nv": "NV00015"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00003",
+    "fields": {
+      "ma_nv": "NV00012",
+      "ngay_lam": "2026-02-08",
+      "ca_lam": "Tối",
+      "gio_vao": "17:00:00",
+      "gio_ra": "22:00:00",
+      "so_gio_lam": 5.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00005",
+    "fields": {
+      "ma_nv": "NV00008",
+      "ngay_lam": "2026-02-09",
+      "ca_lam": "Chiều",
+      "gio_vao": "12:00:00",
+      "gio_ra": "17:15:00",
+      "so_gio_lam": 5.25,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Tăng ca 15 phút"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00007",
+    "fields": {
+      "ma_nv": "NV00015",
+      "ngay_lam": "2026-02-10",
+      "ca_lam": "Sáng",
+      "gio_vao": "06:10:00",
+      "gio_ra": "12:00:00",
+      "so_gio_lam": 5.8,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Vào trễ 10 phút"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00008",
+    "fields": {
+      "ma_nv": "NV00002",
+      "ngay_lam": "2026-02-10",
+      "ca_lam": "Chiều",
+      "gio_vao": "12:00:00",
+      "gio_ra": "17:00:00",
+      "so_gio_lam": 5.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00023",
+    "fields": {
+      "ma_nv": "NV00001",
+      "ngay_lam": "2026-02-16",
+      "ca_lam": "Sáng",
+      "gio_vao": "06:00:00",
+      "gio_ra": "12:00:00",
+      "so_gio_lam": 6.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00024",
+    "fields": {
+      "ma_nv": "NV00002",
+      "ngay_lam": "2026-02-16",
+      "ca_lam": "Sáng",
+      "gio_vao": "06:15:00",
+      "gio_ra": "12:00:00",
+      "so_gio_lam": 5.75,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Trễ 15 phút"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00025",
+    "fields": {
+      "ma_nv": "NV00003",
+      "ngay_lam": "2026-02-16",
+      "ca_lam": "Chiều",
+      "gio_vao": "12:00:00",
+      "gio_ra": "17:00:00",
+      "so_gio_lam": 5.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00026",
+    "fields": {
+      "ma_nv": "NV00004",
+      "ngay_lam": "2026-02-16",
+      "ca_lam": "Chiều",
+      "gio_vao": "12:07:00",
+      "gio_ra": "17:00:00",
+      "so_gio_lam": 4.8,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Trễ 7 phút"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00027",
+    "fields": {
+      "ma_nv": "NV00005",
+      "ngay_lam": "2026-02-17",
+      "ca_lam": "Sáng",
+      "gio_vao": "06:00:00",
+      "gio_ra": "12:00:00",
+      "so_gio_lam": 6.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00028",
+    "fields": {
+      "ma_nv": "NV00006",
+      "ngay_lam": "2026-02-17",
+      "ca_lam": "Sáng",
+      "gio_vao": "06:10:00",
+      "gio_ra": "12:00:00",
+      "so_gio_lam": 5.8,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Trễ 10 phút"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00029",
+    "fields": {
+      "ma_nv": "NV00007",
+      "ngay_lam": "2026-02-17",
+      "ca_lam": "Chiều",
+      "gio_vao": "12:00:00",
+      "gio_ra": "17:00:00",
+      "so_gio_lam": 5.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00030",
+    "fields": {
+      "ma_nv": "NV00008",
+      "ngay_lam": "2026-02-17",
+      "ca_lam": "Tối",
+      "gio_vao": "17:20:00",
+      "gio_ra": "22:00:00",
+      "so_gio_lam": 4.6,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Trễ 20 phút"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00031",
+    "fields": {
+      "ma_nv": "NV00009",
+      "ngay_lam": "2026-02-18",
+      "ca_lam": "Sáng",
+      "gio_vao": "06:00:00",
+      "gio_ra": "12:00:00",
+      "so_gio_lam": 6.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00032",
+    "fields": {
+      "ma_nv": "NV00010",
+      "ngay_lam": "2026-02-18",
+      "ca_lam": "Chiều",
+      "gio_vao": "12:05:00",
+      "gio_ra": "17:00:00",
+      "so_gio_lam": 4.9,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Trễ 5 phút"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00033",
+    "fields": {
+      "ma_nv": "NV00011",
+      "ngay_lam": "2026-02-18",
+      "ca_lam": "Tối",
+      "gio_vao": "17:00:00",
+      "gio_ra": "22:00:00",
+      "so_gio_lam": 5.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00034",
+    "fields": {
+      "ma_nv": "NV00012",
+      "ngay_lam": "2026-02-19",
+      "ca_lam": "Sáng",
+      "gio_vao": "06:12:00",
+      "gio_ra": "12:00:00",
+      "so_gio_lam": 5.8,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Trễ 12 phút"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00035",
+    "fields": {
+      "ma_nv": "NV00013",
+      "ngay_lam": "2026-02-19",
+      "ca_lam": "Chiều",
+      "gio_vao": "12:00:00",
+      "gio_ra": "17:00:00",
+      "so_gio_lam": 5.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00036",
+    "fields": {
+      "ma_nv": "NV00014",
+      "ngay_lam": "2026-02-19",
+      "ca_lam": "Tối",
+      "gio_vao": "17:00:00",
+      "gio_ra": "22:00:00",
+      "so_gio_lam": 5.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00040",
+    "fields": {
+      "ma_nv": "NV00001",
+      "ngay_lam": "2026-02-18",
+      "ca_lam": "Sáng",
+      "gio_vao": "06:00:00",
+      "gio_ra": "12:00:00",
+      "so_gio_lam": 6.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00041",
+    "fields": {
+      "ma_nv": "NV00002",
+      "ngay_lam": "2026-02-18",
+      "ca_lam": "Sáng",
+      "gio_vao": "06:20:00",
+      "gio_ra": "12:00:00",
+      "so_gio_lam": 5.6,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Trễ 20 phút"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00042",
+    "fields": {
+      "ma_nv": "NV00003",
+      "ngay_lam": "2026-02-19",
+      "ca_lam": "Chiều",
+      "gio_vao": "12:00:00",
+      "gio_ra": "17:00:00",
+      "so_gio_lam": 5.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00043",
+    "fields": {
+      "ma_nv": "NV00004",
+      "ngay_lam": "2026-02-19",
+      "ca_lam": "Chiều",
+      "gio_vao": "12:10:00",
+      "gio_ra": "17:00:00",
+      "so_gio_lam": 4.8,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Trễ 10 phút"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00044",
+    "fields": {
+      "ma_nv": "NV00005",
+      "ngay_lam": "2026-02-20",
+      "ca_lam": "Sáng",
+      "gio_vao": "06:00:00",
+      "gio_ra": "12:00:00",
+      "so_gio_lam": 6.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00045",
+    "fields": {
+      "ma_nv": "NV00006",
+      "ngay_lam": "2026-02-20",
+      "ca_lam": "Sáng",
+      "gio_vao": "06:15:00",
+      "gio_ra": "12:00:00",
+      "so_gio_lam": 5.75,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Trễ 15 phút"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00046",
+    "fields": {
+      "ma_nv": "NV00007",
+      "ngay_lam": "2026-02-18",
+      "ca_lam": "Chiều",
+      "gio_vao": "12:00:00",
+      "gio_ra": "17:00:00",
+      "so_gio_lam": 5.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00047",
+    "fields": {
+      "ma_nv": "NV00008",
+      "ngay_lam": "2026-02-18",
+      "ca_lam": "Tối",
+      "gio_vao": "17:05:00",
+      "gio_ra": "22:00:00",
+      "so_gio_lam": 4.9,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Trễ 5 phút"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00048",
+    "fields": {
+      "ma_nv": "NV00009",
+      "ngay_lam": "2026-02-19",
+      "ca_lam": "Sáng",
+      "gio_vao": "06:00:00",
+      "gio_ra": "12:00:00",
+      "so_gio_lam": 6.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00049",
+    "fields": {
+      "ma_nv": "NV00010",
+      "ngay_lam": "2026-02-19",
+      "ca_lam": "Chiều",
+      "gio_vao": "12:30:00",
+      "gio_ra": "17:00:00",
+      "so_gio_lam": 4.5,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Trễ 30 phút"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00050",
+    "fields": {
+      "ma_nv": "NV00011",
+      "ngay_lam": "2026-02-20",
+      "ca_lam": "Tối",
+      "gio_vao": "17:00:00",
+      "gio_ra": "22:00:00",
+      "so_gio_lam": 5.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00051",
+    "fields": {
+      "ma_nv": "NV00012",
+      "ngay_lam": "2026-02-20",
+      "ca_lam": "Sáng",
+      "gio_vao": "06:08:00",
+      "gio_ra": "12:00:00",
+      "so_gio_lam": 5.8,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Trễ 8 phút"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00052",
+    "fields": {
+      "ma_nv": "NV00013",
+      "ngay_lam": "2026-02-18",
+      "ca_lam": "Chiều",
+      "gio_vao": "12:00:00",
+      "gio_ra": "17:00:00",
+      "so_gio_lam": 5.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  },
+  {
+    "model": "attendances.chamcong",
+    "pk": "CC00054",
+    "fields": {
+      "ma_nv": "NV00015",
+      "ngay_lam": "2026-02-20",
+      "ca_lam": "Sáng",
+      "gio_vao": "06:00:00",
+      "gio_ra": "12:00:00",
+      "so_gio_lam": 6.0,
+      "trang_thai": "Hoàn thành",
+      "ghi_chu": "Đúng giờ"
+    }
+  }
+]

@@ -1,4 +1,3 @@
-
 /* Màu sắc chủ đạo GÉ CAFE */
 :root {
     --ge-green-dark: #174D17;      /* Xanh đậm gốc */
@@ -11,87 +10,152 @@
 
 /* Layout tổng thể */
 .request-management-container {
-    padding: 20px;
-    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    width:100%;
+    margin-top:-17px;
 }
 
-/* Hàng 1: Search + Buttons gom chung 1 hàng */
-.toolbar-row-top {
+.top-control-bar {
     display: flex;
-    justify-content: flex-start;
+    margin-bottom: 25px;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* TOOLBAR */
+.toolbar {
+    display: flex;
     align-items: center;
+    gap: 16px;
+    padding: 0px;
+    border-radius: 12px;
+}
+
+/* INPUT FULL */
+.search-box {
+    flex: 1;
+    display: flex;
+}
+
+.search-box input {
     width: 100%;
-    gap:25px;
+    height: 48px;
+    padding: 0 16px;
+    color:  var(--text-color);
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.92);
+    box-sizing: border-box;
+    font-size: 18px;
+    font-family: "Montserrat", sans-serif;
 }
 
-.control-left {
+/* BUTTON GROUP */
+.toolbar-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+/* BUTTON */
+.btn-search,
+.btn-primary {
+    height: 48px;
+    padding: 0 20px;
+    margin-top: 20px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+
+    border: none;
+    border-radius: 10px;
+
+    background: rgb(46, 125, 50);
+    color: #fff;
+
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;              /* 🔥 THÊM */
+    align-items: center;        /* 🔥 CĂN GIỮA DỌC */
+    justify-content: center;
+}
+.btn-search:hover,
+.btn-primary:hover {
+    background: #27682b;
+}
+
+/* Filter bar cho dropdown loc */
+.filter-bar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding:0;
+    align-items: center;
+}
+
+.filter-dropdown {
+    height: 52px;
+    padding: 0 20px;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    background: #fff;
+    font: 500 16px "Montserrat", sans-serif;
+    cursor: pointer;
+    min-width: 150px;
+    box-sizing: border-box;
+}
+
+.filter-dropdown:focus {
+    outline: none;
+    border-color: #174d17;
+    box-shadow: 0 0 0 3px rgba(23, 77, 23, 0.1);
+}
+
+/* Hàng chứa các nút bộ lọc */
+.filter-status-row {
+    display: flex;
+    gap: 16px;
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+/* Trạng thái mặc định (Chưa nhấn) */
+.btn-filter {
+    /* Màu nền xanh lá nhẹ và chữ đen theo yêu cầu */
+    background-color: var(--ge-green-light);
+    color: #000000;
+    margin-top: 0;
+    border: none;
+    padding: 0 25px;
+    /* Bo tròn hoàn toàn (kiểu viên thuốc) */
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700; /* In đậm chữ */
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    height: 48px;
     display: flex;
     align-items: center;
-    gap: 20px;
-}
-
-.search-wrapper {
-
-    max-width: 600px;
-}
-
-.search-input-ge {
-    width: 600px;
-    height: 45px;
-    padding: 0 15px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-size: 18px;
+    justify-content: center;
     outline: none;
+    margin: 0
 }
 
-/* Button Tìm kiếm - Màu xanh đậm */
-.btn-search-ge {
-    height: 45px;
-    width: 180px;
-    padding: 0 25px;
+/* Trạng thái KHI NHẤN VÀO (Active) */
+.btn-filter.active {
+    /* Màu xanh đậm và chữ trắng theo yêu cầu */
     background-color: var(--ge-green-dark);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    font-size:18px;
+    color: #FFFFFF;
+
+    box-shadow: 0 4px 12px rgba(23, 77, 23, 0.3);
 }
 
-.btn-search-ge:hover {
-    background-color: var(--ge-green-hover);
-}
-
-/* Cụm nút bên phải */
-.control-right {
-    display: flex;
-    flex:none;
-    gap:25px;
-}
-
-/* Nút Tính lương & In/Xuất - Theo yêu cầu: Màu xanh lá nhạt khi hover */
-.btn-create-request {
-    height: 45px;
-    width: 180px;
-    padding: 0 20px;
-    background-color: var(--ge-green-dark);
-    color: white;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size:18px;
-}
-
-.btn-create-request:hover {
-    background-color: var(--ge-green-hover); /* Màu xanh lá pastel khi hover */
-}
-
-/* Hàng 2: Chi nhánh và Kỳ lương (Giữ nguyên cấu trúc bạn đã làm) */
-.toolbar-row {
-    margin-top: 5px; /* Khoảng cách nhỏ với hàng trên nếu cần */
+/* Hiệu ứng hover nhẹ khi chưa chọn */
+.btn-filter:hover:not(.active) {
+    filter: brightness(0.9);
 }
 
 /* Bảng dữ liệu */
@@ -99,8 +163,8 @@
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    margin-top: 25px;
     overflow: hidden;
+    margin: 0 0 0px 0;
 }
 
 .ge-main-table {
@@ -135,89 +199,57 @@
     justify-content: center;
 }
 
+/* --- ĐỒNG BỘ KÍCH THƯỚC ICON --- */
+
+/* Class dùng chung cho các nút icon tròn */
+.btn-status-action,
 .btn-action-ge {
     background: white !important;
-    border: 1px solid !important;
-    border-color: #333333 !important; /* Thiết lập viền hình tròn mặc định là màu đen */
-    padding: 0;
-    width: 38px !important;
-    height: 38px !important;
+    border: 1px solid #333333 !important; /* Viền đen mặc định giống nhau */
+    width: 38px !important;  /* Tăng lên 38px cho bằng cột hành động */
+    height: 38px !important; /* Tăng lên 38px */
     border-radius: 50% !important;
-    display: flex;
+    display: inline-flex !important; /* Dùng inline-flex để không làm vỡ dòng */
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-size: 16px !important;
+    font-size: 18px !important; /* Tăng kích thước icon bên trong cho rõ nét */
+    padding: 0 !important;
+    margin: 0 2px; /* Khoảng cách nhẹ giữa các nút */
 }
 
-.btn-edit-ge {
-    border-color: #333333 !important;
-    color: #333333 !important;
-    font-weight: bold;
-}
+/* Màu sắc riêng cho từng loại khi hover hoặc icon bên trong */
+.btn-approve-ge i { color: #28a745; }
+.btn-approve-ge:hover { background-color: #28a745 !important; border-color: #28a745 !important; }
+.btn-approve-ge:hover i { color: white !important; }
 
-.btn-approve-ge {
-    border-color: #333333 !important;
-    color: #28a745 !important;
-}
+.btn-reject-ge i { color: #dc3545; }
+.btn-reject-ge:hover { background-color: #dc3545 !important; border-color: #dc3545 !important; }
+.btn-reject-ge:hover i { color: white !important; }
 
-.btn-reject-ge {
-    border-color: #333333 !important;
-    color: #dc3545 !important;
-}
+.btn-edit-ge i { color: #333333; }
+.btn-edit-ge:hover { background-color: #333333 !important; color: white !important; }
+.btn-edit-ge:hover i { color: white !important; }
 
-.btn-delete-ge {
-    border-color: #333333 !important;
-    color: #d32f2f !important;
-    font-weight: bold;
-}
-/* Hàng chứa các nút bộ lọc */
-.filter-status-row {
+.btn-delete-ge i { color: #d32f2f; }
+.btn-delete-ge:hover { background-color: #d32f2f !important; color: white !important; }
+.btn-delete-ge:hover i { color: white !important; }
+
+/* Căn chỉnh lại container để các nút không bị dính lẹo */
+.status-badge, .action-buttons {
     display: flex;
-    gap: 15px;
-    margin-top: 25px;
-    margin-bottom: 15px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
-/* Trạng thái mặc định (Chưa nhấn) */
-.btn-filter {
-    /* Màu nền xanh lá nhẹ và chữ đen theo yêu cầu */
-    background-color: var(--ge-green-light);
-    color: #000000;
-
-    border: none;
-    padding: 12px 25px;
-
-    /* Bo tròn hoàn toàn (kiểu viên thuốc) */
-    border-radius: 30px;
-
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 700; /* In đậm chữ */
-    transition: all 0.3s ease;
-    outline: none;
-}
-
-/* Trạng thái KHI NHẤN VÀO (Active) */
-.btn-filter.active {
-    /* Màu xanh đậm và chữ trắng theo yêu cầu */
-    background-color: var(--ge-green-dark);
-    color: #FFFFFF;
-
-    box-shadow: 0 4px 12px rgba(23, 77, 23, 0.3);
-}
-
-/* Hiệu ứng hover nhẹ khi chưa chọn */
-.btn-filter:hover:not(.active) {
-    filter: brightness(0.9);
-}
 /* --- TỔNG THỂ MODAL TÍNH LƯƠNG GÉ CAFE --- */
 
 .salary-modal-overlay {
     position: fixed;
     /* Dịch xuống dưới thanh Nav (Giả sử Nav cao 120px) */
-    top: 120px;
+    top: 150px;
     left: 0;
     width: 100%;
     height: calc(100vh - 120px);
@@ -230,7 +262,7 @@
 
 .salary-modal-content {
     /* MÀU XANH PASTEL NHẠT CHO TOÀN BỘ FORM */
-    background-color: #F0F7EF;
+    background-color: white;
     width: 100%;
     max-width: 650px;
     /* DỊCH FORM XUỐNG DƯỚI MỘT CHÚT */
@@ -243,7 +275,7 @@
 
 /* Header: MÀU PASTEL ĐẬM HƠN */
 .salary-modal-header {
-    background-color: var(--ge-green-light); /* Mã màu #CDE0C9 */
+    background-color: white; /* Mã màu #CDE0C9 */
     padding: 18px 25px;
     display: flex;
     justify-content: space-between;
@@ -255,6 +287,8 @@
     color: var(--ge-green-dark);
     font-weight:600;
     font-size: 20px;
+    margin-top: 20px;
+
 }
 
 .close-modal {
@@ -268,15 +302,19 @@
     cursor: pointer;
     color: var(--ge-green-dark);
 }
+.detail { display: flex; justify-content: flex-end; gap: 15px; margin-bottom: 20px; }
+.btn-save { background: #174D17; color: white; border: none;font-size:14px; padding: 10px 40px; border-radius: 8px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 600;}
+.btn-close { background: white; color: black; border: 1.5px solid lightgray; font-size:14px; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 600;}
 
 /* Body Modal */
 .salary-modal-body {
     padding: 25px;
+    margin-top: -10px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     color: var(--ge-green-dark);
     font-weight:600;
 }
@@ -339,7 +377,7 @@
 /* Footer: Nút bấm */
 .salary-modal-footer {
     padding: 15px 25px;
-    background: rgba(205, 224, 201, 0.2);
+    background: white;
     display: flex;
     justify-content: flex-end;
     gap: 15px;
@@ -355,7 +393,7 @@
     cursor: pointer;
 }
 
-.btn-confirm-salary {
+.btn-create-request {
     background: var(--ge-green-dark);
     color: white;
     border: none;
@@ -383,10 +421,10 @@
     to { transform: translateY(0); opacity: 1; }
 }
 
- /*TINH LUONG CHO MOT NHAN VIEN*/
+/*TINH LUONG CHO MOT NHAN VIEN*/
 
 .salary-detail-overlay {
-    margin-top:70px;
+    margin-top:100px;
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;
 }
@@ -426,21 +464,27 @@
     font-weight: 600;
 }
 
-.status-badge.da-duyet i {
-    color: #28a745; /* Màu xanh lá cho dấu tích */
+/* Container bọc icon sau khi đã duyệt */
+.status-badge.da-duyet,
+.status-badge.da-tu-choi {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100%;
+    min-height: 38px; /* Bằng chiều cao nút hành động */
 }
 
+/* Ép icon to lên (bằng size 28px) khi đã chốt */
+.status-badge.da-duyet i,
 .status-badge.da-tu-choi i {
-    color: #dc3545; /* Màu đỏ cho dấu X */
+    font-size: 28px !important;
+    line-height: 1;
+    display: block;
 }
 
-.status-badge.cho-duyet i.fa-check {
-    color: #28a745; /* Đảm bảo icon check trong hàng chờ duyệt màu xanh lá */
-}
-
-.status-badge.cho-duyet i.fa-times {
-    color: #dc3545; /* Đảm bảo icon times trong hàng chờ duyệt màu đỏ */
-}
+/* Màu chuẩn cho icon khi đã chốt */
+.status-badge.da-duyet i { color: #28a745 !important; } /* Tích xanh */
+.status-badge.da-tu-choi i { color: #dc3545 !important; } /* X đỏ */
 
 /* --- TOAST NOTIFICATION STYLES --- */
 .toast-notification {
@@ -598,44 +642,94 @@
 }
 
 /* --- EXPORT CONTROLS STYLES --- */
+/* --- ĐẨY CỤM XUẤT FILE SANG PHẢI --- */
+/* Container chính đẩy về bên phải */
 .export-data-wrapper {
     margin-top: 25px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-end; /* Đẩy cả cụm sang phải */
     padding-bottom: 30px;
+    width: 100%;
 }
 
+/* Cụm điều khiển xếp thành hàng dọc */
 .export-controls {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
+    flex-direction: column;    /* Xếp thành 2 hàng dọc */
+    gap: 12px;                /* Khoảng cách giữa dropdown và nút */
+    align-items: flex-end;     /* Căn cả dropdown và nút sát lề phải */
 }
 
+/* Dropdown chọn định dạng */
 .export-dropdown {
     height: 45px;
-    width:200px;
+    width: 200px;             /* Độ rộng bằng với nút bấm cho cân đối */
     padding: 0 15px;
     border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    background: white;
+    border: 1px solid var(--border-color);
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    background-color: white;
+    cursor: pointer;
 }
 
+/* Nút Xuất báo cáo */
 .btn-export-final {
-    height: 45px;
-    width:200px;
-    padding: 0 30px;
-    background-color: #174D17; /* Màu xanh lá */
+    height: 48px;
+    width: 200px;             /* Độ rộng cố định */
+    background-color: var(--ge-green-dark);
     color: white;
     border: none;
     border-radius: 8px;
     font-weight: 600;
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
     transition: background 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
+
 
 .btn-export-final:hover {
     background-color: #1B5E20; /* Màu xanh lá nhạt hơn khi hover */
+}
+.toolbar, .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;         /* Đảm bảo gap hàng trên và dưới bằng nhau */
+    padding: 0;        /* Bỏ padding riêng để không bị thụt lề */
+    width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .toolbar {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .search-box {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .search-box input {
+        width: 100%;
+    }
+
+    .btn-search,
+    .btn-primary {
+        width: 100%;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .filter-dropdown {
+        width: 100%;
+    }
 }
