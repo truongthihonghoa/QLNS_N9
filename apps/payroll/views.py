@@ -100,12 +100,12 @@ def payroll_list_view(request):
             'ma_nv': row.nhan_vien.ma_nv,
             'ten_nv': row.nhan_vien.ho_ten,
             'ky_luong': f"{row.thang:02d}/{row.nam}",
-            'luong_co_ban': f"{row.luong_co_ban:,.0f}",
-            'luong_theo_gio': f"{row.luong_theo_gio:,.0f}",
+            'luong_co_ban': f"{int(row.luong_co_ban):,}",
+            'luong_theo_gio': f"{int(row.luong_theo_gio):,}",
             'so_gio_lam': row.so_gio_lam,
-            'thuong': f"{row.thuong:,.0f}",
-            'phat': f"{row.phat:,.0f}",
-            'tong_luong': f"{row.tong_luong:,.0f}",
+            'thuong': f"{int(row.thuong):,}",
+            'phat': f"{int(row.phat):,}",
+            'tong_luong': f"{int(row.tong_luong):,}",
             'trang_thai': row.get_trang_thai_display(),
             'trang_thai_key': _status_key(row.trang_thai),
             'da_gui': row.da_gui,
@@ -208,16 +208,79 @@ def payroll_period_employees_view(request):
         'branch': branch, 'month': m, 'year': y,
         'eligible_employees': eligible_employees, 'calculated_employees': calculated_employees,
     })
+def _next_ma_luong() -> str:
+    # Try to generate sequential ML0001, ML0002... based on existing numeric suffixes.
+    max_n = 0
+    for s in Luong.objects.values_list('ma_luong', flat=True):
+        if not s:
+            continue
+        m = re.fullmatch(r'ML(\d+)', str(s).strip())
+        if not m:
+            continue
+        try:
+            n = int(m.group(1))
+        except Exception:
+            continue
+        if n > max_n:
+            max_n = n
+    return f"ML{(max_n + 1):04d}"
+
+import re
+
+
+def _parse_money(value):
+    if value is None:
+        return 0
+
+    # Nếu đã là số → return luôn (QUAN TRỌNG)
+    if isinstance(value, (int, float)):
+        return float(value)
+
+    value = str(value).strip()
+
+    if not value:
+        return 0
+
+    # Remove ký tự không phải số
+    value = re.sub(r'[^0-9,.\-+]', '', value)
+
+    if not value or value in ('-', '+'):
+        return 0
+
+    dot = value.rfind('.')
+    comma = value.rfind(',')
+
+    if dot != -1 and comma != -1:
+        if dot > comma:
+            value = value.replace(',', '')   # , là thousand
+        else:
+            value = value.replace('.', '').replace(',', '.')
+    elif dot != -1:
+        if value.count('.') > 1:
+            value = value.replace('.', '')
+        else:
+            head, tail = value.split('.', 1)
+            if tail.isdigit() and len(tail) == 3:
+                value = value.replace('.', '')
+    elif comma != -1:
+        if value.count(',') > 1:
+            value = value.replace(',', '')
+        else:
+            head, tail = value.split(',', 1)
+            if tail.isdigit() and len(tail) == 3:
+                value = value.replace(',', '')
+            else:
+                value = head + '.' + tail
+
+    try:
+        return float(value)
+    except:
+        return 0
 
 @login_required(login_url='/accounts/login/')
 @require_POST
 def payroll_save_view(request):
-    # Chỉ Chủ mới được quyền lưu/tính lương
-    if not request.user.is_superuser:
-        return JsonResponse({'status': 'error', 'message': 'Bạn không có quyền thực hiện tính lương.'}, status=403)
-
     try:
-        ma_luong = (request.POST.get('ma_luong') or '').strip()
         ma_nv = (request.POST.get('ma_nv') or '').strip()
         branch = (request.POST.get('branch') or '').strip()
         month = (request.POST.get('month') or '').strip()
@@ -227,37 +290,41 @@ def payroll_save_view(request):
             return JsonResponse({'status': 'error', 'message': 'Missing data'}, status=400)
 
         m, y = int(month), int(year)
+
         emp = get_object_or_404(NhanVien, pk=ma_nv)
         chi_nhanh = ChiNhanh.objects.filter(pk=branch).first()
 
-        l_cb = clean_money(request.POST.get('luong_co_ban'))
-        l_gio = clean_money(request.POST.get('luong_theo_gio'))
+        # ✅ PARSE ĐÚNG
+        l_cb = _parse_money(request.POST.get('luong_co_ban'))
+        l_gio = _parse_money(request.POST.get('luong_theo_gio'))
         s_gio = float(request.POST.get('so_gio_lam') or 0)
-        thuong = clean_money(request.POST.get('thuong'))
-        phat = clean_money(request.POST.get('phat'))
+        thuong = _parse_money(request.POST.get('thuong'))
+        phat = _parse_money(request.POST.get('phat'))
+
         tong = l_cb + (l_gio * s_gio) + thuong - phat
 
-        data = {
-            'luong_co_ban': l_cb, 'luong_theo_gio': l_gio, 'so_gio_lam': s_gio,
-            'thuong': thuong, 'phat': phat, 'tong_luong': tong,
-        }
+        obj, created = Luong.objects.update_or_create(
+            nhan_vien=emp,
+            thang=m,
+            nam=y,
+            defaults={
+                'ma_luong': _next_ma_luong(),
+                'chi_nhanh': chi_nhanh,
+                'luong_co_ban': l_cb,
+                'luong_theo_gio': l_gio,
+                'so_gio_lam': s_gio,
+                'thuong': thuong,
+                'phat': phat,
+                'tong_luong': tong,
+                'trang_thai': 'cho_duyet',
+            }
+        )
 
-        if ma_luong:
-            obj = get_object_or_404(Luong, pk=ma_luong)
-            if obj.trang_thai != 'cho_duyet':
-                return JsonResponse({'status': 'error', 'message': 'Record locked'}, status=409)
-            for k, v in data.items(): setattr(obj, k, v)
-            obj.save()
-        else:
-            obj, created = Luong.objects.update_or_create(
-                nhan_vien=emp, thang=m, nam=y,
-                defaults={
-                    'ma_luong': get_next_ma_luong(), 'chi_nhanh': chi_nhanh,
-                    'trang_thai': 'cho_duyet', **data
-                }
-            )
+        return JsonResponse({
+            'status': 'success',
+            'ma_luong': obj.ma_luong,
+        })
 
-        return JsonResponse({'status': 'success', 'ma_luong': obj.ma_luong, 'ten_nv': obj.nhan_vien.ho_ten})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
@@ -341,91 +408,179 @@ def payroll_calculate_view(request):
     request.session['calculated_employees'] = calculated
     return redirect(f'{reverse("payroll_list")}?branch={branch}&month={month}&year={year}&show_modal=true')
 
-@login_required(login_url='/accounts/login/')
 def payroll_add_view(request):
-    if not request.user.is_superuser:
-        messages.error(request, 'Bạn không có quyền thêm bảng lương.')
-        return redirect('payroll_list')
+    # ==========================================
+    # XỬ LÝ LƯU DỮ LIỆU (KHI NHẤN NÚT LƯU)
+    # ==========================================
     if request.method == "POST":
-        branch, month, year = request.POST.get('branch'), request.POST.get('month'), request.POST.get('year')
-        selected_ids = request.POST.getlist('selected_employees')
-        chi_nhanh = ChiNhanh.objects.filter(ma_chi_nhanh=branch).first()
+        month = request.POST.get('month')
+        year = request.POST.get('year')
+        branch_id = request.POST.get('branch')
 
-        for emp_id in selected_ids:
+        # Tìm các ID nhân viên có trong form gửi lên
+        employee_ids = [k.split('_')[1] for k in request.POST.keys() if k.startswith('bonus_')]
+
+        chi_nhanh = None
+        if branch_id:
+            chi_nhanh = ChiNhanh.objects.filter(ma_chi_nhanh=branch_id).first()
+
+        for emp_id in employee_ids:
             try:
                 nv = NhanVien.objects.get(ma_nv=emp_id)
-                base = clean_money(request.POST.get(f'base_salary_{emp_id}', 0))
-                rate = clean_money(request.POST.get(f'hourly_rate_{emp_id}', 0))
-                hours = float(request.POST.get(f'hours_{emp_id}', 0))
-                bonus = clean_money(request.POST.get(f'bonus_{emp_id}', 0))
-                penalty = clean_money(request.POST.get(f'penalty_{emp_id}', 0))
-                
+
+                # Lấy dữ liệu từ các input ẩn và input nhập liệu
+                bonus = _parse_money(request.POST.get(f'bonus_{emp_id}', 0))
+                penalty = _parse_money(request.POST.get(f'penalty_{emp_id}', 0))
+                total_salary = _parse_money(request.POST.get(f'total_salary_{emp_id}', 0))
+
+                base_salary = _parse_money(request.POST.get(f'base_salary_{emp_id}', 0))
+                hourly_rate = _parse_money(request.POST.get(f'hourly_rate_{emp_id}', 0))
+                hours = float(request.POST.get(f'hours_{emp_id}', 0) or 0)
+
+                # Lưu vào Database
+                # Nếu đã tồn tại lương cho NV này trong kỳ này thì cập nhật, chưa có thì tạo mới
                 Luong.objects.update_or_create(
-                    nhan_vien=nv, thang=int(month), nam=int(year),
+                    nhan_vien=nv,
+                    thang=int(month),
+                    nam=int(year),
                     defaults={
-                        'ma_luong': get_next_ma_luong(), 'chi_nhanh': chi_nhanh,
-                        'luong_co_ban': base, 'luong_theo_gio': rate, 'so_gio_lam': hours,
-                        'thuong': bonus, 'phat': penalty, 'tong_luong': base + (rate * hours) + bonus - penalty,
+                        'ma_luong': _next_ma_luong(),  # Chỉ gán mã nếu là tạo mới hoàn toàn
+                        'chi_nhanh': chi_nhanh,
+                        'luong_co_ban': base_salary,
+                        'luong_theo_gio': hourly_rate,
+                        'so_gio_lam': hours,
+                        'thuong': bonus,
+                        'phat': penalty,
+                        'tong_luong': total_salary,
                         'trang_thai': 'cho_duyet',
                     }
                 )
-            except Exception: continue
-        messages.success(request, "Đã lưu bảng lương thành công!")
+            except (NhanVien.DoesNotExist, ValueError):
+                continue
+
+        messages.success(request, f"Đã lưu bảng lương kỳ {month}/{year} thành công!")
+
+        # ĐÂY LÀ CHỖ QUAN TRỌNG: Redirect để xóa trạng thái POST
         return redirect('payroll_list')
 
-    branch, month, year = request.GET.get('branch'), request.GET.get('month'), request.GET.get('year')
+    # ==========================================
+    # HIỂN THỊ DỮ LIỆU TẠM THỜI (KHI MỚI VÀO TRANG)
+    # ==========================================
+    branch = request.GET.get('branch')
+    month = request.GET.get('month')
+    year = request.GET.get('year')
     employees_param = request.GET.get('employees')
-    if not all([month, year, employees_param]): return redirect('payroll_list')
 
-    m_int, y_int = int(month), int(year)
-    employees_data = []
-    for emp_id in employees_param.split(','):
+    if not all([month, year, employees_param]):
+        messages.error(request, 'Dữ liệu không đầy đủ để tính lương.')
+        return redirect('payroll_list')
+
+    try:
+        month_int = int(month)
+        year_int = int(year)
+        selected_ids = employees_param.split(',')
+    except ValueError:
+        return redirect('payroll_list')
+
+    employees = []
+    warnings = []
+
+    for emp_id in selected_ids:
         try:
             nv = NhanVien.objects.get(ma_nv=emp_id)
-            hours = float(ChamCong.objects.filter(ma_nv_id=emp_id, ngay_lam__year=y_int, ngay_lam__month=m_int).aggregate(Sum('so_gio_lam'))['so_gio_lam__sum'] or 0)
-            
+
+            # Lấy dữ liệu chấm công thực tế
+            qs_cc = ChamCong.objects.filter(ma_nv_id=emp_id, ngay_lam__year=year_int, ngay_lam__month=month_int)
+            total_hours = float(qs_cc.aggregate(total=Sum('so_gio_lam'))['total'] or 0)
+
+            if qs_cc.count() == 0:
+                warnings.append(f"Nhân viên {nv.ho_ten} ({nv.ma_nv}) không có dữ liệu chấm công.")
+
+            # Lấy hợp đồng để lấy mức lương
+            first_day = datetime.date(year_int, month_int, 1)
+            last_day = datetime.date(year_int, month_int, calendar.monthrange(year_int, month_int)[1])
+
             contract = HopDongLaoDong.objects.select_related('chi_tiet').filter(
-                ma_nv_id=emp_id, trang_thai='CON_HAN', 
-                ngay_bat_dau__lte=datetime.date(y_int, m_int, calendar.monthrange(y_int, m_int)[1])
-            ).filter(Q(ngay_ket_thuc__isnull=True) | Q(ngay_ket_thuc__gte=datetime.date(y_int, m_int, 1))).order_by('-ngay_bat_dau').first()
+                ma_nv_id=emp_id, trang_thai='CON_HAN', ngay_bat_dau__lte=last_day
+            ).filter(Q(ngay_ket_thuc__isnull=True) | Q(ngay_ket_thuc__gte=first_day)).order_by('-ngay_bat_dau').first()
 
-            l_gio = float(contract.chi_tiet.luong_theo_gio or 0) if contract and hasattr(contract, 'chi_tiet') else 0
-            l_cb = float(contract.chi_tiet.luong_co_ban or 0) if contract and hasattr(contract, 'chi_tiet') else 0
+            luong_gio = 0
+            luong_co_ban = 0
+            if contract and hasattr(contract, 'chi_tiet'):
+                luong_gio = float(contract.chi_tiet.luong_theo_gio or 0)
+                luong_co_ban = float(contract.chi_tiet.luong_co_ban or 0)
 
-            employees_data.append({
-                'ma_nv': nv.ma_nv, 'ho_ten': nv.ho_ten, 'sogio': hours,
-                'luong_gio': l_gio, 'luong_co_ban': l_cb, 'tong_luong': (hours * l_gio) + l_cb,
+            employees.append({
+                'ma_nv': nv.ma_nv,
+                'ho_ten': nv.ho_ten,
+                'sogio': total_hours,
+                'luong_gio': luong_gio,
+                'luong_co_ban': luong_co_ban,
+                'tong_luong': (total_hours * luong_gio) + luong_co_ban,
             })
-        except Exception: continue
+        except NhanVien.DoesNotExist:
+            continue
 
     return render(request, 'payroll/payroll_add.html', {
-        'branch': branch, 'month': m_int, 'year': y_int, 'employees': employees_data
+        'branch': branch,
+        'month': month_int,
+        'year': year_int,
+        'employees': employees,
+        'warnings': warnings
     })
 
-@login_required(login_url='/accounts/login/')
+
 def payroll_edit_view(request, ma_luong):
-    if not request.user.is_superuser:
-        messages.error(request, 'Bạn không có quyền sửa bảng lương.')
-        return redirect('payroll_list')
+    # 1. Lấy bản ghi bảng lương
     obj = get_object_or_404(Luong.objects.select_related('nhan_vien', 'chi_nhanh'), pk=ma_luong)
+
+
+    # 3. XỬ LÝ LƯU (POST)
     if request.method == "POST":
-        bonus = clean_money(request.POST.get(f'bonus_{obj.nhan_vien.ma_nv}', 0))
-        penalty = clean_money(request.POST.get(f'penalty_{obj.nhan_vien.ma_nv}', 0))
-        obj.thuong, obj.phat = bonus, penalty
-        obj.tong_luong = (float(obj.luong_co_ban) + (float(obj.luong_theo_gio) * float(obj.so_gio_lam)) + bonus - penalty)
+        # Lấy dữ liệu Thưởng/Phạt từ form gửi lên
+        # Template của bạn đang dùng name="bonus_{{ emp.ma_nv }}"
+        bonus = _parse_money(request.POST.get(f'bonus_{obj.nhan_vien.ma_nv}', 0))
+        penalty = _parse_money(request.POST.get(f'penalty_{obj.nhan_vien.ma_nv}', 0))
+
+        # Cập nhật dữ liệu
+        obj.thuong = bonus
+        obj.phat = penalty
+
+        # Tính toán lại tổng lương (Lương CB + Lương Giờ*Số Giờ + Thưởng - Phạt)
+        obj.tong_luong = (float(obj.luong_co_ban) +
+                          (float(obj.luong_theo_gio) * float(obj.so_gio_lam)) +
+                          float(bonus) - float(penalty))
+
         obj.save()
+        
+        # Thêm thông báo success
+        messages.success(request, 'Cập nhật bảng lương thành công!')
+
+        # Sau khi lưu xong, redirect về danh sách.
+
         return redirect('payroll_list')
+
+    # 4. HIỂN THỊ DỮ LIỆU (GET)
+    # Mapping dữ liệu để tương thích với template payroll_add.html (hoặc edit)
+    # Vì template đang dùng vòng lặp {% for emp in employees %}
+    employee_data = {
+        'ma_nv': obj.nhan_vien.ma_nv,
+        'ho_ten': obj.nhan_vien.ho_ten,
+        'sogio': obj.so_gio_lam,
+        'luong_gio': obj.luong_theo_gio,
+        'luong_co_ban': obj.luong_co_ban,
+        'thuong': obj.thuong,
+        'phat': obj.phat,
+        'tong_luong': obj.tong_luong,
+    }
 
     return render(request, 'payroll/payroll_edit.html', {
-        'branch': obj.chi_nhanh.ten_chi_nhanh if obj.chi_nhanh else "N/A",
-        'month': obj.thang, 'year': obj.nam, 'ma_luong': obj.ma_luong,
-        'employees': [{
-            'ma_nv': obj.nhan_vien.ma_nv, 'ho_ten': obj.nhan_vien.ho_ten, 'sogio': obj.so_gio_lam,
-            'luong_gio': obj.luong_theo_gio, 'luong_co_ban': obj.luong_co_ban, 
-            'thuong': obj.thuong, 'phat': obj.phat, 'tong_luong': obj.tong_luong,
-        }],
+        'branch': obj.chi_nhanh.ten_chi_nhanh if obj.chi_nhanh else "Chi nhánh GÉ",
+        'month': obj.thang,
+        'year': obj.nam,
+        'employees': [employee_data],  # Truyền vào list
+        'ma_luong': obj.ma_luong,
     })
-
 @login_required(login_url='/accounts/login/')
 def my_salary_view(request):
     month, year = request.GET.get('month'), request.GET.get('year')
@@ -438,9 +593,9 @@ def my_salary_view(request):
         for p in payrolls:
             payroll_rows.append({
                 'ma_luong': p.ma_luong, 'ho_ten': p.nhan_vien.ho_ten, 'ky_luong': f"{p.thang:02d}/{p.nam}",
-                'luong_co_ban': f"{p.luong_co_ban:,.0f}", 'luong_theo_gio': f"{p.luong_theo_gio:,.0f}",
-                'so_gio_lam': p.so_gio_lam, 'thuong': f"{p.thuong:,.0f}", 'phat': f"{p.phat:,.0f}",
-                'tong_luong': f"{p.tong_luong:,.0f}", 'trang_thai': p.get_trang_thai_display(),
+                'luong_co_ban': f"{int(float(p.luong_co_ban)):,}", 'luong_theo_gio': f"{int(float(p.luong_theo_gio)):,}",
+                'so_gio_lam': p.so_gio_lam, 'thuong': f"{int(float(p.thuong)):,}", 'phat': f"{int(float(p.phat)):,}",
+                'tong_luong': f"{int(float(p.tong_luong)):,}", 'trang_thai': p.get_trang_thai_display(),
             })
     except Exception: pass
     return render(request, 'payroll/payroll_detail.html', {

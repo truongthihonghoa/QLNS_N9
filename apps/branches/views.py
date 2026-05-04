@@ -14,7 +14,7 @@ def branch_list(request):
 
     # 1. Nếu là Admin/Staff
     if user.is_superuser:
-        branches = ChiNhanh.objects.all().order_by('ma_chi_nhanh')
+        branches = ChiNhanh.objects.filter(trang_thai='active').order_by('ma_chi_nhanh')
         return render(request, 'branches/branch_list.html', {'branches': branches})
     
     if user.is_staff:

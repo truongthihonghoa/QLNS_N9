@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const cancelBtn = document.querySelector('.contract-cancel-btn');
     const employeeNameInput = document.getElementById('ten_nv');
     const employeeCodeInput = document.getElementById('ma_nv');
-    const employeeOptions = Array.from(document.querySelectorAll('#employee-options option'));
+    const employeeDropdown = document.getElementById('employee-dropdown');
+    const employeeOptions = Array.from(document.querySelectorAll('.employee-option'));
     const contractTypeSelect = document.getElementById('loai_hd');
     const luongCoBanInput = document.getElementById('luong_co_ban');
     const luongTheoGioInput = document.getElementById('luong_theo_gio');
@@ -38,8 +39,58 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
 
+    // Autocomplete functionality
+    function filterEmployees(searchTerm) {
+        const filtered = employeeOptions.filter(option => {
+            const name = option.dataset.name.toLowerCase();
+            return name.includes(searchTerm.toLowerCase());
+        });
+        
+        employeeDropdown.innerHTML = '';
+        
+        if (filtered.length === 0) {
+            employeeDropdown.style.display = 'none';
+            return;
+        }
+        
+        filtered.forEach(option => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'employee-option';
+            optionDiv.dataset.name = option.dataset.name;
+            optionDiv.dataset.code = option.dataset.code;
+            optionDiv.dataset.position = option.dataset.position;
+            optionDiv.dataset.branch = option.dataset.branch;
+            optionDiv.textContent = option.dataset.name;
+            employeeDropdown.appendChild(optionDiv);
+        });
+        
+        employeeDropdown.style.display = 'block';
+    }
+    
+    function selectEmployee(employeeElement) {
+        const name = employeeElement.dataset.name;
+        const code = employeeElement.dataset.code;
+        const position = employeeElement.dataset.position;
+        const branch = employeeElement.dataset.branch;
+        
+        employeeNameInput.value = name;
+        employeeCodeInput.value = code;
+        
+        // Tự động điền chức vụ và chi nhánh
+        if (positionSelect && position && position !== 'None' && position !== '') {
+            const mappedValue = positionMap[position] || position;
+            positionSelect.value = mappedValue;
+        }
+        
+        if (branchSelect && branch && branch !== 'None' && branch !== '' && branch !== 'undefined') {
+            branchSelect.value = branch;
+        }
+        
+        employeeDropdown.style.display = 'none';
+    }
+    
     function syncEmployeeCode(skipAutofill = false) {
-        const selectedOption = employeeOptions.find((option) => option.value === employeeNameInput.value.trim());
+        const selectedOption = employeeOptions.find((option) => option.dataset.name === employeeNameInput.value.trim());
         if (selectedOption) {
             employeeCodeInput.value = selectedOption.dataset.code || '';
             
@@ -245,6 +296,45 @@ document.addEventListener('DOMContentLoaded', function () {
         syncEmployeeCode(true);
         updateMucLuong();
 
+        // Validation các trường bắt buộc
+        const requiredFields = [
+            { id: 'ten_nv', name: 'Tên nhân viên' },
+            { id: 'loai_hd', name: 'Loại hợp đồng' },
+            { id: 'ngay_bd', name: 'Ngày bắt đầu' },
+            { id: 'ngay_kt', name: 'Ngày kết thúc' },
+            { id: 'so_gio_lam_toi_thieu', name: 'Số giờ làm tối thiểu' },
+            { id: 'chuc_vu', name: 'Chức vụ' },
+            { id: 'dia_diem_lam_viec', name: 'Địa điểm làm việc' }
+        ];
+
+        // Kiểm tra các trường bắt buộc
+        for (const field of requiredFields) {
+            const element = document.getElementById(field.id);
+            if (!element || !element.value.trim()) {
+                showErrorPopup(`Trường ${field.name} là bắt buộc và không được để trống.`);
+                element?.focus();
+                return;
+            }
+        }
+
+        // Kiểm tra lương cơ bản hoặc lương theo giờ tùy theo loại hợp đồng
+        const loaiHd = document.getElementById('loai_hd').value;
+        if (loaiHd === 'FULLTIME') {
+            const luongCoBan = document.getElementById('luong_co_ban');
+            if (!luongCoBan.value.trim()) {
+                showErrorPopup('Lương cơ bản là bắt buộc đối với hợp đồng Full Time.');
+                luongCoBan.focus();
+                return;
+            }
+        } else if (loaiHd === 'PARTTIME') {
+            const luongTheoGio = document.getElementById('luong_theo_gio');
+            if (!luongTheoGio.value.trim()) {
+                showErrorPopup('Lương theo giờ là bắt buộc đối với hợp đồng Part Time.');
+                luongTheoGio.focus();
+                return;
+            }
+        }
+
         // Strip dots before sending
         if (!validateDates()) {
             return;
@@ -281,9 +371,31 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (employeeNameInput) {
-        employeeNameInput.addEventListener('input', syncEmployeeCode);
+        employeeNameInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.trim();
+            if (searchTerm.length > 0) {
+                filterEmployees(searchTerm);
+            } else {
+                employeeDropdown.style.display = 'none';
+            }
+        });
+        
         employeeNameInput.addEventListener('change', syncEmployeeCode);
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.employee-autocomplete')) {
+                employeeDropdown.style.display = 'none';
+            }
+        });
     }
+    
+    // Handle dropdown option clicks
+    employeeDropdown.addEventListener('click', function(e) {
+        if (e.target.classList.contains('employee-option')) {
+            selectEmployee(e.target);
+        }
+    });
     if (contractForm) {
         // GIÁM SÁT TOÀN DIỆN: Bắt mọi sự kiện nhập liệu trên toàn bộ form
         const impactIds = ['loai_hd', 'luong_co_ban', 'luong_theo_gio', 'so_gio_lam_toi_thieu', 'thuong'];

@@ -347,7 +347,8 @@
             height: 'auto',
             nowIndicator: true,
             eventContent: function (arg) {
-                const emps = arg.event.extendedProps.employees;
+                // Use filtered employees if available (from sidebar checkbox filtering), otherwise use all employees
+                const emps = arg.event.extendedProps.filteredEmployees || arg.event.extendedProps.employees;
                 const timeStr = arg.event.extendedProps.ca_lam;
                 const branch = arg.event.extendedProps.chi_nhanh;
 
@@ -458,7 +459,7 @@
         if (listContainer) {
             listContainer.innerHTML = '';
 
-            employees.forEach(emp => {
+            employees.forEach((emp, index) => {
                 const names = emp.name.trim().split(' ');
                 let initials = '';
                 if (names.length >= 2) {
@@ -469,7 +470,8 @@
                 const initialsText = initials.toUpperCase();
 
                 const empHtml = `
-                    <div class="participant-info" style="margin-bottom: 20px;">
+                    <div class="participant-info" style="margin-bottom: 20px; display: flex; align-items: center; gap: 15px;" data-employee-name="${emp.name}">
+                        <input type="checkbox" class="employee-checkbox" checked onchange="toggleEmployeeInShift('${emp.name}', this.checked)">
                         <div class="participant-avatar" style="background-color: var(--primary-green);">${initialsText}</div>
                         <div class="participant-details">
                             <span class="name">${emp.name}</span>
@@ -557,18 +559,28 @@
             // Match search query
             const searchMatch = q === "" || employees.some(emp => emp.name.toLowerCase().includes(q));
 
-            // Match checked names
-            const nameMatch = employees.some(emp => checkedNames.includes(emp.name));
-
             // Match branch
             const branchMatch = branchFilter === "all" || branch === branchFilter;
 
-            if (searchMatch && nameMatch && branchMatch) {
+            // Filter employees for this event
+            const filteredEmployees = employees.filter(emp => checkedNames.includes(emp.name));
+            
+            // Update event content based on filtered employees
+            if (searchMatch && branchMatch && filteredEmployees.length > 0) {
                 event.setProp('display', 'auto');
+                
+                // Update event title to show only checked employees
+                event.setProp('title', filteredEmployees.map(e => e.name).join(', '));
+                
+                // Update extended props to reflect filtered employees
+                event.extendedProps.filteredEmployees = filteredEmployees;
             } else {
                 event.setProp('display', 'none');
             }
         });
+        
+        // Force calendar to re-render with updated content
+        calendar.render();
     }
 
 
@@ -744,6 +756,73 @@
         }
     }
 
+    function toggleEmployeeInShift(employeeName, isChecked) {
+        // Find the current event that opened the modal
+        const modal = document.getElementById('eventModal');
+        const currentEvent = window.currentEventDetail;
+        
+        if (!currentEvent) return;
+        
+        // Get current employees list
+        const employees = currentEvent.extendedProps.employees;
+        
+        if (isChecked) {
+            // Add employee back to the shift if not already present
+            if (!employees.some(emp => emp.name === employeeName)) {
+                // Find the employee from the original data
+                const schedulesData = JSON.parse(document.getElementById('schedules-data').textContent);
+                const empData = schedulesData.find(item => item.ten_nv === employeeName && 
+                    item.ngay_lam === currentEvent.extendedProps.ngay_lam && 
+                    item.khung_gio === currentEvent.extendedProps.ca_lam);
+                
+                if (empData) {
+                    employees.push({
+                        id: empData.ma_llv,
+                        name: empData.ten_nv,
+                        chuc_vu: empData.chuc_vu,
+                        status: empData.trang_thai
+                    });
+                }
+            }
+        } else {
+            // Remove employee from the shift
+            const index = employees.findIndex(emp => emp.name === employeeName);
+            if (index > -1) {
+                employees.splice(index, 1);
+            }
+        }
+        
+        // Update the event title and display
+        if (employees.length > 0) {
+            currentEvent.setProp('title', employees.map(e => e.name).join(', '));
+            currentEvent.setProp('display', 'auto');
+        } else {
+            // If no employees left, hide the shift or show empty state
+            currentEvent.setProp('title', currentEvent.extendedProps.ca_lam);
+            // Keep the event visible but empty
+        }
+        
+        // Update the modal employee list visual
+        const participantDiv = document.querySelector(`[data-employee-name="${employeeName}"]`);
+        if (participantDiv) {
+            if (!isChecked) {
+                participantDiv.style.opacity = '0.5';
+                participantDiv.style.textDecoration = 'line-through';
+            } else {
+                participantDiv.style.opacity = '1';
+                participantDiv.style.textDecoration = 'none';
+            }
+        }
+        
+        // Show toast notification
+        if (typeof window.showToast === 'function') {
+            window.showToast(
+                isChecked ? `Đã thêm ${employeeName} vào ca làm việc` : `Đã bỏ ${employeeName} khỏi ca làm việc`,
+                'info'
+            );
+        }
+    }
+
     function showErrorPopup(title, msg) {
         if (typeof window.showToast === 'function') {
             window.showToast(msg, 'error');
@@ -751,5 +830,87 @@
             alert(msg);
         }
     }
+
+    // Toggle employee in shift function
+    function toggleEmployeeInShift(employeeName, isChecked) {
+        // Find the current event that opened the modal
+        const currentEvent = window.currentEventDetail;
+        
+        if (!currentEvent) {
+            console.error('No current event found');
+            return;
+        }
+        
+        // Get current employees list
+        const employees = currentEvent.extendedProps.employees;
+        
+        if (isChecked) {
+            // Add employee back to the shift if not already present
+            if (!employees.some(emp => emp.name === employeeName)) {
+                // Find the employee from the original data
+                const schedulesData = JSON.parse(document.getElementById('schedules-data').textContent);
+                const empData = schedulesData.find(item => item.ten_nv === employeeName && 
+                    item.ngay_lam === currentEvent.extendedProps.ngay_lam && 
+                    item.khung_gio === currentEvent.extendedProps.ca_lam);
+                
+                if (empData) {
+                    employees.push({
+                        id: empData.ma_llv,
+                        name: empData.ten_nv,
+                        chuc_vu: empData.chuc_vu,
+                        status: empData.trang_thai
+                    });
+                }
+            }
+        } else {
+            // Remove employee from the shift
+            const index = employees.findIndex(emp => emp.name === employeeName);
+            if (index > -1) {
+                employees.splice(index, 1);
+            }
+        }
+        
+        // Update the event title and display
+        if (employees.length > 0) {
+            currentEvent.setProp('title', employees.map(e => e.name).join(', '));
+            currentEvent.setProp('display', 'auto');
+        } else {
+            // If no employees left, show empty state
+            currentEvent.setProp('title', currentEvent.extendedProps.ca_lam);
+        }
+        
+        // Update the modal employee list visual
+        const participantDiv = document.querySelector(`[data-employee-name="${employeeName}"]`);
+        if (participantDiv) {
+            if (!isChecked) {
+                participantDiv.style.opacity = '0.5';
+                participantDiv.style.textDecoration = 'line-through';
+            } else {
+                participantDiv.style.opacity = '1';
+                participantDiv.style.textDecoration = 'none';
+            }
+        }
+        
+        // Show toast notification
+        if (typeof window.showToast === 'function') {
+            window.showToast(
+                isChecked ? `Đã thêm ${employeeName} vào ca làm việc` : `Đã bỏ ${employeeName} khỏi ca làm việc`,
+                'info'
+            );
+        }
+        
+        // Force calendar to re-render the event
+        calendar.refetchEvents();
+    }
+
+    // Override showEventDetail to store current event
+    const originalShowEventDetail = showEventDetail;
+    showEventDetail = function(event) {
+        // Store current event globally for toggle function access
+        window.currentEventDetail = event;
+        
+        // Call original function
+        return originalShowEventDetail(event);
+    };
 </script>
 {% endblock %}

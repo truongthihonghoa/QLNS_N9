@@ -54,9 +54,9 @@
                 {% for emp in employees %}
                 <div class="payroll-employee-card"
                      data-ma-nv="{{ emp.ma_nv|stringformat:'s' }}"
-                     data-hours="{{ emp.sogio }}"
-                     data-hourly="{{ emp.luong_gio }}"
-                     data-base="{{ emp.luong_co_ban }}">
+                     data-hours="{{ emp.sogio|floatformat:0 }}"
+                     data-hourly="{{ emp.luong_gio|floatformat:0 }}"
+                     data-base="{{ emp.luong_co_ban|floatformat:0 }}">
                     <input type="hidden" name="base_salary_{{ emp.ma_nv }}" value="{{ emp.luong_co_ban }}">
                     <input type="hidden" name="hourly_rate_{{ emp.ma_nv }}" value="{{ emp.luong_gio }}">
                     <input type="hidden" name="hours_{{ emp.ma_nv }}" value="{{ emp.sogio }}">
@@ -204,5 +204,49 @@
 </script>
 <script src="{% static 'payroll/js/payroll_edit.js' %}?v=3.4"></script>
 
+{% include 'partials/toast_notification.html' %}
+
+<script>
+// Check for success notifications from sessionStorage and display them
+document.addEventListener('DOMContentLoaded', function() {
+    // Check for payroll success notifications
+    if (sessionStorage.getItem('payroll_success') === 'true') {
+        const action = sessionStorage.getItem('payroll_action');
+        const customMessage = sessionStorage.getItem('payroll_success_message');
+        
+        let message = 'Thao tác thành công!';
+        
+        // Use custom message if available, otherwise use default messages
+        if (customMessage) {
+            message = customMessage;
+        } else {
+            // Default messages based on action
+            switch(action) {
+                case 'edit':
+                    message = 'Cập nhật bảng lương thành công!';
+                    break;
+                default:
+                    message = 'Thao tác thành công!';
+            }
+        }
+        
+        // Show toast notification
+        const toast = document.getElementById("toast-notification");
+        const toastMsg = document.getElementById("toast-message");
+        if (toast && toastMsg) {
+            toastMsg.textContent = message;
+            toast.classList.add("show");
+            setTimeout(() => { 
+                toast.classList.remove("show"); 
+            }, 3000);
+        }
+        
+        // Clear sessionStorage
+        sessionStorage.removeItem('payroll_success');
+        sessionStorage.removeItem('payroll_action');
+        sessionStorage.removeItem('payroll_success_message');
+    }
+});
+</script>
 
 {% endblock %}

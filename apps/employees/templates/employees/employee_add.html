@@ -50,7 +50,24 @@
 {% include 'partials/popup_confirm_cancel.html' %}
 
 {% if form.errors %}
-    <div id="auto-show-invalid-info-popup" style="display: none;"></div>
+    <script>
+        // Show errors immediately without waiting for DOM ready
+        (function() {
+            var message = 'Thông tin nhân viên không hợp lệ';
+            if (typeof window.showToast === 'function') {
+                window.showToast(message, 'error');
+            } else {
+                // Fallback to alert if showToast not ready
+                setTimeout(function() {
+                    if (typeof window.showToast === 'function') {
+                        window.showToast(message, 'error');
+                    } else {
+                        alert(message);
+                    }
+                }, 100);
+            }
+        })();
+    </script>
 {% endif %}
 {% endblock %}
 

@@ -36,15 +36,20 @@
 
                 <div class="contract-field">
                     <label for="ten_nv">Tên nhân viên <span class="required">*</span></label>
-                    <input type="text" id="ten_nv" name="ten_nv" list="employee-options" placeholder="Chọn hoặc nhập tên nhân viên" required>
-                    <datalist id="employee-options">
-                        {% for employee in employees %}
-                        <option value="{{ employee.ho_ten }}" 
-                                data-code="{{ employee.ma_nv }}"
-                                data-position="{{ employee.chuc_vu }}"
-                                data-branch="{{ employee.ma_chi_nhanh.ma_chi_nhanh }}"></option>
-                        {% endfor %}
-                    </datalist>
+                    <div class="employee-autocomplete">
+                        <input type="text" id="ten_nv" name="ten_nv" placeholder="Chọn hoặc nhập tên nhân viên" required>
+                        <div id="employee-dropdown" class="employee-dropdown" style="display: none;">
+                            {% for employee in employees %}
+                            <div class="employee-option" 
+                                 data-name="{{ employee.ho_ten }}" 
+                                 data-code="{{ employee.ma_nv }}"
+                                 data-position="{{ employee.chuc_vu }}"
+                                 data-branch="{{ employee.ma_chi_nhanh.ma_chi_nhanh }}">
+                                {{ employee.ho_ten }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
 
                 <div class="contract-field">

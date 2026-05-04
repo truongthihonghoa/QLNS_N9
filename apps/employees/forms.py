@@ -1,6 +1,7 @@
 from django import forms
 
 from .models import NhanVien
+from apps.branches.models import ChiNhanh
 
 
 class EmployeeBaseForm(forms.ModelForm):
@@ -32,6 +33,10 @@ class EmployeeBaseForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        # Override ma_chi_nhanh field to filter only active branches
+        self.fields['ma_chi_nhanh'].queryset = ChiNhanh.objects.filter(trang_thai='active')
+        
         for field_name, field in self.fields.items():
             widget = field.widget
             css_class = widget.attrs.get("class", "")

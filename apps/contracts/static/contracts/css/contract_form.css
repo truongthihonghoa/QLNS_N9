@@ -4,6 +4,70 @@
     margin: 0 auto;
 }
 
+/* Employee Autocomplete Dropdown */
+.employee-autocomplete {
+    position: relative;
+}
+
+.employee-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 150px; /* Tăng chiều cao để hiển thị nhiều hơn */
+    overflow-y: auto; /* Luôn hiển thị scrollbar khi cần */
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+    margin-top: 2px;
+}
+
+/* Đảm bảo input tên nhân viên có chiều dài như các input khác */
+.employee-autocomplete input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.employee-option {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+.employee-option:hover {
+    background-color: #f5f5f5;
+}
+
+.employee-option:last-child {
+    border-bottom: none;
+}
+
+.employee-option.selected {
+    background-color: #e6f3ff;
+}
+
+/* Custom scrollbar cho dropdown */
+.employee-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.employee-dropdown::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.employee-dropdown::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.employee-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 .contract-form-card {
     width: min(1180px, 100%);
     background: rgba(255, 255, 255, 0.98);

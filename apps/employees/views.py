@@ -119,8 +119,8 @@ def employee_list_view(request):
                 | Q(ma_chi_nhanh__ten_chi_nhanh__icontains=search_query)
             )
 
-    # Lọc danh sách chi nhánh trong context
-    all_branches = ChiNhanh.objects.all()
+    # Lọc danh sách chi nhánh trong context - chỉ hiển thị chi nhánh đang hoạt động
+    all_branches = ChiNhanh.objects.filter(trang_thai='active')
     if not request.user.is_superuser:
         try:
             u_branch_id = request.user.taikhoan.ma_nv.ma_chi_nhanh_id
@@ -155,7 +155,9 @@ def employee_add_view(request):
             messages.success(request, "Thêm nhân viên mới thành công!")
             return redirect("employee_list")
 
+        # Khi form không hợp lệ, vẫn trả về form với lỗi để hiển thị dưới từng ô input
         messages.error(request, "Thông tin nhân viên không hợp lệ.", extra_tags="invalid_info_error")
+        return render(request, "employees/employee_add.html", {"form": form})
     else:
         form = EmployeeCreateForm(initial={"ma_nv": get_next_employee_id()})
 

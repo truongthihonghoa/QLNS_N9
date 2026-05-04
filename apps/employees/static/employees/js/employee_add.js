@@ -90,14 +90,18 @@ document.addEventListener('DOMContentLoaded', function() {
         saveBtn.addEventListener('click', function(event) {
             if (!employeeForm.checkValidity()) {
                 event.preventDefault();
-                window.showToast('Xin vui lòng nhập đầy đủ thông tin!', 'error');
+                window.showToast('Xin vui lòng nhập đầy đủ thông tin', 'error');
             }
         });
     }
 
-    const autoShowInvalidInfo = document.getElementById('auto-show-invalid-info-popup');
-    if (autoShowInvalidInfo) {
-        window.showToast('Thông tin không hợp lệ? Xin vui lòng nhập lại thông tin chính xác!', 'error');
+    // Check for form errors on page load
+    const formErrorSummary = document.querySelector('.form-error-summary');
+    if (formErrorSummary) {
+        const errorText = formErrorSummary.textContent.trim();
+        if (errorText) {
+            window.showToast(errorText, 'error');
+        }
     }
 
     bindAvatarUpload();

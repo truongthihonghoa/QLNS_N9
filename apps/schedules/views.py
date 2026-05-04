@@ -89,7 +89,7 @@ def schedule_create_view(request):
     role = request.session.get('role', 'Nhân viên')
     if not (_is_admin(request.user) or role != "Nhân viên"):
         messages.error(request, "Bạn không có quyền truy cập chức năng này.")
-        return redirect('schedules:schedule_list')
+        return redirect('schedule_list')
 
     if request.method == 'POST':
         ngay_lam_str = request.POST.get('ngay_lam')
@@ -121,7 +121,7 @@ def schedule_create_view(request):
                             }
                         )
                 messages.success(request, 'Đã tạo lịch làm việc thành công.')
-                return redirect('schedules:schedule_list')
+                return redirect('schedule_list')
             except Exception as e:
                 messages.error(request, f'Lỗi hệ thống: {str(e)}')
 
@@ -144,7 +144,7 @@ def schedule_edit_view(request, schedule_id):
     role = request.session.get('role', 'Nhân viên')
     if not (_is_admin(request.user) or role != "Nhân viên"):
         messages.error(request, "Bạn không có quyền sửa lịch làm việc.")
-        return redirect('schedules:schedule_list')
+        return redirect('schedule_list')
 
     schedule = get_object_or_404(LichLamViec, ma_llv=schedule_id)
     related_schedules = LichLamViec.objects.filter(
@@ -182,7 +182,7 @@ def schedule_edit_view(request, schedule_id):
                             }
                         )
                 messages.success(request, 'Cập nhật lịch làm thành công.')
-                return redirect('schedules:schedule_list')
+                return redirect('schedule_list')
             except Exception as e:
                 messages.error(request, f'Lỗi hệ thống: {str(e)}')
     

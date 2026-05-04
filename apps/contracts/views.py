@@ -121,8 +121,8 @@ def contract_list_view(request):
             "trang_thai_display": status["display"],
         })
 
-    # Lọc danh sách chi nhánh và nhân viên trong context
-    all_branches = ChiNhanh.objects.all()
+    # Lọc danh sách chi nhánh và nhân viên trong context - chỉ hiển thị chi nhánh đang hoạt động
+    all_branches = ChiNhanh.objects.filter(trang_thai='active')
     all_employees = NhanVien.objects.all()
     if not request.user.is_superuser:
         try:
@@ -203,6 +203,19 @@ def contract_add_view(request):
                 if ngay_kt and ngay_kt < ngay_bd:
                     return JsonResponse({"success": False, "message": "Ngày kết thúc không thể trước ngày bắt đầu"}, status=400)
 
+                # Kiểm tra hợp đồng trùng lặp
+                existing_contract = HopDongLaoDong.objects.filter(
+                    ma_nv=nhan_vien,
+                    ngay_bat_dau=ngay_bd,
+                    ngay_ket_thuc=ngay_kt
+                ).first()
+                
+                if existing_contract:
+                    return JsonResponse({
+                        "success": False, 
+                        "message": f"Nhân viên {nhan_vien.ho_ten} đã có hợp đồng trong khoảng thời gian này ({existing_contract.ma_hd})"
+                    }, status=400)
+
                 new_ma_hd = get_next_ma_hd()
                 hd = HopDongLaoDong.objects.create(
                     ma_hd=new_ma_hd,
@@ -231,7 +244,7 @@ def contract_add_view(request):
         "next_ma_hd": get_next_ma_hd(),
         "employees": NhanVien.objects.all().order_by("-ma_nv"),
         "positions": HopDongLaoDong.CHUC_VU_CHOICES,
-        "branches": ChiNhanh.objects.all(),
+        "branches": ChiNhanh.objects.filter(trang_thai='active'),
         "contract_types": HopDongLaoDong.LOAI_HD_CHOICES,
     })
 
@@ -277,7 +290,7 @@ def contract_edit_view(request, contract_id):
     return render(request, "contracts/contract_edit.html", {
         "contract": hd,
         "ct": ct,
-        "branches": ChiNhanh.objects.all(),
+        "branches": ChiNhanh.objects.filter(trang_thai='active'),
         "positions": HopDongLaoDong.CHUC_VU_CHOICES,
         "luong_co_ban": format_number(ct.luong_co_ban) if ct else 0,
         "luong_theo_gio": format_number(ct.luong_theo_gio) if ct else 0,
